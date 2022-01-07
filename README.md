@@ -15,3 +15,6 @@
   - `brownie pm install OpenZeppelin/openzeppelin-contracts@4.4.1`
 - Compile Contracts: `brownie compile`
 - Run Unittests: `brownie test`
+- Test On Remix Env:
+  1. Install **remixd** at https://www.npmjs.com/package/remixd
+  2. Run: `remixd -s <absolute-path to project> --remix-ide https://remix.ethereum.org`

@@ -6,3 +6,6 @@ build/
 reports/
 dev/*
 .idea
+.deps/
+.pytest_cache/
+node_modules/
