@@ -11,7 +11,7 @@ import "../interfaces/IContractRegistry.sol";
 contract GNFTToken is ERC721, Ownable, IGNFTToken {
 
     IContractRegistry public registry;
-    uint256 private _totalTokens;
+    uint256 private _totalGeneticProfiles;
 
     constructor(
         address gfnOwner,
@@ -25,42 +25,37 @@ contract GNFTToken is ERC721, Ownable, IGNFTToken {
         transferOwnership(gfnOwner);
     }
 
-    function mintToken(
-        address geneticOwner,
-        uint256 tokenId
+    function mintGNFT(
+        address geneticProfileOwner,
+        uint256 geneticProfileId
     )
         public override onlyOwner
     {
-        // Each genetic owner has only one GNFT token
-        require(
-            balanceOf(geneticOwner) == 0,
-            "GNFTToken: genetic owner had GNFT token."
-        );
         // Mint a new GNFT token for genetic owner
-        _safeMint(geneticOwner, tokenId);
-        // increase total tokens by one
-        _totalTokens += 1;
+        _safeMint(geneticProfileOwner, geneticProfileId);
+        // increase total genetic profiles by one
+        _totalGeneticProfiles += 1;
         // When a new GNFT Token is minted => some of LIFE token also are minted
         ILIFEToken lifeToken = ILIFEToken(registry.getContractAddress('LIFEToken'));
-        lifeToken.mintLIFEToTreasury(tokenId);
+        lifeToken.mintLIFE(geneticProfileId);
 
-        emit MintToken(geneticOwner, tokenId);
+        emit MintGNFT(geneticProfileOwner, geneticProfileId);
     }
 
-    function burnToken(uint256 tokenId) public override onlyOwner {
-        // require Token Id must exist
-        require(_exists(tokenId), "GNFTToken: token id must exist for burning");
-        // Perform burning the token id
-        _burn(tokenId);
+    function burnGNFT(uint256 geneticProfileId) public override onlyOwner {
+        // require genetic profile id must exist
+        require(_exists(geneticProfileId), "GNFTToken: genetic profile id must exist for burning");
+        // Perform burning the genetic profile id
+        _burn(geneticProfileId);
 
-        // increase total tokens by one
-        _totalTokens -= 1;
+        // decrease total genetic profiles by one
+        _totalGeneticProfiles -= 1;
 
-        emit BurnToken(tokenId);
+        emit BurnGNFT(geneticProfileId);
     }
 
-    function getTotalTokens() external view override returns (uint256) {
-        return _totalTokens;
+    function getTotalGeneticProfiles() external view override returns (uint256) {
+        return _totalGeneticProfiles;
     }
 
 }

@@ -13,7 +13,7 @@ def setup(deployment, const):
     genetic_owner1 = accounts[2]
 
     # Actions
-    gnft_token.mintToken(genetic_owner1, token_id, {"from": gfn_owner1})
+    gnft_token.mintGNFT(genetic_owner1, token_id, {"from": gfn_owner1})
 
 
 def test_success__burn_token(setup, deployment, const):
@@ -26,15 +26,15 @@ def test_success__burn_token(setup, deployment, const):
 
     # Assert before burning token
     # # Asserts
-    assert gnft_token.getTotalTokens() == 1
+    assert gnft_token.getTotalGeneticProfiles() == 1
     assert gnft_token.balanceOf(genetic_owner1) == 1
     assert gnft_token.ownerOf(12345678) == genetic_owner1
 
     # Actions
-    gnft_token.burnToken(token_id, {"from": gfn_owner1})
+    gnft_token.burnGNFT(token_id, {"from": gfn_owner1})
 
     # # Asserts
-    assert gnft_token.getTotalTokens() == 0
+    assert gnft_token.getTotalGeneticProfiles() == 0
     assert gnft_token.balanceOf(genetic_owner1) == 0
     with brownie.reverts("ERC721: owner query for nonexistent token"):
         assert gnft_token.ownerOf(12345678)
@@ -48,7 +48,7 @@ def test_failed__burn_token__not_gfn_owner_burn_token(setup, deployment, const):
     # Actions
     # genetic_owner1 make a transaction to burn their token id
     with brownie.reverts("Ownable: caller is not the owner"):
-        gnft_token.burnToken(12345678, {"from": genetic_owner1})
+        gnft_token.burnGNFT(12345678, {"from": genetic_owner1})
 
 
 def test_failed__burn_token__not_existed_token_id(setup, deployment, const):
@@ -60,15 +60,15 @@ def test_failed__burn_token__not_existed_token_id(setup, deployment, const):
     genetic_owner1 = accounts[2]
 
     # Assert before burning token
-    assert gnft_token.getTotalTokens() == 1
+    assert gnft_token.getTotalGeneticProfiles() == 1
     assert gnft_token.balanceOf(genetic_owner1) == 1
     assert gnft_token.ownerOf(12345678) == genetic_owner1
 
     # Actions
-    with brownie.reverts("GNFTToken: token id must exist for burning"):
-        gnft_token.burnToken(other_token_id, {"from": gfn_owner1})
+    with brownie.reverts("GNFTToken: genetic profile id must exist for burning"):
+        gnft_token.burnGNFT(other_token_id, {"from": gfn_owner1})
 
     # Assert after burning token
-    assert gnft_token.getTotalTokens() == 1
+    assert gnft_token.getTotalGeneticProfiles() == 1
     assert gnft_token.balanceOf(genetic_owner1) == 1
     assert gnft_token.ownerOf(12345678) == genetic_owner1

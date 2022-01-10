@@ -30,12 +30,12 @@ def test_success__submit_transaction__remove_owner_from_treasury(const):
     tx = life_treasury.submitTransaction(
         life_treasury.address, 0, calldata, {"from": gfn_owner1}
     )
-    transaction_id = tx.events['Submission']['transactionId']
-    assert life_treasury.isConfirmed(transaction_id) is False
+    transaction_id = tx.events['SubmitTransaction']['transactionId']
+    assert life_treasury.isConfirmedTransaction(transaction_id) is False
 
     # Action: gnf_owner3 confirm the request
     life_treasury.confirmTransaction(transaction_id, {"from": gfn_owner3})
-    assert life_treasury.isConfirmed(transaction_id) is True
+    assert life_treasury.isConfirmedTransaction(transaction_id) is True
 
     # assert: after remove gfn_owner2
     owners = life_treasury.getOwners()

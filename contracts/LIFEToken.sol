@@ -59,8 +59,8 @@ contract LIFEToken is ERC20, Ownable, ILIFEToken {
         return 0;
     }
 
-    function mintLIFEToTreasury(
-        uint256 geneticId
+    function mintLIFE(
+        uint256 geneticProfileId
     ) external override onlyGNFTToken {
         address lifeTreasuryAddress = _getLIFETreasuryAddress();
         require(
@@ -69,14 +69,14 @@ contract LIFEToken is ERC20, Ownable, ILIFEToken {
         );
 
         // find number of LIFE to mint
-        uint256 totalGNFTTokens = _getGNFTTokenInstance().getTotalTokens();
+        uint256 totalGNFTTokens = _getGNFTTokenInstance().getTotalGeneticProfiles();
         uint256 numberOfLIFEToMint = findNumberOfLIFEToMint(totalGNFTTokens);
 
         if (numberOfLIFEToMint > 0) {
             // Mint new LIFE tokens to LIFETreasury contract
             _mint(lifeTreasuryAddress, numberOfLIFEToMint);
 
-            emit MintLIFEToTreasury(lifeTreasuryAddress, geneticId);
+            emit MintLIFE(lifeTreasuryAddress, geneticProfileId);
         }
     }
 

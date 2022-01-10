@@ -15,7 +15,7 @@ def test_success__submit_transaction__transfer_life_from_treasury(deployment, co
     genetic_owner2 = accounts[4]
 
     # mint LIFE to Treasury
-    gnft_token.mintToken(genetic_owner1, 12345678, {"from": gfn_owner1})
+    gnft_token.mintGNFT(genetic_owner1, 12345678, {"from": gfn_owner1})
     # check balance of Treasury after mint GFNT token
     assert life_token.balanceOf(life_treasury.address) == 90000000e+18
     assert life_token.balanceOf(genetic_owner2) == 0
@@ -26,7 +26,7 @@ def test_success__submit_transaction__transfer_life_from_treasury(deployment, co
     tx = life_treasury.submitTransaction(
         life_token.address, 0, calldata, {"from": gfn_owner1}
     )
-    transaction_id = tx.events['Submission']['transactionId']
+    transaction_id = tx.events['SubmitTransaction']['transactionId']
 
     # gnf_owner2 confirm the transaction that gfn_owner1 made
     life_treasury.confirmTransaction(transaction_id, {"from": gfn_owner2})
