@@ -10,10 +10,11 @@ def setup(deployment, const):
     gnft_token = deployment[const.GNFT_TOKEN]
 
     token_id = 12345678
+    genetic_profile_id = 'abcxyz'
     genetic_owner1 = accounts[2]
 
     # Actions
-    gnft_token.mintGNFT(genetic_owner1, token_id, {"from": gfn_owner1})
+    gnft_token.mintGNFT(genetic_owner1, genetic_profile_id, token_id, {"from": gfn_owner1})
 
 
 def test_success__burn_token(setup, deployment, const):
@@ -26,7 +27,7 @@ def test_success__burn_token(setup, deployment, const):
 
     # Assert before burning token
     # # Asserts
-    assert gnft_token.getTotalGeneticProfiles() == 1
+    assert gnft_token.getTotalGeneticData() == 1
     assert gnft_token.balanceOf(genetic_owner1) == 1
     assert gnft_token.ownerOf(12345678) == genetic_owner1
 
@@ -34,7 +35,7 @@ def test_success__burn_token(setup, deployment, const):
     gnft_token.burnGNFT(token_id, {"from": gfn_owner1})
 
     # # Asserts
-    assert gnft_token.getTotalGeneticProfiles() == 0
+    assert gnft_token.getTotalGeneticData() == 0
     assert gnft_token.balanceOf(genetic_owner1) == 0
     with brownie.reverts("ERC721: owner query for nonexistent token"):
         assert gnft_token.ownerOf(12345678)
@@ -60,7 +61,7 @@ def test_failed__burn_token__not_existed_token_id(setup, deployment, const):
     genetic_owner1 = accounts[2]
 
     # Assert before burning token
-    assert gnft_token.getTotalGeneticProfiles() == 1
+    assert gnft_token.getTotalGeneticData() == 1
     assert gnft_token.balanceOf(genetic_owner1) == 1
     assert gnft_token.ownerOf(12345678) == genetic_owner1
 
@@ -69,6 +70,6 @@ def test_failed__burn_token__not_existed_token_id(setup, deployment, const):
         gnft_token.burnGNFT(other_token_id, {"from": gfn_owner1})
 
     # Assert after burning token
-    assert gnft_token.getTotalGeneticProfiles() == 1
+    assert gnft_token.getTotalGeneticData() == 1
     assert gnft_token.balanceOf(genetic_owner1) == 1
     assert gnft_token.ownerOf(12345678) == genetic_owner1

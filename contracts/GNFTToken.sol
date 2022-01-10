@@ -11,7 +11,9 @@ import "../interfaces/IContractRegistry.sol";
 contract GNFTToken is ERC721, Ownable, IGNFTToken {
 
     IContractRegistry public registry;
-    uint256 private _totalGeneticProfiles;
+    // Mapping: genetic Profile Id => minted or not
+    mapping(string => bool) mintedGeneticProfiles;
+    uint256 private _totalGeneticData;
 
     constructor(
         address gfnOwner,
@@ -27,35 +29,42 @@ contract GNFTToken is ERC721, Ownable, IGNFTToken {
 
     function mintGNFT(
         address geneticProfileOwner,
-        uint256 geneticProfileId
+        string memory geneticProfileId,
+        uint256 geneticDataId
     )
         public override onlyOwner
     {
         // Mint a new GNFT token for genetic owner
-        _safeMint(geneticProfileOwner, geneticProfileId);
-        // increase total genetic profiles by one
-        _totalGeneticProfiles += 1;
-        // When a new GNFT Token is minted => some of LIFE token also are minted
-        ILIFEToken lifeToken = ILIFEToken(registry.getContractAddress('LIFEToken'));
-        lifeToken.mintLIFE(geneticProfileId);
+        _safeMint(geneticProfileOwner, geneticDataId);
+        // increase total genetic data by one
+        _totalGeneticData += 1;
 
-        emit MintGNFT(geneticProfileOwner, geneticProfileId);
+        // only mint LIFE token once per genetic Profile Id
+        if (!mintedGeneticProfiles[geneticProfileId]){
+            // track genetic profile that was minted G-NFT
+            mintedGeneticProfiles[geneticProfileId] = true;
+            // When a new G-NFT Token is minted => some of LIFE token also are minted
+            ILIFEToken lifeToken = ILIFEToken(registry.getContractAddress('LIFEToken'));
+            lifeToken.mintLIFE(geneticProfileId, geneticDataId);
+        }
+
+        emit MintGNFT(geneticProfileOwner, geneticProfileId, geneticDataId);
     }
 
-    function burnGNFT(uint256 geneticProfileId) public override onlyOwner {
+    function burnGNFT(uint256 geneticDataId) public override onlyOwner {
         // require genetic profile id must exist
-        require(_exists(geneticProfileId), "GNFTToken: genetic profile id must exist for burning");
+        require(_exists(geneticDataId), "GNFTToken: genetic profile id must exist for burning");
         // Perform burning the genetic profile id
-        _burn(geneticProfileId);
+        _burn(geneticDataId);
 
         // decrease total genetic profiles by one
-        _totalGeneticProfiles -= 1;
+        _totalGeneticData -= 1;
 
-        emit BurnGNFT(geneticProfileId);
+        emit BurnGNFT(geneticDataId);
     }
 
-    function getTotalGeneticProfiles() external view override returns (uint256) {
-        return _totalGeneticProfiles;
+    function getTotalGeneticData() external view override returns (uint256) {
+        return _totalGeneticData;
     }
 
 }
