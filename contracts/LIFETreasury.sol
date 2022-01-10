@@ -180,7 +180,7 @@ contract LIFETreasury is ILIFETreasury {
                 break;
             }
         owners.pop();
-        // TODO: check this
+
         if (numberOfRequiredConfirmation > owners.length) {
             changeNumberOfConfirmationRequired(owners.length);
         }
