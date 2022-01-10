@@ -48,7 +48,7 @@ contract LIFEToken is ERC20, Ownable, ILIFEToken {
         public view returns (uint256)
     {
         uint256 minIndex = 1;
-        uint256 maxIndex = 11;
+        uint256 maxIndex = 18;
         for(uint256 index = minIndex; index <= maxIndex; index++) {
             GNFTRange storage range = _tableOfMintingLIFE[index];
             if (totalGNFTTokens >= range.lower
@@ -106,16 +106,23 @@ contract LIFEToken is ERC20, Ownable, ILIFEToken {
 
     function _initializeTableOfMintingLIFE() private {
 //        _tableOfMintingLIFE[index] = GNFTRange(lower, upper, number of LIFE);
-        _tableOfMintingLIFE[1] = GNFTRange(1, 1, 90000000e18);
-        _tableOfMintingLIFE[2] = GNFTRange(2, 10, 10000000e18);
-        _tableOfMintingLIFE[3] = GNFTRange(11, 100, 1000000e18);
-        _tableOfMintingLIFE[4] = GNFTRange(101, 1000, 100000e18);
-        _tableOfMintingLIFE[5] = GNFTRange(1001, 10000, 10000e18);
-        _tableOfMintingLIFE[6] = GNFTRange(10001, 100000, 1000e18);
-        _tableOfMintingLIFE[7] = GNFTRange(100001, 1000000, 100e18);
-        _tableOfMintingLIFE[8] = GNFTRange(1000001, 10000000, 10e18);
-        _tableOfMintingLIFE[9] = GNFTRange(10000001, 100000000, 1e18);
-        _tableOfMintingLIFE[10] = GNFTRange(100000001, 1000000000, 1e17);
-        _tableOfMintingLIFE[11] = GNFTRange(1000000001, 10000000000, 1e16);
+        _tableOfMintingLIFE[1] = GNFTRange(1, 1, 9*10**25);
+        _tableOfMintingLIFE[2] = GNFTRange(2, 10**1, 10**25);
+        _tableOfMintingLIFE[3] = GNFTRange(10**1 + 1, 10**2, 10**24);
+        _tableOfMintingLIFE[4] = GNFTRange(10**2 + 1, 10**3, 10**23);
+        _tableOfMintingLIFE[5] = GNFTRange(10**3 + 1, 10**4, 10**22);
+        _tableOfMintingLIFE[6] = GNFTRange(10**4 + 1, 10**5, 10**21);
+        _tableOfMintingLIFE[7] = GNFTRange(10**5 + 1, 10**6, 10**20);
+        _tableOfMintingLIFE[8] = GNFTRange(10**6 + 1, 10**7, 10**19);
+        _tableOfMintingLIFE[9] = GNFTRange(10**7 + 1, 10**8, 10**18);
+        _tableOfMintingLIFE[10] = GNFTRange(10**8 + 1, 10**9, 10**17);
+        _tableOfMintingLIFE[11] = GNFTRange(10**9 + 1, 10**10, 10**16);
+        _tableOfMintingLIFE[12] = GNFTRange(10**10 + 1, 10**11, 10**15);
+        _tableOfMintingLIFE[13] = GNFTRange(10**11 + 1, 10**12, 10**14);
+        _tableOfMintingLIFE[14] = GNFTRange(10**12 + 1, 10**13, 10**13);
+        _tableOfMintingLIFE[15] = GNFTRange(10**13 + 1, 10**14, 10**12);
+        _tableOfMintingLIFE[16] = GNFTRange(10**14 + 1, 10**15, 10**11);
+        _tableOfMintingLIFE[17] = GNFTRange(10**15 + 1, 10**16, 10**10);
+        _tableOfMintingLIFE[18] = GNFTRange(10**16 + 1, 10**17, 10**9);
     }
 }
