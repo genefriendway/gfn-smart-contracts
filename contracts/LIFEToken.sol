@@ -70,7 +70,7 @@ contract LIFEToken is ERC20, Ownable, ILIFEToken {
         );
 
         // find number of LIFE to mint base on total Genetic Data
-        uint256 totalGeneticData = _getGNFTTokenInstance().getTotalGeneticData();
+        uint256 totalGeneticData = _getGNFTTokenInstance().getTotalMintedGeneticProfiles();
         uint256 numberOfLIFEToMint = findNumberOfLIFEToMint(totalGeneticData);
 
         if (numberOfLIFEToMint > 0) {

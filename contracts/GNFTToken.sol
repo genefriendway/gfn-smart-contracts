@@ -11,9 +11,23 @@ import "../interfaces/IContractRegistry.sol";
 contract GNFTToken is ERC721, Ownable, IGNFTToken {
 
     IContractRegistry public registry;
-    // Mapping: genetic Profile Id => minted or not
+    // Mapping: genetic Profile Id => ever minted or not
+    // This mapping tracks genetic profile of Customer that has been ever minted
+    // this mapping only incrementally
     mapping(string => bool) mintedGeneticProfiles;
-    uint256 private _totalGeneticData;
+    uint256 private _totalMintedGeneticProfiles;
+
+    // Total number of current tokens that will be changed when minting or burning
+    uint256 private _totalCurrentTokens;
+
+    // ===== Modifiers =======
+    modifier notNullGeneticProfileId(string memory geneticProfileId) {
+        require(
+            bytes(geneticProfileId).length > 0,
+            "GNFTToken: genetic profile id must not be null"
+        );
+        _;
+    }
 
     constructor(
         address gfnOwner,
@@ -32,19 +46,24 @@ contract GNFTToken is ERC721, Ownable, IGNFTToken {
         string memory geneticProfileId,
         uint256 geneticDataId
     )
-        public override onlyOwner
+        public
+        override
+        onlyOwner
+        notNullGeneticProfileId(geneticProfileId)
     {
-        // Mint a new GNFT token for genetic owner
+        // Mint a new G-NFT token for genetic profile owner
         _safeMint(geneticProfileOwner, geneticDataId);
-        // increase total genetic data by one
-        _totalGeneticData += 1;
+        // increase total current tokens by one
+        _totalCurrentTokens += 1;
 
-        // only mint LIFE token once per genetic Profile Id
+        // only mint LIFE token once per genetic profile id
         if (!mintedGeneticProfiles[geneticProfileId]){
+            // increase total minted genetic profiles by one
+            _totalMintedGeneticProfiles += 1;
             // track genetic profile that was minted G-NFT
             mintedGeneticProfiles[geneticProfileId] = true;
             // When a new G-NFT Token is minted => some of LIFE token also are minted
-            ILIFEToken lifeToken = ILIFEToken(registry.getContractAddress('LIFEToken'));
+            ILIFEToken lifeToken = ILIFEToken(_getLIFETokenAddress());
             lifeToken.mintLIFE(geneticProfileId, geneticDataId);
         }
 
@@ -52,19 +71,29 @@ contract GNFTToken is ERC721, Ownable, IGNFTToken {
     }
 
     function burnGNFT(uint256 geneticDataId) public override onlyOwner {
-        // require genetic profile id must exist
-        require(_exists(geneticDataId), "GNFTToken: genetic profile id must exist for burning");
-        // Perform burning the genetic profile id
+        // require geneticDataId must exist
+        require(
+            _exists(geneticDataId),
+            "GNFTToken: genetic data id must exist for burning"
+        );
+        // Perform burning the genetic data id
         _burn(geneticDataId);
-
-        // decrease total genetic profiles by one
-        _totalGeneticData -= 1;
+        // decrease total current tokens by one
+        _totalCurrentTokens -= 1;
 
         emit BurnGNFT(geneticDataId);
     }
 
-    function getTotalGeneticData() external view override returns (uint256) {
-        return _totalGeneticData;
+    function getTotalMintedGeneticProfiles() external view override returns (uint256) {
+        return _totalMintedGeneticProfiles;
+    }
+
+    function getTotalCurrentTokens() external view override returns (uint256) {
+        return _totalCurrentTokens;
+    }
+
+    function _getLIFETokenAddress() internal view returns (address) {
+        return registry.getContractAddress('LIFEToken');
     }
 
 }

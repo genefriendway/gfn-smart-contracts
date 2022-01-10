@@ -18,6 +18,7 @@ interface IGNFTToken {
     ) external;
     function burnGNFT(uint256 geneticDataId) external;
 
-    function getTotalGeneticData() external view returns (uint256);
+    function getTotalMintedGeneticProfiles() external view returns (uint256);
+    function getTotalCurrentTokens() external view returns (uint256);
 
 }

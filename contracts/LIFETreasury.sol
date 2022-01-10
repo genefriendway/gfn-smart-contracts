@@ -100,8 +100,8 @@ contract LIFETreasury is ILIFETreasury {
         _;
     }
 
-    modifier addressNotNull(address _address) {
-        require(_address != address(0), "LIFETreasury: address must not null");
+    modifier notNullAddress(address _address) {
+        require(_address != address(0), "LIFETreasury: address must not be null");
         _;
     }
 
@@ -155,7 +155,7 @@ contract LIFETreasury is ILIFETreasury {
     )
         public
         onlyTreasury
-        addressNotNull(owner)
+        notNullAddress(owner)
         ownerDoesNotExist(owner)
         validNumberOfConfirmation(owners.length + 1, numberOfRequiredConfirmation)
     {
@@ -317,7 +317,7 @@ contract LIFETreasury is ILIFETreasury {
         bytes memory data
     )
         internal
-        addressNotNull(destination)
+        notNullAddress(destination)
         returns (uint256 transactionId)
     {
         transactionCount += 1;
