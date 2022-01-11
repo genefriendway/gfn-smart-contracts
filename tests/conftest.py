@@ -10,15 +10,13 @@ from brownie import (
     LIFETreasury,
 )
 
+from constants import ContractName
 
-class Constant:
+
+class Constant(ContractName):
     GFN_DEPLOYER = 'gfn_deployer'
     GFN_OWNER1 = 'gfn_owner1'
     GFN_OWNER2 = 'gfn_owner2'
-    REGISTRY = 'ContractRegistry'
-    GNFT_TOKEN = 'GNFTToken'
-    LIFE_TOKEN = 'LIFEToken'
-    LIFE_TREASURY = 'LIFETreasury'
 
 
 @pytest.fixture(scope="module")

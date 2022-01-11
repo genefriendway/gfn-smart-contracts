@@ -9,3 +9,4 @@ dev/*
 .deps/
 .pytest_cache/
 node_modules/
+bin/
