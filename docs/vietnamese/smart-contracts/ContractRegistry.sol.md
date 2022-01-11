@@ -1,8 +1,8 @@
 ## Description
 - GFN sẽ có rất nhiều các smart contracts khác nhau, các smart contracts đó sẽ 
-cần biết địa chỉ của nhau để gọi tương tác.
+cần biết địa chỉ của nhau để tương tác.
 - ContractRegistry sẽ là nơi mà những smart contracts trong GFN được đăng ký, 
-khi muốn tìm địa chỉ smart contract nào thì sẽ tìm trong Contract Registry
+khi muốn tìm địa chỉ smart contract nào thì sẽ tìm trong ContractRegistry
 ## API
 - `function registerContract(string memory name, address _address)`
   - đăng ký 1 địa chỉ contract và cùng với tên của nó vào registry
