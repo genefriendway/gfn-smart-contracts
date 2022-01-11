@@ -3,12 +3,13 @@ pragma solidity 0.8.11;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "../interfaces/IGNFTToken.sol";
-import "../interfaces/ILIFEToken.sol";
-import "../interfaces/IContractRegistry.sol";
+import "./interfaces/IGNFTToken.sol";
+import "./interfaces/ILIFEToken.sol";
+import "./interfaces/IContractRegistry.sol";
+import "./mixins/LIFETokenRetriever.sol";
 
 
-contract GNFTToken is ERC721, Ownable, IGNFTToken {
+contract GNFTToken is ERC721, Ownable, IGNFTToken, LIFETokenRetriever{
 
     IContractRegistry public registry;
     // Mapping: genetic Profile Id => ever minted or not
@@ -63,7 +64,7 @@ contract GNFTToken is ERC721, Ownable, IGNFTToken {
             // track genetic profile that was minted G-NFT
             mintedGeneticProfiles[geneticProfileId] = true;
             // When a new G-NFT Token is minted => some of LIFE token also are minted
-            ILIFEToken lifeToken = ILIFEToken(_getLIFETokenAddress());
+            ILIFEToken lifeToken = ILIFEToken(_getLIFETokenAddress(registry));
             lifeToken.mintLIFE(geneticProfileId, geneticDataId);
         }
 
@@ -90,10 +91,6 @@ contract GNFTToken is ERC721, Ownable, IGNFTToken {
 
     function getTotalCurrentTokens() external view override returns (uint256) {
         return _totalCurrentTokens;
-    }
-
-    function _getLIFETokenAddress() internal view returns (address) {
-        return registry.getContractAddress('LIFEToken');
     }
 
 }

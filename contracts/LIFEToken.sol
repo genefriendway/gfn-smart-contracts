@@ -3,12 +3,20 @@ pragma solidity 0.8.11;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "../interfaces/IContractRegistry.sol";
-import "../interfaces/ILIFEToken.sol";
-import "../interfaces/IGNFTToken.sol";
+import "./interfaces/IContractRegistry.sol";
+import "./interfaces/ILIFEToken.sol";
+import "./interfaces/IGNFTToken.sol";
+import "./mixins/GNFTTokenRetriever.sol";
+import "./mixins/LIFETreasuryRetriever.sol";
 
 
-contract LIFEToken is ERC20, Ownable, ILIFEToken {
+contract LIFEToken is
+    ERC20,
+    Ownable,
+    ILIFEToken,
+    GNFTTokenRetriever,
+    LIFETreasuryRetriever
+{
 
     IContractRegistry public registry;
 
@@ -23,7 +31,7 @@ contract LIFEToken is ERC20, Ownable, ILIFEToken {
 
     modifier onlyGNFTToken() {
         require(
-            _msgSender() == _getGNFTTokenAddress(),
+            _msgSender() == _getGNFTTokenAddress(registry),
             "LIFEToken: caller is not GNFTToken contract"
         );
         _;
@@ -63,14 +71,15 @@ contract LIFEToken is ERC20, Ownable, ILIFEToken {
         string memory geneticProfileId,
         uint256 geneticDataId
     ) external override onlyGNFTToken {
-        address lifeTreasuryAddress = _getLIFETreasuryAddress();
+        address lifeTreasuryAddress = _getLIFETreasuryAddress(registry);
         require(
             lifeTreasuryAddress != address(0),
             "LIFEToken: Please register LIFETreasury in ContractRegistry"
         );
 
         // find number of LIFE to mint base on total Genetic Data
-        uint256 totalGeneticData = _getGNFTTokenInstance().getTotalMintedGeneticProfiles();
+        IGNFTToken gnft_token = IGNFTToken(_getGNFTTokenAddress(registry));
+        uint256 totalGeneticData = gnft_token.getTotalMintedGeneticProfiles();
         uint256 numberOfLIFEToMint = findNumberOfLIFEToMint(totalGeneticData);
 
         if (numberOfLIFEToMint > 0) {
@@ -89,19 +98,6 @@ contract LIFEToken is ERC20, Ownable, ILIFEToken {
         );
         _burn(accountToBurn, amount);
         emit BurnLIFE(accountToBurn, amount);
-    }
-
-
-    function _getLIFETreasuryAddress() internal view returns (address) {
-        return registry.getContractAddress('LIFETreasury');
-    }
-
-    function _getGNFTTokenAddress() internal view returns (address) {
-        return registry.getContractAddress('GNFTToken');
-    }
-
-    function _getGNFTTokenInstance() internal view returns (IGNFTToken) {
-        return  IGNFTToken(_getGNFTTokenAddress());
     }
 
     function _initializeTableOfMintingLIFE() private {
