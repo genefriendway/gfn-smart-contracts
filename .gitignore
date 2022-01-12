@@ -10,3 +10,4 @@ dev/*
 .pytest_cache/
 node_modules/
 bin/
+contracts/artifacts/
