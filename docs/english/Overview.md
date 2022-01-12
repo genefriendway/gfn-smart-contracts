@@ -8,11 +8,11 @@ multi-sign wallet (named LIFETreasury). GFN Founders will be the managers of LIF
 ## Definitions
 
 - `GFN`: Gene Friend Network
-- `gfnOwner`: Gene Friend Network's Owner, đây là địa chỉ administrator của GFN
-- `Genetic Profile`: đây là hồ sơ của cá nhân sở hữu bộ gene.
-- `Genetic Profile Id`: mã định danh duy nhất của của người sở hữu bộ Gene trong GFN
-- `Genetic Profile Owner`: Người sở hữu của bộ gene.
-- `Genetic Data`: dữ liệu Gene của cá nhân nào đó.
-- `Genetic Data Id`: mã định danh của dữ liệu Gene
-- `G-NFT`: tên ERC721 token
-- `LIFE`: tên ERC20 token 
+- `gfnOwner`: Gene Friend Network's Owner/administrator address
+- `Genetic Profile Owner`: The individual who owns the genome
+- `Genetic Profile`: profile of `Genetic Profile Owner`
+- `Genetic Profile Id`: unique identifier of `Genetic Profile`
+- `Genetic Data`: Genome data of an individual
+- `Genetic Data Id`: unique identifier of `Genetic Data`
+- `G-NFT`: Name of ERC721 token
+- `LIFE`: Name of ERC20 token

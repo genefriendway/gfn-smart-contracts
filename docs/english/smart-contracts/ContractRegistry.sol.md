@@ -1,0 +1,18 @@
+## Description
+GFN will have multiple smart contracts. In order to interact with each others, one will need to acknowledge other's address.
+
+ContractRegistry will be the place where GFN's smart contracts being registered, and looking for others' address.
+
+## API
+- `function registerContract(string memory name, address _address)`
+  - register a new contract's address along with its name into registry
+  - only gfnOwner will be allowed to use this API
+- `function removeContract(string memory name, address _address)`
+  - remove a contract record from registry
+  - only gfnOwner will be allowed to use this API
+- `function getContractAddress(string memory name)`
+  - retrieve a smart contract's address by specifying its registered name
+  - any entity can use this API
+- `function getContractName(address _address)`
+  - retrieve a smart contract's name by specifying its registered address
+  - any entity can use this API
