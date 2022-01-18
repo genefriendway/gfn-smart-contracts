@@ -115,7 +115,16 @@ def deploy_life_treasury(registry):
 
 def main():
     registry = deploy_contract_registry()
-    deploy_gnft_token(registry)
-    deploy_life_token(registry)
-    deploy_life_treasury(registry)
-    print(registry)
+    gnft_token = deploy_gnft_token(registry)
+    life_token = deploy_life_token(registry)
+    life_treasury = deploy_life_treasury(registry)
+
+    print("========= RESULTS ==============")
+    print(f'=> Network: {network.show_active()}')
+    print(f'=> gfn_deployer: {gfn_deployer}')
+    print(f'=> gfn_owner: {GFN_OWNER_ADDRESS}')
+    print(f"=> ContractRegistry Address: {registry.address}")
+    print(f"=> GNFTToken Address: {gnft_token.address}")
+    print(f"=> LIFEToken Address: {life_token.address}")
+    print(f"=> LIFETreasury Address: {life_treasury.address}")
+    print("================================")
