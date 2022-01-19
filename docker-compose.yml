@@ -1,0 +1,14 @@
+version: "3.3"
+
+services:
+  gfn_smart_contracts:
+    build:
+        context: .
+        dockerfile: Dockerfile
+    image: gfn_smart_contracts:0.0.1
+    container_name: gfn_smart_contracts
+    volumes:
+      - .:/gfn-smart-contracts
+    entrypoint: sh -c
+    command:
+      - while true; do echo "GFN Smart Contract Environment Is Running"; sleep 20; done

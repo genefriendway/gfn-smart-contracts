@@ -17,6 +17,8 @@ networks:
     reverting_tx_gas_limit: max
     default_contract_owner: true
     cmd_settings: null
+    explorer: https://testnet.snowtrace.io/
+
   live:
     gas_limit: auto
     gas_buffer: 1.1

@@ -80,8 +80,13 @@ def validate_environment_variables():
 
 # ======= function deploy smart contracts =======
 def deploy_contract_registry():
-    print("================== [Deploying ContractRegistry] ==================")
-    return ContractRegistry.deploy(gfn_deployer, gfn_deployer_info)
+    print("================== [Deploying ContractRegistry Contract] ==================")
+    registry = ContractRegistry.deploy(gfn_deployer, gfn_deployer_info)
+
+    print("====> [Publishing ContractRegistry Contract]")
+    ContractRegistry.publish_source(registry)
+
+    return registry
 
 
 def deploy_gnft_token(registry):
@@ -98,11 +103,15 @@ def deploy_gnft_token(registry):
     registry.registerContract(
         ContractName.GNFT_TOKEN, gnft_token.address, gfn_deployer_info
     )
+
+    print("====> [Publishing GNFTToken Contract]")
+    GNFTToken.publish_source(gnft_token)
+
     return gnft_token
 
 
 def deploy_life_token(registry):
-    print("================== [Deploying LIFEToken] ==================")
+    print("================== [Deploying LIFEToken Contract] ==================")
     life_token = LIFEToken.deploy(
         GFN_OWNER_ADDRESS,
         registry,
@@ -110,15 +119,19 @@ def deploy_life_token(registry):
         "LIFE",
         gfn_deployer_info
     )
+
     print("====> [Registering LIFEToken contract]")
     registry.registerContract(
         ContractName.LIFE_TOKEN, life_token.address, gfn_deployer_info
     )
+
+    print("====> [Publishing LIFEToken Contract]")
+    LIFEToken.publish_source(life_token)
     return life_token
 
 
 def deploy_life_treasury(registry):
-    print("================== [Deploying LIFETreasury] ==================")
+    print("================ [Deploying LIFETreasury Contract] ================")
     life_treasury = LIFETreasury.deploy(
         [GFN_FOUNDER_ADDRESS_ONE, GFN_FOUNDER_ADDRESS_TWO, GFN_FOUNDER_ADDRESS_THREE],
         3,
@@ -128,6 +141,9 @@ def deploy_life_treasury(registry):
     registry.registerContract(
         ContractName.LIFE_TREASURY, life_treasury.address, gfn_deployer_info
     )
+
+    print("====> [Publishing LIFETreasury Contract]")
+    LIFETreasury.publish_source(life_treasury)
     return life_treasury
 
 
