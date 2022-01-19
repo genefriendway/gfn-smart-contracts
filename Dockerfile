@@ -14,4 +14,4 @@ RUN apt-get update \
     && pip install -r requirements.txt \
     && brownie pm install OpenZeppelin/openzeppelin-contracts@4.4.1
 
-ADD . /code/
+ADD . /gfn-smart-contracts/
