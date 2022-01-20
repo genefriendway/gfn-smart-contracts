@@ -1,7 +1,14 @@
 __pycache__
 .env
+.env.*
 .history
 .hypothesis/
 build/
 reports/
+dev/*
 .idea
+.deps/
+.pytest_cache/
+node_modules/
+bin/
+contracts/artifacts/
