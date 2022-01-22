@@ -1,4 +1,10 @@
+import pytest
 import brownie
+
+
+@pytest.fixture(autouse=True)
+def isolation(fn_isolation):
+    pass
 
 
 def test_success__register_contract(registry_deployment, const):
@@ -23,7 +29,7 @@ def test_success__register_contract(registry_deployment, const):
     assert gnft_name == 'AnyName'
 
 
-def test_failed__register_contract__empty_contract_name(registry_deployment, const):
+def test_failure__register_contract__empty_contract_name(registry_deployment, const):
     # Arranges
     gfn_owner1 = registry_deployment[const.GFN_OWNER1]
     registry = registry_deployment[const.REGISTRY]
@@ -34,7 +40,7 @@ def test_failed__register_contract__empty_contract_name(registry_deployment, con
         registry.registerContract('', gnft_token.address, {"from": gfn_owner1})
 
 
-def test_failed__register_contract__duplicated_contract_name(registry_deployment, const):
+def test_failure__register_contract__duplicated_contract_name(registry_deployment, const):
     # Arranges
     gfn_owner1 = registry_deployment[const.GFN_OWNER1]
     registry = registry_deployment[const.REGISTRY]
@@ -53,7 +59,7 @@ def test_failed__register_contract__duplicated_contract_name(registry_deployment
         )
 
 
-def test_failed__register_contract__empty_address(registry_deployment, const):
+def test_failure__register_contract__empty_address(registry_deployment, const):
     # Arranges
     gfn_owner1 = registry_deployment[const.GFN_OWNER1]
     registry = registry_deployment[const.REGISTRY]
@@ -65,7 +71,7 @@ def test_failed__register_contract__empty_address(registry_deployment, const):
         )
 
 
-def test_failed__register_contract__duplicated_contract_address(registry_deployment, const):
+def test_failure__register_contract__duplicated_contract_address(registry_deployment, const):
     # Arranges
     gfn_owner1 = registry_deployment[const.GFN_OWNER1]
     registry = registry_deployment[const.REGISTRY]

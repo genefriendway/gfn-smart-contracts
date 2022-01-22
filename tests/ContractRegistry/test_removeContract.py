@@ -1,8 +1,11 @@
+#!/usr/bin/python3
+import pytest
 import brownie
 
-#!/usr/bin/python3
 
-import pytest
+@pytest.fixture(autouse=True)
+def isolation(fn_isolation):
+    pass
 
 
 @pytest.fixture(scope="function")
@@ -38,7 +41,7 @@ def test_success__remove_contract(setup, registry_deployment, const):
     assert gnft_name == ''
 
 
-def test_failed__remove_contract__empty_contract_name(setup, registry_deployment, const):
+def test_failure__remove_contract__empty_contract_name(setup, registry_deployment, const):
     # Arranges
     gfn_owner1 = registry_deployment[const.GFN_OWNER1]
     registry = registry_deployment[const.REGISTRY]
@@ -51,7 +54,7 @@ def test_failed__remove_contract__empty_contract_name(setup, registry_deployment
         )
 
 
-def test_failed__remove_contract__not_existed_name(registry_deployment, const):
+def test_failure__remove_contract__not_existed_name(registry_deployment, const):
     # Arranges
     gfn_owner1 = registry_deployment[const.GFN_OWNER1]
     registry = registry_deployment[const.REGISTRY]
@@ -64,7 +67,7 @@ def test_failed__remove_contract__not_existed_name(registry_deployment, const):
         )
 
 
-def test_failed__remove_contract__empty_contract_address(setup, registry_deployment, const):
+def test_failure__remove_contract__empty_contract_address(setup, registry_deployment, const):
     # Arranges
     gfn_owner1 = registry_deployment[const.GFN_OWNER1]
     registry = registry_deployment[const.REGISTRY]
@@ -76,7 +79,7 @@ def test_failed__remove_contract__empty_contract_address(setup, registry_deploym
         )
 
 
-def test_failed__remove_contract__not_existed_address(setup, registry_deployment, const):
+def test_failure__remove_contract__not_existed_address(setup, registry_deployment, const):
     # Arranges
     gfn_owner1 = registry_deployment[const.GFN_OWNER1]
     registry = registry_deployment[const.REGISTRY]

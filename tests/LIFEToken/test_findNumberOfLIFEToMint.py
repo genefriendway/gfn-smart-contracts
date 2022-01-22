@@ -1,4 +1,9 @@
-import brownie
+import pytest
+
+
+@pytest.fixture(autouse=True)
+def isolation(fn_isolation):
+    pass
 
 
 def test_success__find_LIFE_to_mint__total_01_GNFT(deployment, const):

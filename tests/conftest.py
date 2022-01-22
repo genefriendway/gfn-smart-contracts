@@ -24,7 +24,7 @@ def const():
     return Constant
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture(scope="module")
 def deployment():
     gfn_deployer = accounts[0]
     gfn_owner1 = accounts[1]
