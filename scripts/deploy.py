@@ -12,6 +12,7 @@ from brownie import (
 from constants import ContractName
 
 gfn_deployer = None
+gfn_deployer_address = None
 gfn_deployer_info = None
 ENV_NAME = None
 GFN_DEPLOYER_PRIVATE_KEY = None
@@ -24,6 +25,7 @@ GFN_FOUNDER_ADDRESS_THREE = None
 def validate_environment_variables():
     global gfn_deployer
     global gfn_deployer_info
+    global gfn_deployer_address
     global GFN_DEPLOYER_PRIVATE_KEY
     global ENV_NAME
     global GFN_OWNER_ADDRESS
@@ -56,7 +58,8 @@ def validate_environment_variables():
     # Load accounts from private keys
 
     gfn_deployer = accounts.add(GFN_DEPLOYER_PRIVATE_KEY)
-    gfn_deployer_info = {'from': gfn_deployer}
+    gfn_deployer_address = gfn_deployer.address
+    gfn_deployer_info = {'from': gfn_deployer_address}
 
     print(F"===================== {ENV_NAME} =========================")
     print(f'=> Network: {network.show_active()}')
@@ -81,7 +84,9 @@ def validate_environment_variables():
 # ======= function deploy smart contracts =======
 def deploy_contract_registry():
     print("================== [Deploying ContractRegistry Contract] ==================")
-    registry = ContractRegistry.deploy(gfn_deployer, gfn_deployer_info)
+    registry = ContractRegistry.deploy(
+        gfn_deployer_address, gfn_deployer_info
+    )
 
     print("====> [Publishing ContractRegistry Contract]")
     ContractRegistry.publish_source(registry)
