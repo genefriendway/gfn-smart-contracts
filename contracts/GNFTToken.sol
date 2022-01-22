@@ -7,25 +7,44 @@ import "./interfaces/IGNFTToken.sol";
 import "./interfaces/ILIFEToken.sol";
 import "./interfaces/IContractRegistry.sol";
 import "./mixins/LIFETokenRetriever.sol";
+import "./mixins/LIFETreasuryRetriever.sol";
 
 
-contract GNFTToken is ERC721, Ownable, IGNFTToken, LIFETokenRetriever{
+contract GNFTToken is 
+    ERC721, 
+    Ownable, 
+    IGNFTToken, 
+    LIFETokenRetriever,
+    LIFETreasuryRetriever
+{
 
     IContractRegistry public registry;
     // Mapping: genetic Profile Id => ever minted or not
     // This mapping tracks genetic profile of Customer that has been ever minted
     // this mapping only incrementally
-    mapping(string => bool) mintedGeneticProfiles;
+    mapping(uint256 => bool) private _mintedGeneticProfiles;
     uint256 private _totalMintedGeneticProfiles;
 
-    // Total number of current tokens that will be changed when minting or burning
+    // Total number of current tokens
+    // This value will be updated when minting or burning happens
     uint256 private _totalCurrentTokens;
 
     // ===== Modifiers =======
-    modifier notNullGeneticProfileId(string memory geneticProfileId) {
+    modifier existLIFEToken() {
+        address lifeTokenAddress = _getLIFETokenAddress(registry);
         require(
-            bytes(geneticProfileId).length > 0,
-            "GNFTToken: genetic profile id must not be null"
+            lifeTokenAddress != address(0),
+            "GNFTToken: Please register LIFEToken on ContractRegistry"
+        );
+        _;
+    }
+
+    // ===== Modifiers =======
+    modifier existLIFETreasury() {
+        address lifeTreasuryAddress = _getLIFETreasuryAddress(registry);
+        require(
+            lifeTreasuryAddress != address(0),
+            "GNFTToken: Please register LIFETreasury on ContractRegistry"
         );
         _;
     }
@@ -44,45 +63,45 @@ contract GNFTToken is ERC721, Ownable, IGNFTToken, LIFETokenRetriever{
 
     function mintGNFT(
         address geneticProfileOwner,
-        string memory geneticProfileId,
-        uint256 geneticDataId
+        uint256 geneticProfileId
     )
         public
         override
         onlyOwner
-        notNullGeneticProfileId(geneticProfileId)
+        existLIFEToken
+        existLIFETreasury
     {
         // Mint a new G-NFT token for genetic profile owner
-        _safeMint(geneticProfileOwner, geneticDataId);
+        _safeMint(geneticProfileOwner, geneticProfileId);
         // increase total current tokens by one
         _totalCurrentTokens += 1;
 
         // only mint LIFE token once per genetic profile id
-        if (!mintedGeneticProfiles[geneticProfileId]){
+        if (!_mintedGeneticProfiles[geneticProfileId]){
             // increase total minted genetic profiles by one
             _totalMintedGeneticProfiles += 1;
             // track genetic profile that was minted G-NFT
-            mintedGeneticProfiles[geneticProfileId] = true;
+            _mintedGeneticProfiles[geneticProfileId] = true;
             // When a new G-NFT Token is minted => some of LIFE token also are minted
             ILIFEToken lifeToken = ILIFEToken(_getLIFETokenAddress(registry));
-            lifeToken.mintLIFE(geneticProfileId, geneticDataId);
+            lifeToken.mintLIFE(geneticProfileId);
         }
 
-        emit MintGNFT(geneticProfileOwner, geneticProfileId, geneticDataId);
+        emit MintGNFT(geneticProfileOwner, geneticProfileId);
     }
 
-    function burnGNFT(uint256 geneticDataId) public override onlyOwner {
-        // require geneticDataId must exist
+    function burnGNFT(uint256 geneticProfileId) public override onlyOwner {
+        // require geneticProfileId must exist
         require(
-            _exists(geneticDataId),
-            "GNFTToken: genetic data id must exist for burning"
+            _exists(geneticProfileId),
+            "GNFTToken: genetic profile id must exist for burning"
         );
-        // Perform burning the genetic data id
-        _burn(geneticDataId);
         // decrease total current tokens by one
         _totalCurrentTokens -= 1;
+        // Perform burning the genetic profile id
+        _burn(geneticProfileId);
 
-        emit BurnGNFT(geneticDataId);
+        emit BurnGNFT(geneticProfileId);
     }
 
     function getTotalMintedGeneticProfiles() external view override returns (uint256) {

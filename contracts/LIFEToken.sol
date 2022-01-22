@@ -67,26 +67,18 @@ contract LIFEToken is
         return 0;
     }
 
-    function mintLIFE(
-        string memory geneticProfileId,
-        uint256 geneticDataId
-    ) external override onlyGNFTToken {
+    function mintLIFE(uint256 geneticProfileId) external override onlyGNFTToken {
         address lifeTreasuryAddress = _getLIFETreasuryAddress(registry);
-        require(
-            lifeTreasuryAddress != address(0),
-            "LIFEToken: Please register LIFETreasury in ContractRegistry"
-        );
-
-        // find number of LIFE to mint base on total Genetic Data
+        // find number of LIFE to mint base on total genetic profiles
         IGNFTToken gnft_token = IGNFTToken(_getGNFTTokenAddress(registry));
-        uint256 totalGeneticData = gnft_token.getTotalMintedGeneticProfiles();
-        uint256 numberOfLIFEToMint = findNumberOfLIFEToMint(totalGeneticData);
+        uint256 totalGeneticProfiles = gnft_token.getTotalMintedGeneticProfiles();
+        uint256 numberOfLIFEToMint = findNumberOfLIFEToMint(totalGeneticProfiles);
 
         if (numberOfLIFEToMint > 0) {
             // Mint new LIFE tokens to LIFETreasury contract
             _mint(lifeTreasuryAddress, numberOfLIFEToMint);
 
-            emit MintLIFE(lifeTreasuryAddress, geneticProfileId, geneticDataId);
+            emit MintLIFE(lifeTreasuryAddress, geneticProfileId);
         }
     }
 
