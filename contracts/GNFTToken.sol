@@ -90,6 +90,22 @@ contract GNFTToken is
         emit MintGNFT(geneticProfileOwner, geneticProfileId);
     }
 
+    function mintBatchGNFT(
+        address[] memory geneticProfileOwners,
+        uint256[] memory geneticProfileIds
+    )
+        public
+        override
+        onlyOwner
+        existLIFEToken
+        existLIFETreasury
+    {
+        for (uint256 i = 0; i < geneticProfileOwners.length; i++) {
+            mintGNFT(geneticProfileOwners[i], geneticProfileIds[i]);
+        }
+        emit MintBatchGNFT(geneticProfileOwners, geneticProfileIds);
+    }
+
     function burnGNFT(uint256 geneticProfileId) public override onlyOwner {
         // require geneticProfileId must exist
         require(
