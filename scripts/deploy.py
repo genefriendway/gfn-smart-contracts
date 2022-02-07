@@ -172,16 +172,16 @@ def _deployment_flow():
     print("================================")
 
 
-def local():
+def env_local():
     load_dotenv('.env.local')
     _deployment_flow()
 
 
-def nightly():
+def env_nightly():
     load_dotenv('.env.nightly')
     _deployment_flow()
 
 
-def production():
+def env_production():
     load_dotenv('.env.production')
     _deployment_flow()
