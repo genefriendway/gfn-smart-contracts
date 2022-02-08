@@ -86,6 +86,18 @@ contract ContractRegistry is Ownable, IContractRegistry {
         emit RemoveContract(name, _address);
     }
 
+    function isRegisteredContract(
+        address _address
+    )
+        external override view returns(bool)
+    {
+        if(bytes(_addressToName[_address]).length > 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     function getContractAddress(
         string memory name
     ) 
