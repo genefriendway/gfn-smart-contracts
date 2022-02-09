@@ -4,6 +4,7 @@ class ContractName:
     LIFE_TOKEN = 'LIFEToken'
     LIFE_TREASURY = 'LIFETreasury'
     GENE_FRIEND_NETWORK_WALLET = 'GeneFriendNetworkWallet'
+    GFN_SALE_WALLET = 'GFNSaleWallet'
     GENETIC_PROFILE_OWNER_WALLET = 'GeneticProfileOwnerWallet'
     INVESTOR_WALLET = 'InvestorWallet'
     LAB_SERVICE_PROVIDER_WALLET = 'LabServiceProviderWallet'
