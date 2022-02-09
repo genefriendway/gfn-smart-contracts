@@ -58,7 +58,7 @@ contract ParticipantWallet is
         // validate: must have enough balance of sender
         require(
             balancesOfParticipant[sender] >= amount,
-            "ParticipantWallet: sender has not enough amount to send externally"
+            "ParticipantWallet: sender has not enough amount to send to another participant wallet"
         );
         // decrease balance of sender
         balancesOfParticipant[sender] -= amount;
@@ -80,7 +80,7 @@ contract ParticipantWallet is
         // validate: must have enough balance of sender
         require(
             balancesOfParticipant[sender] >= amount,
-            "ParticipantWallet: sender has not enough amount to send externally"
+            "ParticipantWallet: sender has not enough amount to send to GFN wallet"
         );
         // decrease balance of sender
         balancesOfParticipant[sender] -= amount;

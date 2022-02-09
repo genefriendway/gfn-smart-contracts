@@ -30,7 +30,7 @@ contract GeneFriendNetworkWallet is
         // validate: must have enough balance of wallet
         require(
             getBalanceOfWallet() >= amount,
-            "GeneFriendNetWorkWallet: Wallet has not enough amount to transfer."
+            "GeneFriendNetWorkWallet: Wallet has not enough amount to transfer"
         );
         SafeERC20.safeTransfer(IERC20(_getLIFETokenAddress(registry)), receiver, amount);
         emit Transfer(receiver, amount);
@@ -44,7 +44,7 @@ contract GeneFriendNetworkWallet is
         // validate: must have enough balance of wallet
         require(
             getBalanceOfWallet() >= amount,
-            "GeneFriendNetWorkWallet: Wallet has not enough amount to transfer."
+            "GeneFriendNetWorkWallet: Wallet has not enough amount to transfer"
         );
         // transfer real number of LIFE
         SafeERC20.safeTransfer(IERC20(_getLIFETokenAddress(registry)), participantWallet, amount);
