@@ -39,6 +39,7 @@ def deployment():
     life_treasury = LIFETreasury.deploy([gfn_owner1, gfn_owner2], 2, {'from': gfn_deployer})
     # GeneFriendNetwork Wallet
     gfn_wallet = GeneFriendNetworkWallet.deploy(gfn_owner1, registry, {'from': gfn_deployer})
+    gfn_sale_wallet = GeneFriendNetworkWallet.deploy(gfn_owner1, registry, {'from': gfn_deployer})
     # GeneProfileOwner Wallet
     gpo_wallet = ParticipantWallet.deploy(gfn_owner1, registry, {'from': gfn_deployer})
     # DataUtilizer Wallet
@@ -49,6 +50,7 @@ def deployment():
     registry.registerContract(Constant.LIFE_TOKEN, life_token.address, {'from': gfn_owner1})
     registry.registerContract(Constant.LIFE_TREASURY, life_treasury.address, {'from': gfn_owner1})
     registry.registerContract(Constant.GENE_FRIEND_NETWORK_WALLET, gfn_wallet.address, {'from': gfn_owner1})
+    registry.registerContract(Constant.GFN_SALE_WALLET, gfn_sale_wallet.address, {'from': gfn_owner1})
     registry.registerContract(Constant.GENETIC_PROFILE_OWNER_WALLET, gpo_wallet.address, {'from': gfn_owner1})
 
     results = {
@@ -60,6 +62,7 @@ def deployment():
         Constant.LIFE_TOKEN: life_token,
         Constant.LIFE_TREASURY: life_treasury,
         Constant.GENE_FRIEND_NETWORK_WALLET: gfn_wallet,
+        Constant.GFN_SALE_WALLET: gfn_sale_wallet,
         Constant.GENETIC_PROFILE_OWNER_WALLET: gpo_wallet,
         Constant.DATA_UTILIZER_WALLET: du_wallet,
     }
