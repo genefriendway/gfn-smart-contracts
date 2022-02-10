@@ -72,9 +72,9 @@ contract ParticipantWallet is
         emit TransferToAnotherParticipantWallet(sender, receiver, participantWallet, amount);
     }
 
-    function transferToGFNWallet(
+    function transferExternally(
         address sender,
-        address gfnWallet,
+        address receiver,
         uint256 amount
     ) external override onlyOwner {
         // validate: must have enough balance of sender
@@ -86,10 +86,10 @@ contract ParticipantWallet is
         balancesOfParticipant[sender] -= amount;
         // transfer real number of LIFE from wallet of sender to GFN wallet
         SafeERC20.safeTransfer(
-            IERC20(_getLIFETokenAddress(registry)), gfnWallet, amount
+            IERC20(_getLIFETokenAddress(registry)), receiver, amount
         );
 
-        emit TransferToGFNWallet(sender, gfnWallet, amount);
+        emit TransferExternally(sender, receiver, amount);
     }
 
     function receiveFromExternal(

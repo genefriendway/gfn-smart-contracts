@@ -15,9 +15,9 @@ interface IParticipantWallet {
         address indexed participantWallet,
         uint256 amount
     );
-    event TransferToGFNWallet(
+    event TransferExternally(
         address indexed sender,
-        address indexed gfnWallet,
+        address indexed receiver,
         uint256 amount
     );
     event ReceiveFromExternal(
@@ -38,9 +38,9 @@ interface IParticipantWallet {
         uint256 amount
     ) external;
 
-    function transferToGFNWallet(
+    function transferExternally(
         address sender,
-        address gfnWallet,
+        address receiver,
         uint256 amount
     ) external;
 
