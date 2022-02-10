@@ -4,10 +4,10 @@ pragma solidity 0.8.11;
 
 interface IGeneFriendNetworkWallet {
 
-    event Transfer(address receiver, uint256 indexed amount);
+    event Transfer(address indexed receiver, uint256 amount);
     event TransferToParticipantWallet(
-        address participantWallet,
-        address receiver,
+        address indexed participantWallet,
+        address indexed receiver,
         uint256 indexed amount
     );
 

@@ -4,19 +4,26 @@ pragma solidity 0.8.11;
 
 interface IParticipantWallet {
 
-    event TransferInternally(address sender, address receiver, uint256 indexed amount);
+    event TransferInternally(
+        address indexed sender,
+        address indexed receiver,
+        uint256 amount
+    );
     event TransferToAnotherParticipantWallet(
-        address sender,
-        address receiver,
-        address participantWallet,
-        uint256 indexed amount
+        address indexed sender,
+        address indexed receiver,
+        address indexed participantWallet,
+        uint256 amount
     );
     event TransferToGFNWallet(
-        address sender,
-        address gfnWallet,
-        uint256 indexed amount
+        address indexed sender,
+        address indexed gfnWallet,
+        uint256 amount
     );
-    event ReceiveFromExternal(address receiver, uint256 indexed amount);
+    event ReceiveFromExternal(
+        address indexed receiver,
+        uint256 amount
+    );
 
     function transferInternally(
         address sender,
