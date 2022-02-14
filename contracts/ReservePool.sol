@@ -168,7 +168,7 @@ contract ReservePool is
         IRevenueSharingArrangement arrangement = IRevenueSharingArrangement(
             _getRevenueSharingArrangementAddress(registry)
         );
-        arrangement.makeArrangementBetweenGeneticProfileOwnerAndInvestor(
+        arrangement.makeCollaborationBetweenGeneticProfileOwnerAndInvestor(
             geneticProfileOwner, investor, investedNumberOfLIFE
         );
     }

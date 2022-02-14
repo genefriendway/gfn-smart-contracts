@@ -3,30 +3,48 @@ pragma solidity 0.8.11;
 
 interface IRevenueSharingArrangement {
 
-    event MakeArrangementOnlyGeneticProfileOwner(address indexed geneticProfileOwner);
-    event MakeArrangementBetweenGeneticProfileOwnerAndInvestor(
+    event MakeCollaborationBetweenGeneticProfileOwnerAndInvestor(
         address indexed geneticProfileOwner,
         address indexed investor,
         uint256 investedLIFE
     );
 
-    function makeArrangementOnlyGeneticProfileOwner(
-        address _geneticProfileOwner
-    ) external;
+    event MakeRevenueSharingArrangement(
+        address indexed geneticProfileOwner,
+        uint256 gnftTokenId
+    );
 
-    function makeArrangementBetweenGeneticProfileOwnerAndInvestor(
+    function makeCollaborationBetweenGeneticProfileOwnerAndInvestor(
         address _geneticProfileOwner,
         address _investor,
         uint256 _investedNumberOfLIFE
     ) external;
 
     function distributeRevenue(
-        address _geneticProfileOwner,
-        uint256 _earnings
+        uint256 _gnftTokenId,
+        uint256 _revenue
     ) external;
 
     function queryTotalAccumulatedRevenue(
-        address _geneticProfileOwner
+        uint256 _gnftTokenId
+    ) external view returns (uint256);
+
+    function queryTotalInvestedLIFEOfInvestors(
+        address _originalGeneticProfileOwner
+    ) external view returns (uint256);
+
+    function queryTotalInvestedLIFEOfInvestors(
+        uint256 _gnftTokenId
+    ) external view returns (uint256);
+
+    function queryInvestedLIFEOfInvestor(
+        uint256 _gnftTokenId,
+        address _investor
+    ) external view returns (uint256);
+
+    function queryInvestedLIFEOfInvestor(
+        address _originalGeneticProfileOwner,
+        address _investor
     ) external view returns (uint256);
 
 }
