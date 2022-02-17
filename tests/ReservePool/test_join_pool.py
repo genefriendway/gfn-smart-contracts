@@ -1,0 +1,67 @@
+import brownie
+import pytest
+from brownie import accounts
+
+
+@pytest.fixture(autouse=True)
+def isolation(fn_isolation):
+    pass
+
+
+def test_success__join_pool__one_investor_join(deployment, initial_life_treasury_and_pool, const):
+    # Arranges
+    gfn_owner1 = deployment[const.GFN_OWNER1]
+    life_token = deployment[const.LIFE_TOKEN]
+    reserve_pool = deployment[const.RESERVE_POOL]
+    reserve_pool_wallet = deployment[const.RESERVE_POOL_WALLET]
+    investor_wallet = deployment[const.INVESTOR_WALLET]
+
+    investor1 = initial_life_treasury_and_pool['investor1']
+    pool_id = initial_life_treasury_and_pool['pool_id']
+
+    # Actions
+    reserve_pool.joinPool(investor1, pool_id, 12e+18, {'from': gfn_owner1})
+
+    # Asserts: ReversePool status
+    assert reserve_pool.getBalanceOfPool(pool_id) == 12e+18
+    assert reserve_pool.getBalanceOfInvestor(investor1, pool_id) == 12e+18
+
+    # Asserts: InvestorWallet status
+    assert investor_wallet.getBalanceOfParticipant(investor1.address) == 88e+18
+    assert life_token.balanceOf(investor_wallet.address) == 338e+18
+
+    # Asserts: ReversePoolWallet status
+    assert reserve_pool_wallet.getBalanceOfParticipant(investor1.address) == 12e+18
+    assert life_token.balanceOf(reserve_pool_wallet.address) == 12e+18
+
+
+def test_success__join_pool__two_investors_join(deployment, initial_life_treasury_and_pool, const):
+    # Arranges
+    gfn_owner1 = deployment[const.GFN_OWNER1]
+    life_token = deployment[const.LIFE_TOKEN]
+    reserve_pool = deployment[const.RESERVE_POOL]
+    reserve_pool_wallet = deployment[const.RESERVE_POOL_WALLET]
+    investor_wallet = deployment[const.INVESTOR_WALLET]
+
+    investor1 = initial_life_treasury_and_pool['investor1']
+    investor2 = initial_life_treasury_and_pool['investor2']
+    pool_id = initial_life_treasury_and_pool['pool_id']
+
+    # Actions
+    reserve_pool.joinPool(investor1, pool_id, 12e+18, {'from': gfn_owner1})
+    reserve_pool.joinPool(investor2, pool_id, 50e+18, {'from': gfn_owner1})
+
+    # Asserts: ReversePool status
+    assert reserve_pool.getBalanceOfPool(pool_id) == 62e+18
+    assert reserve_pool.getBalanceOfInvestor(investor1, pool_id) == 12e+18
+    assert reserve_pool.getBalanceOfInvestor(investor2, pool_id) == 50e+18
+
+    # Asserts: InvestorWallet status
+    assert investor_wallet.getBalanceOfParticipant(investor1.address) == 88e+18
+    assert investor_wallet.getBalanceOfParticipant(investor2.address) == 200e+18
+    assert life_token.balanceOf(investor_wallet.address) == 288e+18
+
+    # Asserts: ReversePoolWallet status
+    assert reserve_pool_wallet.getBalanceOfParticipant(investor1.address) == 12e+18
+    assert reserve_pool_wallet.getBalanceOfParticipant(investor2.address) == 50e+18
+    assert life_token.balanceOf(reserve_pool_wallet.address) == 62e+18

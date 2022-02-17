@@ -10,6 +10,8 @@ from brownie import (
     LIFETreasury,
     GeneFriendNetworkWallet,
     ParticipantWallet,
+    ReservePool,
+    RevenueSharingArrangement
 )
 
 from constants import ContractName
@@ -44,6 +46,14 @@ def deployment():
     gpo_wallet = ParticipantWallet.deploy(gfn_owner1, registry, {'from': gfn_deployer})
     # DataUtilizer Wallet
     du_wallet = ParticipantWallet.deploy(gfn_owner1, registry, {'from': gfn_deployer})
+    # Investor Wallet
+    investor_wallet = ParticipantWallet.deploy(gfn_owner1, registry, {'from': gfn_deployer})
+    # Reserve Pool Wallet
+    reserve_pool_wallet = ParticipantWallet.deploy(gfn_owner1, registry, {'from': gfn_deployer})
+    reserve_pool = ReservePool.deploy(gfn_owner1, registry, {'from': gfn_deployer})
+    revenue_sharing_arrangement = RevenueSharingArrangement.deploy(
+        gfn_owner1, registry, {'from': gfn_deployer}
+    )
 
     # add deployed smart contracts to ContractRegistry
     registry.registerContract(Constant.GNFT_TOKEN, gnft_token.address, {'from': gfn_owner1})
@@ -52,6 +62,11 @@ def deployment():
     registry.registerContract(Constant.GENE_FRIEND_NETWORK_WALLET, gfn_wallet.address, {'from': gfn_owner1})
     registry.registerContract(Constant.GFN_SALE_WALLET, gfn_sale_wallet.address, {'from': gfn_owner1})
     registry.registerContract(Constant.GENETIC_PROFILE_OWNER_WALLET, gpo_wallet.address, {'from': gfn_owner1})
+    registry.registerContract(Constant.DATA_UTILIZER_WALLET, du_wallet.address, {'from': gfn_owner1})
+    registry.registerContract(Constant.INVESTOR_WALLET, investor_wallet.address, {'from': gfn_owner1})
+    registry.registerContract(Constant.RESERVE_POOL_WALLET, reserve_pool_wallet.address, {'from': gfn_owner1})
+    registry.registerContract(Constant.RESERVE_POOL, reserve_pool.address, {'from': gfn_owner1})
+    registry.registerContract(Constant.REVENUE_SHARING_ARRANGEMENT, revenue_sharing_arrangement.address, {'from': gfn_owner1})
 
     results = {
         Constant.GFN_DEPLOYER: gfn_deployer,
@@ -65,6 +80,10 @@ def deployment():
         Constant.GFN_SALE_WALLET: gfn_sale_wallet,
         Constant.GENETIC_PROFILE_OWNER_WALLET: gpo_wallet,
         Constant.DATA_UTILIZER_WALLET: du_wallet,
+        Constant.INVESTOR_WALLET: investor_wallet,
+        Constant.RESERVE_POOL_WALLET: reserve_pool_wallet,
+        Constant.RESERVE_POOL: reserve_pool,
+        Constant.REVENUE_SHARING_ARRANGEMENT: revenue_sharing_arrangement,
     }
 
     return results
