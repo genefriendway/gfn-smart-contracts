@@ -6,7 +6,7 @@ import "../interfaces/IContractRegistry.sol";
 
 abstract contract GeneticProfileOwnerWalletRetriever {
 
-    function _getLIFETreasuryAddress(
+    function _getGeneticProfileOwnerWalletAddress(
         IContractRegistry registry
     )
         internal view returns (address)
