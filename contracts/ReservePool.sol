@@ -5,16 +5,24 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
-import "./interfaces/IReservePool.sol";
 import "./interfaces/IContractRegistry.sol";
+import "./interfaces/IReservePool.sol";
+import "./interfaces/IReservePool.sol";
+import "./interfaces/IParticipantWallet.sol";
 import "./interfaces/IRevenueSharingArrangement.sol";
 import "./mixins/RevenueSharingArrangementRetriever.sol";
+import "./mixins/InvestorWalletRetriever.sol";
+import "./mixins/ReservePoolWalletRetriever.sol";
+import "./mixins/GeneFriendNetworkWalletRetriever.sol";
 
 
 contract ReservePool is
     Ownable,
     IReservePool,
-    RevenueSharingArrangementRetriever
+    RevenueSharingArrangementRetriever,
+    InvestorWalletRetriever,
+    ReservePoolWalletRetriever,
+    GeneFriendNetworkWalletRetriever
 {
 
     using SafeERC20 for IERC20;
@@ -76,6 +84,15 @@ contract ReservePool is
             "ReservePool: Investing LIFE amount must be greater than zero"
         );
 
+        IParticipantWallet investorWallet = IParticipantWallet(
+            _getInvestorWalletAddress(registry)
+        );
+
+        require(
+            numberOfLIFE <= investorWallet.getBalanceOfParticipant(investor),
+            "ReservePool: investor has no enough LIFE to join pool in InvestorWallet"
+        );
+
         // retrieve PoolInfo by PoolId
         PoolInfo storage _poolInfo = poolInfo[poolId];
 
@@ -88,6 +105,14 @@ contract ReservePool is
 
         // increase total invested LIFE of investor by new number of LIFE
         balanceOfInvestors[investor][poolId] += numberOfLIFE;
+
+        // transfer LIFE of investor from InvestorWallet to ReservePoolWallet
+        investorWallet.transferToAnotherParticipantWallet(
+            investor,
+            _getReservePoolWalletAddress(registry),
+            investor,
+            numberOfLIFE
+        );
 
         emit JoinPool(investor, poolId, numberOfLIFE);
     }
@@ -164,11 +189,23 @@ contract ReservePool is
         address investor,
         uint256 investedNumberOfLIFE
     ) private {
+
+        // Make Arrangement between Investors and GPOwner
         IRevenueSharingArrangement arrangement = IRevenueSharingArrangement(
             _getRevenueSharingArrangementAddress(registry)
         );
         arrangement.makeArrangementBetweenGeneticProfileOwnerAndInvestor(
             geneticProfileOwner, investor, investedNumberOfLIFE
+        );
+
+        // transfer LIFE of Investor from RPWallet to GFN Wallet
+        IParticipantWallet  reserve_pool_wallet = IParticipantWallet(
+            _getReservePoolWalletAddress(registry)
+        );
+        reserve_pool_wallet.transferExternally(
+            investor,
+            _getGeneFriendNetworkWalletAddress(registry),
+            investedNumberOfLIFE
         );
     }
 
@@ -187,12 +224,23 @@ contract ReservePool is
             "ReservePool: Exited number of LIFE exceeds current balance"
         );
 
-        _updateBalanceOfInvestor(investor, poolId, exitedNumberOfLIFE);
+        _decreaseBalanceOfInvestor(investor, poolId, exitedNumberOfLIFE);
+
+        // transfer LIFE of Investor from RPWallet to InvestorWallet
+        IParticipantWallet  reserve_pool_wallet = IParticipantWallet(
+            _getReservePoolWalletAddress(registry)
+        );
+        reserve_pool_wallet.transferToAnotherParticipantWallet(
+            investor,
+            _getInvestorWalletAddress(registry),
+            investor,
+            exitedNumberOfLIFE
+        );
 
         emit ExitPool(investor, poolId, exitedNumberOfLIFE);
     }
 
-    function _updateBalanceOfInvestor(
+    function _decreaseBalanceOfInvestor(
         address investor,
         string memory poolId,
         uint256 numberOfLIFE
