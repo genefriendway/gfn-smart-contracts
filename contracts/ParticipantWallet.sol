@@ -36,7 +36,7 @@ contract ParticipantWallet is
         address sender,
         address receiver,
         uint256 amount
-    ) external override onlyOwner {
+    ) external override onlyOwnerOrRegisteredContract {
         // validate: must have enough balance of sender
         require(
             balancesOfParticipant[sender] >= amount,
@@ -54,7 +54,7 @@ contract ParticipantWallet is
         address participantWallet,
         address receiver,
         uint256 amount
-    ) external override onlyOwner {
+    ) external override onlyOwnerOrRegisteredContract {
         // validate: must have enough balance of sender
         require(
             balancesOfParticipant[sender] >= amount,
@@ -76,7 +76,7 @@ contract ParticipantWallet is
         address sender,
         address receiver,
         uint256 amount
-    ) external override onlyOwner {
+    ) external override onlyOwnerOrRegisteredContract {
         // validate: must have enough balance of sender
         require(
             balancesOfParticipant[sender] >= amount,
@@ -84,7 +84,7 @@ contract ParticipantWallet is
         );
         // decrease balance of sender
         balancesOfParticipant[sender] -= amount;
-        // transfer real number of LIFE from wallet of sender to GFN wallet
+        // transfer real number of LIFE from wallet of sender to receiver
         SafeERC20.safeTransfer(
             IERC20(_getLIFETokenAddress(registry)), receiver, amount
         );
