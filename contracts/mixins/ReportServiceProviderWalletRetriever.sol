@@ -6,7 +6,7 @@ import "../interfaces/IContractRegistry.sol";
 
 abstract contract ReportServiceProviderWalletRetriever {
 
-    function _getLIFETreasuryAddress(
+    function _getReportServiceProviderWalletAddress(
         IContractRegistry registry
     )
         internal view returns (address)
