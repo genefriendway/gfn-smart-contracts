@@ -13,3 +13,4 @@ class ContractName:
     RESERVE_POOL = 'ReservePool'
     RESERVE_POOL_WALLET = 'ReservePoolWallet'
     REVENUE_SHARING_ARRANGEMENT = 'RevenueSharingArrangement'
+    DATA_UTILIZATION = 'DataUtilization'
