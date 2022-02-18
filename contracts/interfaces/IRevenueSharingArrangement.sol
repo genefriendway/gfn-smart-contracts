@@ -3,48 +3,68 @@ pragma solidity 0.8.11;
 
 interface IRevenueSharingArrangement {
 
-    event MakeCollaborationBetweenGeneticProfileOwnerAndInvestor(
-        address indexed geneticProfileOwner,
+    event MakeArrangementBetweenGeneticProfileOwnerAndInvestor(
+        address indexed originalGeneticProfileOwner,
         address indexed investor,
-        uint256 investedLIFE
+        uint256 investedLIFEAmount
     );
 
-    event MakeRevenueSharingArrangement(
-        address indexed geneticProfileOwner,
-        uint256 gnftTokenId
+    event LinkGNFTTokenIdAndOriginalGeneticProfileOwner(
+        uint256 gnftTokenId,
+        address indexed originalGeneticProfileOwner
+
     );
 
-    function makeCollaborationBetweenGeneticProfileOwnerAndInvestor(
-        address _geneticProfileOwner,
-        address _investor,
-        uint256 _investedNumberOfLIFE
+    function makeArrangementBetweenGeneticProfileOwnerAndInvestor(
+        address geneticProfileOwner,
+        address investor,
+        uint256 investedNumberOfLIFE
+    ) external;
+
+    function linkGNFTTokenIdAndOriginalGeneticProfileOwner(
+        uint256 gnftTokenId,
+        address originalGeneticProfileOwner
     ) external;
 
     function distributeRevenue(
-        uint256 _gnftTokenId,
-        uint256 _revenue
+        address fromParticipantWallet,
+        address fromSender,
+        uint256 gnftTokenId,
+        uint256 revenue
     ) external;
 
-    function queryTotalAccumulatedRevenue(
-        uint256 _gnftTokenId
+    function queryCoInvestorsByGPO(
+        address originalGeneticProfileOwner
+    ) external view returns (address[] memory);
+
+    function queryCoInvestorsByTokenId(
+        uint256 gnftTokenId
+    ) external view returns (address[] memory);
+
+    function queryTotalAccumulatedRevenueByGPO(
+        address originalGeneticProfileOwner
     ) external view returns (uint256);
 
-    function queryTotalInvestedLIFEOfInvestors(
-        address _originalGeneticProfileOwner
+    function queryTotalAccumulatedRevenueByTokenId(
+        uint256 gnftTokenId
     ) external view returns (uint256);
 
-    function queryTotalInvestedLIFEOfInvestors(
-        uint256 _gnftTokenId
+    function queryTotalInvestedLIFEOfInvestorsByGPO(
+        address originalGeneticProfileOwner
     ) external view returns (uint256);
 
-    function queryInvestedLIFEOfInvestor(
-        uint256 _gnftTokenId,
-        address _investor
+    function queryTotalInvestedLIFEOfInvestorsByTokenId(
+        uint256 gnftTokenId
     ) external view returns (uint256);
 
-    function queryInvestedLIFEOfInvestor(
-        address _originalGeneticProfileOwner,
-        address _investor
+    function queryInvestedLIFEOfInvestorByGPO(
+        address originalGeneticProfileOwner,
+        address investor
+    ) external view returns (uint256);
+
+    function queryInvestedLIFEOfInvestorByTokenId(
+        uint256 gnftTokenId,
+        address investor
     ) external view returns (uint256);
 
 }
