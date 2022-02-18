@@ -10,9 +10,9 @@ interface IReservePool {
         uint256 availableNumberOfLIFE;
     }
 
-    struct PoolPointer {
-        uint256 firstIndex;
-        uint256 lastIndex;
+    struct PoolInfo {
+        uint256 firstSlotIndex;
+        uint256 lastSlotIndex;
         uint256 balanceOfPool;
         bool isActive;
     }

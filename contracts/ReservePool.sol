@@ -5,16 +5,24 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
-import "./interfaces/IReservePool.sol";
 import "./interfaces/IContractRegistry.sol";
+import "./interfaces/IReservePool.sol";
+import "./interfaces/IReservePool.sol";
+import "./interfaces/IParticipantWallet.sol";
 import "./interfaces/IRevenueSharingArrangement.sol";
 import "./mixins/RevenueSharingArrangementRetriever.sol";
+import "./mixins/InvestorWalletRetriever.sol";
+import "./mixins/ReservePoolWalletRetriever.sol";
+import "./mixins/GeneFriendNetworkWalletRetriever.sol";
 
 
 contract ReservePool is
     Ownable,
     IReservePool,
-    RevenueSharingArrangementRetriever
+    RevenueSharingArrangementRetriever,
+    InvestorWalletRetriever,
+    ReservePoolWalletRetriever,
+    GeneFriendNetworkWalletRetriever
 {
 
     using SafeERC20 for IERC20;
@@ -23,8 +31,8 @@ contract ReservePool is
     uint8 private maxLengthPoolId = 128;
     // poolId -> index -> Slot struct
     mapping(string => mapping(uint256 => Slot)) public pools;
-    // poolId -> PoolPointer struct
-    mapping(string => PoolPointer) pointers;
+    // poolId -> PoolInfo struct
+    mapping(string => PoolInfo) poolInfo;
     // investor -> (poolId -> LIFE amount)
     mapping(address => mapping(string => uint256)) public balanceOfInvestors;
 
@@ -38,7 +46,7 @@ contract ReservePool is
 
     modifier activePoolId(string memory poolId) {
         require(
-            pointers[poolId].isActive == true,
+            poolInfo[poolId].isActive == true,
             'ReservePool: Pool Id is not active'
         );
         _;
@@ -52,15 +60,15 @@ contract ReservePool is
     function createPool(
         string memory poolId
     ) external override onlyOwner validPoolId(poolId) {
-        // retrieve pointer of pool,
+        // retrieve poolInfo of Pool,
         // if not existing pool => system will initialize by default values
-        PoolPointer storage pointer = pointers[poolId];
+        PoolInfo storage _poolInfo = poolInfo[poolId];
 
         // validate: the pool Id must be existed and activated
-        require(pointer.isActive == false, 'ReservePool: Pool Id was created');
+        require(_poolInfo.isActive == false, 'ReservePool: Pool Id was created');
 
         // activate PoolId
-        pointer.isActive = true;
+        _poolInfo.isActive = true;
 
         emit CreatePool(poolId);
     }
@@ -76,19 +84,35 @@ contract ReservePool is
             "ReservePool: Investing LIFE amount must be greater than zero"
         );
 
-        // retrieve PoolPointer by PoolId
-        PoolPointer storage pointer = pointers[poolId];
+        IParticipantWallet investorWallet = IParticipantWallet(
+            _getInvestorWalletAddress(registry)
+        );
+
+        require(
+            numberOfLIFE <= investorWallet.getBalanceOfParticipant(investor),
+            "ReservePool: investor has no enough LIFE to join pool in InvestorWallet"
+        );
+
+        // retrieve PoolInfo by PoolId
+        PoolInfo storage _poolInfo = poolInfo[poolId];
 
         // append a new slot to pools
-        pools[poolId][pointer.lastIndex] = Slot(investor, numberOfLIFE);
+        pools[poolId][_poolInfo.lastSlotIndex] = Slot(investor, numberOfLIFE);
 
-        // update balance of Pool and last Index in the pointer
-        pointer.balanceOfPool += numberOfLIFE;
-
-        pointer.lastIndex += 1;
+        // update balance of Pool and last Index in the _poolInfo
+        _poolInfo.balanceOfPool += numberOfLIFE;
+        _poolInfo.lastSlotIndex += 1;
 
         // increase total invested LIFE of investor by new number of LIFE
         balanceOfInvestors[investor][poolId] += numberOfLIFE;
+
+        // transfer LIFE of investor from InvestorWallet to ReservePoolWallet
+        investorWallet.transferToAnotherParticipantWallet(
+            investor,
+            _getReservePoolWalletAddress(registry),
+            investor,
+            numberOfLIFE
+        );
 
         emit JoinPool(investor, poolId, numberOfLIFE);
     }
@@ -98,8 +122,8 @@ contract ReservePool is
         string memory requestedPoolId,
         uint256 requestedNumerOfLIFE
     ) external override onlyOwner activePoolId(requestedPoolId) {
-        // retrieve PoolPointer by PoolId
-        PoolPointer storage pointer = pointers[requestedPoolId];
+        // retrieve PoolInfo by PoolId
+        PoolInfo storage _poolInfo = poolInfo[requestedPoolId];
 
         // validate requestedNumerOfLIFE
         require(
@@ -107,7 +131,7 @@ contract ReservePool is
             "ReservePool: requested number of LIFE must be greater than zero"
         );
         require(
-            requestedNumerOfLIFE <= pointer.balanceOfPool, 
+            requestedNumerOfLIFE <= _poolInfo.balanceOfPool, 
             "ReservePool: requested pool does not have enough number of LIFE"
         );
 
@@ -115,7 +139,7 @@ contract ReservePool is
         do {
             // loop through each slot of the requested pool, 
             // start from the first slot
-            Slot storage currentSlot = pools[requestedPoolId][pointer.firstIndex];
+            Slot storage currentSlot = pools[requestedPoolId][_poolInfo.firstSlotIndex];
             // if available number of LIFE of current slot is over
             // requested number of LIFE
             if (currentSlot.availableNumberOfLIFE > remainingRequestedNumberOfLIFE) {
@@ -147,14 +171,14 @@ contract ReservePool is
                     currentSlot.availableNumberOfLIFE
                 );
                 // the current slot run out of available LIFE, clear it
-                delete pools[requestedPoolId][pointer.firstIndex];
-                // move the pointer to the next slot
-                pointer.firstIndex += 1;
+                delete pools[requestedPoolId][_poolInfo.firstSlotIndex];
+                // move the _poolInfo to the next slot
+                _poolInfo.firstSlotIndex += 1;
             }
         } while (remainingRequestedNumberOfLIFE > 0);
 
         // decrease balance of pool after finding out co-investor
-        pointer.balanceOfPool -= requestedNumerOfLIFE;
+        _poolInfo.balanceOfPool -= requestedNumerOfLIFE;
 
         emit RequestCoInvestors(
             geneticProfileOwner, requestedPoolId, requestedNumerOfLIFE
@@ -165,11 +189,23 @@ contract ReservePool is
         address investor,
         uint256 investedNumberOfLIFE
     ) private {
+
+        // Make Arrangement between Investors and GPOwner
         IRevenueSharingArrangement arrangement = IRevenueSharingArrangement(
             _getRevenueSharingArrangementAddress(registry)
         );
         arrangement.makeArrangementBetweenGeneticProfileOwnerAndInvestor(
             geneticProfileOwner, investor, investedNumberOfLIFE
+        );
+
+        // transfer LIFE of Investor from RPWallet to GFN Wallet
+        IParticipantWallet  reserve_pool_wallet = IParticipantWallet(
+            _getReservePoolWalletAddress(registry)
+        );
+        reserve_pool_wallet.transferExternally(
+            investor,
+            _getGeneFriendNetworkWalletAddress(registry),
+            investedNumberOfLIFE
         );
     }
 
@@ -179,25 +215,42 @@ contract ReservePool is
         uint256 exitedNumberOfLIFE
     ) external override onlyOwner activePoolId(poolId) {
         uint256 currentNumberOfLIFE = balanceOfInvestors[investor][poolId];
-        require(exitedNumberOfLIFE > 0, "ReservePool: Exited number of LIFE must be greater than zero");
-        require(exitedNumberOfLIFE <= currentNumberOfLIFE, "ReservePool: Exited number of LIFE exceeds current balance");
+        require(
+            exitedNumberOfLIFE > 0,
+            "ReservePool: Exited number of LIFE must be greater than zero"
+        );
+        require(
+            exitedNumberOfLIFE <= currentNumberOfLIFE,
+            "ReservePool: Exited number of LIFE exceeds current balance"
+        );
 
-        _updateBalanceOfInvestor(investor, poolId, exitedNumberOfLIFE);
+        _decreaseBalanceOfInvestor(investor, poolId, exitedNumberOfLIFE);
+
+        // transfer LIFE of Investor from RPWallet to InvestorWallet
+        IParticipantWallet  reserve_pool_wallet = IParticipantWallet(
+            _getReservePoolWalletAddress(registry)
+        );
+        reserve_pool_wallet.transferToAnotherParticipantWallet(
+            investor,
+            _getInvestorWalletAddress(registry),
+            investor,
+            exitedNumberOfLIFE
+        );
 
         emit ExitPool(investor, poolId, exitedNumberOfLIFE);
     }
 
-    function _updateBalanceOfInvestor(
+    function _decreaseBalanceOfInvestor(
         address investor,
         string memory poolId,
         uint256 numberOfLIFE
     ) private {
-        // retrieve PoolPointer by PoolId
-        PoolPointer storage pointer = pointers[poolId];
+        // retrieve PoolInfo by PoolId
+        PoolInfo storage _poolInfo = poolInfo[poolId];
 
         uint256 numberOfLIFETemp = numberOfLIFE;
         Slot storage _slot;
-        for (uint256 index = pointer.firstIndex; index < pointer.lastIndex; index++) {
+        for (uint256 index = _poolInfo.firstSlotIndex; index < _poolInfo.lastSlotIndex; index++) {
             _slot = pools[poolId][index];
             if (_slot.investor == investor) {
                 if (numberOfLIFETemp < _slot.availableNumberOfLIFE) {
@@ -211,16 +264,16 @@ contract ReservePool is
             }
         }
 
-        pointer.balanceOfPool -= numberOfLIFE;
+        _poolInfo.balanceOfPool -= numberOfLIFE;
         balanceOfInvestors[investor][poolId] -= numberOfLIFE;
     }
 
     function getStatusOfPool(string memory poolId) external override view returns (bool) {
-        return pointers[poolId].isActive;
+        return poolInfo[poolId].isActive;
     }
 
     function getBalanceOfPool(string memory poolId) external override view returns (uint256) {
-        return pointers[poolId].balanceOfPool;
+        return poolInfo[poolId].balanceOfPool;
     }
 
     function getBalanceOfInvestor(
