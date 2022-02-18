@@ -75,7 +75,7 @@ def test_failure__transfer_to_gfn_wallet__not_gfn_owner_make_transaction(
     assert gpo_wallet.getBalanceOfParticipant(genetic_owner2) == 24e+18
 
     # Action: transfer LIFE to another participant wallet
-    with brownie.reverts("Ownable: caller is not the owner"):
+    with brownie.reverts("ParticipantWallet: caller is not the owner or registered contract"):
         gpo_wallet.transferExternally(
             genetic_owner2, gfn_sale_wallet, 24e+18, {"from": genetic_owner2}
         )

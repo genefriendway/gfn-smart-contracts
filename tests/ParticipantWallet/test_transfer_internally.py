@@ -75,7 +75,7 @@ def test_failure__transfer_internally__not_gfn_owner_make_transaction(
     assert gpo_wallet.getBalanceOfParticipant(genetic_owner3) == 0
 
     # Actions
-    with brownie.reverts("Ownable: caller is not the owner"):
+    with brownie.reverts("ParticipantWallet: caller is not the owner or registered contract"):
         gpo_wallet.transferInternally(
             genetic_owner2, genetic_owner3, 25e+18, {"from": genetic_owner3}
         )
