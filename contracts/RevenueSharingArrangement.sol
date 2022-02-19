@@ -6,10 +6,12 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "./interfaces/IContractRegistry.sol";
 import "./interfaces/IRevenueSharingArrangement.sol";
 import "./interfaces/IParticipantWallet.sol";
+import "./interfaces/IConfiguration.sol";
 import "./mixins/ReservePoolRetriever.sol";
 import "./mixins/GNFTTokenRetriever.sol";
 import "./mixins/GeneticProfileOwnerWalletRetriever.sol";
 import "./mixins/InvestorWalletRetriever.sol";
+import "./mixins/ConfigurationRetriever.sol";
 import "./GNFTToken.sol";
 
 
@@ -19,17 +21,11 @@ contract RevenueSharingArrangement is
     ReservePoolRetriever,
     GNFTTokenRetriever,
     GeneticProfileOwnerWalletRetriever,
-    InvestorWalletRetriever
+    InvestorWalletRetriever,
+    ConfigurationRetriever
 {
 
     IContractRegistry public registry;
-
-    struct DistributionRatio {
-        uint256 percentageForInvestor;
-        uint256 percentageForGeneticProfileOwner;
-    }
-    // index => DistributionRatio
-    mapping(uint256 => DistributionRatio) private _distributionRatios;
 
     struct Arrangement {
         address originalGeneticProfileOwner;
@@ -106,7 +102,6 @@ contract RevenueSharingArrangement is
     constructor(address gfnOwner, IContractRegistry _registry) {
         registry = _registry;
         transferOwnership(gfnOwner);
-        _setupDistributionRatios();
     }
 
     function makeArrangementBetweenGeneticProfileOwnerAndInvestor(
@@ -213,13 +208,15 @@ contract RevenueSharingArrangement is
         Arrangement storage arrangement,
         address currentGeneticProfileOwner,
         uint256 newRevenue
-    ) private onlyOwner {
-        
+    )
+        private onlyOwner
+    {
+        IConfiguration config = IConfiguration(_getConfigurationAddress(registry));
         uint256 remainingNotDistributedRevenue = newRevenue;
 
         while (remainingNotDistributedRevenue > 0) {
             // distributions = [ remainingNewRevenue, distributedRevenue, % for Investor, % for GPO]
-            uint256[4] memory distributions = getDistributionRevenueRatios(
+            uint256[4] memory distributions = config.getRevenueDistributionRatios(
                 arrangement.totalInvestedLIFEOfInvestors,
                 arrangement.totalAccumulatedRevenue,
                 remainingNotDistributedRevenue
@@ -266,7 +263,9 @@ contract RevenueSharingArrangement is
         address fromSender,
         address toGeneticProfileOwner,
         uint256 revenue
-    ) private onlyOwner {
+    )
+        private onlyOwner
+    {
         IParticipantWallet wallet = IParticipantWallet(fromParticipantWallet);
         wallet.transferToAnotherParticipantWallet(
             fromSender,
@@ -281,7 +280,9 @@ contract RevenueSharingArrangement is
         address fromSender,
         address toInvestor,
         uint256 revenue
-    ) private onlyOwner {
+    )
+        private onlyOwner
+    {
         IParticipantWallet wallet = IParticipantWallet(fromParticipantWallet);
         wallet.transferToAnotherParticipantWallet(
             fromSender,
@@ -365,65 +366,5 @@ contract RevenueSharingArrangement is
         address originalGeneticProfileOwner = gnftTokenIdToOriginalOwner[gnftTokenId];
         Arrangement storage arrangement = arrangements[originalGeneticProfileOwner];
         return arrangement.originalGeneticProfileOwner != address(0);
-    }
-
-     function _setupDistributionRatios() private {
-        _distributionRatios[0] = DistributionRatio(100, 0);
-        _distributionRatios[1] = DistributionRatio(80, 20);
-        _distributionRatios[2] = DistributionRatio(60, 40);
-        _distributionRatios[3] = DistributionRatio(40, 60);
-        _distributionRatios[4] = DistributionRatio(20, 80);
-    }
-
-    function getDistributionRevenueRatios(
-        uint256 _totalInvestedLIFEOfInvestors,
-        uint256 _totalAccumulatedRevenue,
-        uint256 newRevenue
-    )
-        public view returns (uint256[4] memory)
-    {
-        uint256[3][5] memory revenueRanges = getDistributionRevenueRanges(
-            _totalInvestedLIFEOfInvestors
-        );
-        // [remainingNewRevenue, distributedRevenue, % for Investor, % for GPO]
-        uint256[4] memory distributions;
-        uint256 remainingNewRevenue;
-        for(uint256 index = 0; index <= 4; index++) {
-            uint256[3] memory ranges = revenueRanges[index];
-            uint256 milestoneRevenue = ranges[0];
-            if (_totalAccumulatedRevenue < milestoneRevenue) {
-                uint256 revenueToFillUpMilestone = milestoneRevenue - _totalAccumulatedRevenue;
-                uint256 distributedRevenue;
-                if (newRevenue <= revenueToFillUpMilestone) {
-                    distributedRevenue = newRevenue;
-                    remainingNewRevenue = 0;
-                } else {
-                    distributedRevenue = revenueToFillUpMilestone;
-                    remainingNewRevenue = newRevenue - revenueToFillUpMilestone;
-                }
-                return [remainingNewRevenue, distributedRevenue, ranges[1], ranges[2]];
-            }
-        }
-        // if total Accumulated Revenue went through all milestones
-        // => always keep ratio 20 % (investor) - 80 % (GPO)
-        return [0, newRevenue, 20, 80];
-    }
-
-    function getDistributionRevenueRanges(
-        uint256 _totalInvestedLIFEOfInvestors
-    ) public view returns (uint256[3][5] memory){
-        uint256[3][5] memory revenueRanges;
-        for(uint256 index = 0; index <= 4; index++) {
-            uint256[3] memory ranges;
-            // first position: revenue milestone
-            ranges[0] = _totalInvestedLIFEOfInvestors * (index + 1);
-            // second position: percentage of revenue belong to investors
-            ranges[1] = _distributionRatios[index].percentageForInvestor;
-            // third position: percentage of revenue belong to GPO
-            ranges[2] = _distributionRatios[index].percentageForGeneticProfileOwner;
-
-            revenueRanges[index] = ranges;
-        }
-        return revenueRanges;
     }
 }
