@@ -5,6 +5,7 @@ import pytest
 from brownie import (
     accounts,
     ContractRegistry,
+    Configuration,
     GNFTToken,
     LIFEToken,
     LIFETreasury,
@@ -36,6 +37,7 @@ def deployment():
 
     # deploy smart contracts and get instance of them
     registry = ContractRegistry.deploy(gfn_owner1, {'from': gfn_deployer})
+    configuration = Configuration.deploy(gfn_owner1, registry, {'from': gfn_deployer})
     gnft_token = GNFTToken.deploy(gfn_owner1, registry, "GNFT", "GNFT", {'from': gfn_deployer})
     life_token = LIFEToken.deploy(gfn_owner1, registry, "LIFE", "LIFE", {'from': gfn_deployer})
     life_treasury = LIFETreasury.deploy([gfn_owner1, gfn_owner2], 2, {'from': gfn_deployer})
@@ -56,6 +58,7 @@ def deployment():
     )
 
     # add deployed smart contracts to ContractRegistry
+    registry.registerContract(Constant.CONFIGURATION, configuration.address, {'from': gfn_owner1})
     registry.registerContract(Constant.GNFT_TOKEN, gnft_token.address, {'from': gfn_owner1})
     registry.registerContract(Constant.LIFE_TOKEN, life_token.address, {'from': gfn_owner1})
     registry.registerContract(Constant.LIFE_TREASURY, life_treasury.address, {'from': gfn_owner1})
@@ -73,6 +76,7 @@ def deployment():
         Constant.GFN_OWNER1: gfn_owner1,
         Constant.GFN_OWNER2: gfn_owner2,
         Constant.REGISTRY: registry,
+        Constant.CONFIGURATION: configuration,
         Constant.GNFT_TOKEN: gnft_token,
         Constant.LIFE_TOKEN: life_token,
         Constant.LIFE_TREASURY: life_treasury,
