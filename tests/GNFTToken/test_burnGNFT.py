@@ -39,7 +39,23 @@ def test_success__burn_token__01_existed_token(setup, deployment, const):
     assert gnft_token.ownerOf(12345678) == genetic_owner1
 
     # Actions
-    gnft_token.burnGNFT(genetic_profile_id, {"from": gfn_owner1})
+    tx = gnft_token.burnGNFT(genetic_profile_id, {"from": gfn_owner1})
+
+    # Assert: BurnGNFT Event
+    assert ('BurnGNFT' in tx.events) is True
+    assert tx.events['BurnGNFT']['geneticProfileId'] == genetic_profile_id
+
+    # Assert: Approval Event
+    assert ('Approval' in tx.events) is True
+    assert tx.events['Approval']['owner'] == genetic_owner1
+    assert tx.events['Approval']['approved'] == "0x0000000000000000000000000000000000000000"
+    assert tx.events['Approval']['tokenId'] == genetic_profile_id
+
+    # Assert: Approval Event
+    assert ('Transfer' in tx.events) is True
+    assert tx.events['Transfer']['from'] == genetic_owner1
+    assert tx.events['Transfer']['to'] == "0x0000000000000000000000000000000000000000"
+    assert tx.events['Transfer']['tokenId'] == genetic_profile_id
 
     # # Asserts
     assert gnft_token.getTotalMintedGeneticProfiles() == 1

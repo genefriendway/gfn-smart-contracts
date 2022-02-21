@@ -18,14 +18,31 @@ def test_success__mint_batch_gnft__mint_01_new_token(deployment, const):
     # Arranges
     gfn_owner1 = deployment[const.GFN_OWNER1]
     gnft_token = deployment[const.GNFT_TOKEN]
+    life_treasury = deployment[const.LIFE_TREASURY]
 
     genetic_profile_id1 = 12345678
     genetic_owner1 = accounts[2]
 
     # Actions
-    gnft_token.mintBatchGNFT(
+    tx = gnft_token.mintBatchGNFT(
         [genetic_owner1], [genetic_profile_id1], {"from": gfn_owner1}
     )
+
+    # Assert: MintBatchGNFT Event
+    assert ('MintBatchGNFT' in tx.events) is True
+    # Assert: MintGNFT Event
+    assert ('MintGNFT' in tx.events) is True
+    assert tx.events['MintGNFT']['geneticProfileOwner'] == genetic_owner1
+    assert tx.events['MintGNFT']['geneticProfileId'] == 12345678
+
+    # Assert: MintLIFE Event
+    assert ('MintLIFE' in tx.events) is True
+    assert tx.events['MintLIFE']['to'] == life_treasury
+    assert tx.events['MintLIFE']['geneticProfileId'] == 12345678
+
+    # Assert: Events of Transaction
+    assert ('Transfer' in tx.events) is True
+    assert len(tx.events['Transfer']) == 2  # Transfer of ERC20 and ERC721
 
     # # Asserts
     assert gnft_token.getTotalMintedGeneticProfiles() == 1
