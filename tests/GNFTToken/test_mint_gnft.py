@@ -19,6 +19,7 @@ def test_success__mint_token__mint_01_new_gnft_token(deployment, const):
     # Arranges
     gfn_owner1 = deployment[const.GFN_OWNER1]
     gnft_token = deployment[const.GNFT_TOKEN]
+    life_token = deployment[const.LIFE_TOKEN]
     life_treasury = deployment[const.LIFE_TREASURY]
 
     genetic_profile_id1 = 12345678
@@ -43,17 +44,22 @@ def test_success__mint_token__mint_01_new_gnft_token(deployment, const):
     assert ('Transfer' in tx.events) is True
     assert len(tx.events['Transfer']) == 2  # Transfer of ERC20 and ERC721
 
-    # # Asserts
+    # Asserts: GNFTToken status
     assert gnft_token.getTotalMintedGeneticProfiles() == 1
     assert gnft_token.getTotalCurrentTokens() == 1
     assert gnft_token.balanceOf(genetic_owner1) == 1
     assert gnft_token.ownerOf(genetic_profile_id1) == genetic_owner1
+
+    # Asserts: LIFEToken Status
+    assert life_token.balanceOf(life_treasury) == 90000000e+18
 
 
 def test_success__mint_token__mint_02_new_gnft_token(deployment, const):
     # Arranges
     gfn_owner1 = deployment[const.GFN_OWNER1]
     gnft_token = deployment[const.GNFT_TOKEN]
+    life_token = deployment[const.LIFE_TOKEN]
+    life_treasury = deployment[const.LIFE_TREASURY]
 
     genetic_profile_id1 = 12345678
     genetic_owner1 = accounts[2]
@@ -68,6 +74,9 @@ def test_success__mint_token__mint_02_new_gnft_token(deployment, const):
     assert gnft_token.getTotalCurrentTokens() == 1
     assert gnft_token.balanceOf(genetic_owner1) == 1
     assert gnft_token.ownerOf(genetic_profile_id1) == genetic_owner1
+
+    # Asserts: LIFEToken Status
+    assert life_token.balanceOf(life_treasury) == 90000000e+18
 
     # continue to mint another GNFT
     # Arranges
@@ -86,6 +95,9 @@ def test_success__mint_token__mint_02_new_gnft_token(deployment, const):
     assert gnft_token.balanceOf(genetic_owner2) == 1
     assert gnft_token.ownerOf(genetic_profile_id1) == genetic_owner1
     assert gnft_token.ownerOf(genetic_profile_id2) == genetic_owner2
+
+    # Asserts: LIFEToken Status
+    assert life_token.balanceOf(life_treasury) == 100000000e+18
 
 
 def test_failure__mint_token__not_gfn_owner_mint_gnft_token(deployment, const):

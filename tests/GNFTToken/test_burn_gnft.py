@@ -13,6 +13,8 @@ def setup(deployment, const):
     # Arranges
     gfn_owner1 = deployment[const.GFN_OWNER1]
     gnft_token = deployment[const.GNFT_TOKEN]
+    life_token = deployment[const.LIFE_TOKEN]
+    life_treasury = deployment[const.LIFE_TREASURY]
 
     genetic_profile_id = 12345678
     genetic_owner1 = accounts[2]
@@ -22,11 +24,16 @@ def setup(deployment, const):
         genetic_owner1, genetic_profile_id, {"from": gfn_owner1}
     )
 
+    # Asserts: LIFEToken Status
+    assert life_token.balanceOf(life_treasury) == 90000000e+18
+
 
 def test_success__burn_token__01_existed_token(setup, deployment, const):
     # Arranges
     gfn_owner1 = deployment[const.GFN_OWNER1]
     gnft_token = deployment[const.GNFT_TOKEN]
+    life_token = deployment[const.LIFE_TOKEN]
+    life_treasury = deployment[const.LIFE_TREASURY]
 
     genetic_profile_id = 12345678
     genetic_owner1 = accounts[2]
@@ -64,11 +71,16 @@ def test_success__burn_token__01_existed_token(setup, deployment, const):
     with brownie.reverts("ERC721: owner query for nonexistent token"):
         assert gnft_token.ownerOf(12345678)
 
+    # Asserts: LIFEToken Status
+    assert life_token.balanceOf(life_treasury) == 90000000e+18
+
 
 def test_success__burn_token__burn_and_mint_again(setup, deployment, const):
     # Arranges
     gfn_owner1 = deployment[const.GFN_OWNER1]
     gnft_token = deployment[const.GNFT_TOKEN]
+    life_token = deployment[const.LIFE_TOKEN]
+    life_treasury = deployment[const.LIFE_TREASURY]
 
     genetic_profile_id = 12345678
     genetic_owner1 = accounts[2]
@@ -90,13 +102,20 @@ def test_success__burn_token__burn_and_mint_again(setup, deployment, const):
     with brownie.reverts("ERC721: owner query for nonexistent token"):
         assert gnft_token.ownerOf(12345678)
 
+    # Asserts: LIFEToken Status
+    assert life_token.balanceOf(life_treasury) == 90000000e+18
+
     # Mint again the same token id
     # Arranges
     genetic_profile_id = 12345678
     genetic_owner1 = accounts[2]
 
-    # Actions
+    # Actions: remint GNFT
     gnft_token.mintGNFT(genetic_owner1, genetic_profile_id, {"from": gfn_owner1})
+
+    # Asserts: LIFEToken Status
+    # the number of LIFE not changed
+    assert life_token.balanceOf(life_treasury) == 90000000e+18
 
 
 def test_failure__burn_token__not_gfn_owner_burn_token(setup, deployment, const):
