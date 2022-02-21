@@ -32,7 +32,14 @@ def test_success__remove_contract(setup, registry_deployment, const):
     assert gnft_name == 'ValidName'
 
     # Actions
-    registry.removeContract('ValidName', gnft_token.address, {"from": gfn_owner1})
+    tx = registry.removeContract(
+        'ValidName', gnft_token.address, {"from": gfn_owner1}
+    )
+
+    # Assert: RegisterContract Event
+    assert ('RemoveContract' in tx.events) is True
+    assert tx.events['RemoveContract']['name'] == 'ValidName'
+    assert tx.events['RemoveContract']['_address'] == gnft_token.address
 
     # Asserts: after removing Contract
     gnft_address = registry.getContractAddress('ValidName')
