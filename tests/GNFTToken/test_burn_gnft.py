@@ -41,7 +41,7 @@ def test_success__burn_token__01_existed_token(setup, deployment, const):
     # Assert before burning token
     # # Asserts
     assert gnft_token.getTotalMintedGeneticProfiles() == 1
-    assert gnft_token.getTotalCurrentTokens() == 1
+    assert gnft_token.totalSupply() == 1
     assert gnft_token.balanceOf(genetic_owner1) == 1
     assert gnft_token.ownerOf(12345678) == genetic_owner1
 
@@ -66,7 +66,7 @@ def test_success__burn_token__01_existed_token(setup, deployment, const):
 
     # # Asserts
     assert gnft_token.getTotalMintedGeneticProfiles() == 1
-    assert gnft_token.getTotalCurrentTokens() == 0
+    assert gnft_token.totalSupply() == 0
     assert gnft_token.balanceOf(genetic_owner1) == 0
     with brownie.reverts("ERC721: owner query for nonexistent token"):
         assert gnft_token.ownerOf(12345678)
@@ -88,7 +88,7 @@ def test_success__burn_token__burn_and_mint_again(setup, deployment, const):
     # Assert before burning token
     # # Asserts
     assert gnft_token.getTotalMintedGeneticProfiles() == 1
-    assert gnft_token.getTotalCurrentTokens() == 1
+    assert gnft_token.totalSupply() == 1
     assert gnft_token.balanceOf(genetic_owner1) == 1
     assert gnft_token.ownerOf(12345678) == genetic_owner1
 
@@ -97,7 +97,7 @@ def test_success__burn_token__burn_and_mint_again(setup, deployment, const):
 
     # # Asserts
     assert gnft_token.getTotalMintedGeneticProfiles() == 1
-    assert gnft_token.getTotalCurrentTokens() == 0
+    assert gnft_token.totalSupply() == 0
     assert gnft_token.balanceOf(genetic_owner1) == 0
     with brownie.reverts("ERC721: owner query for nonexistent token"):
         assert gnft_token.ownerOf(12345678)
@@ -139,7 +139,7 @@ def test_failure__burn_token__not_existed_genetic_profile_id(setup, deployment, 
 
     # Assert before burning token
     assert gnft_token.getTotalMintedGeneticProfiles() == 1
-    assert gnft_token.getTotalCurrentTokens() == 1
+    assert gnft_token.totalSupply() == 1
     assert gnft_token.balanceOf(genetic_owner1) == 1
     assert gnft_token.ownerOf(12345678) == genetic_owner1
 
@@ -149,6 +149,6 @@ def test_failure__burn_token__not_existed_genetic_profile_id(setup, deployment, 
 
     # Assert after burning token
     assert gnft_token.getTotalMintedGeneticProfiles() == 1
-    assert gnft_token.getTotalCurrentTokens() == 1
+    assert gnft_token.totalSupply() == 1
     assert gnft_token.balanceOf(genetic_owner1) == 1
     assert gnft_token.ownerOf(12345678) == genetic_owner1

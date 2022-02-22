@@ -46,7 +46,7 @@ def test_success__mint_token__mint_01_new_gnft_token(deployment, const):
 
     # Asserts: GNFTToken status
     assert gnft_token.getTotalMintedGeneticProfiles() == 1
-    assert gnft_token.getTotalCurrentTokens() == 1
+    assert gnft_token.totalSupply() == 1
     assert gnft_token.balanceOf(genetic_owner1) == 1
     assert gnft_token.ownerOf(genetic_profile_id1) == genetic_owner1
 
@@ -71,7 +71,7 @@ def test_success__mint_token__mint_02_new_gnft_token(deployment, const):
 
     # Asserts
     assert gnft_token.getTotalMintedGeneticProfiles() == 1
-    assert gnft_token.getTotalCurrentTokens() == 1
+    assert gnft_token.totalSupply() == 1
     assert gnft_token.balanceOf(genetic_owner1) == 1
     assert gnft_token.ownerOf(genetic_profile_id1) == genetic_owner1
 
@@ -90,7 +90,7 @@ def test_success__mint_token__mint_02_new_gnft_token(deployment, const):
 
     # # Asserts
     assert gnft_token.getTotalMintedGeneticProfiles() == 2
-    assert gnft_token.getTotalCurrentTokens() == 2
+    assert gnft_token.totalSupply() == 2
     assert gnft_token.balanceOf(genetic_owner1) == 1
     assert gnft_token.balanceOf(genetic_owner2) == 1
     assert gnft_token.ownerOf(genetic_profile_id1) == genetic_owner1
@@ -115,7 +115,7 @@ def test_failure__mint_token__not_gfn_owner_mint_gnft_token(deployment, const):
 
     # Asserts
     assert gnft_token.getTotalMintedGeneticProfiles() == 0
-    assert gnft_token.getTotalCurrentTokens() == 0
+    assert gnft_token.totalSupply() == 0
 
 
 def test_failure__mint_token__life_token_not_registered(const):
@@ -147,7 +147,7 @@ def test_failure__mint_token__life_token_not_registered(const):
 
     # Asserts
     assert gnft_token.getTotalMintedGeneticProfiles() == 0
-    assert gnft_token.getTotalCurrentTokens() == 0
+    assert gnft_token.totalSupply() == 0
 
 
 def test_failure__mint_token__life_treasury_not_registered(const):
@@ -185,7 +185,7 @@ def test_failure__mint_token__life_treasury_not_registered(const):
 
     # Asserts
     assert gnft_token.getTotalMintedGeneticProfiles() == 0
-    assert gnft_token.getTotalCurrentTokens() == 0
+    assert gnft_token.totalSupply() == 0
 
 
 def test_failure__mint_token__null_genetic_profile_address(deployment, const):
@@ -204,7 +204,7 @@ def test_failure__mint_token__null_genetic_profile_address(deployment, const):
 
     # Asserts
     assert gnft_token.getTotalMintedGeneticProfiles() == 0
-    assert gnft_token.getTotalCurrentTokens() == 0
+    assert gnft_token.totalSupply() == 0
 
 
 def test_failure__mint_token__existed_genetic_profile_id(deployment, const):
@@ -232,6 +232,6 @@ def test_failure__mint_token__existed_genetic_profile_id(deployment, const):
 
     # Asserts
     assert gnft_token.getTotalMintedGeneticProfiles() == 1
-    assert gnft_token.getTotalCurrentTokens() == 1
+    assert gnft_token.totalSupply() == 1
     assert gnft_token.balanceOf(genetic_owner1) == 1
     assert gnft_token.ownerOf(genetic_profile_id1) == genetic_owner1
