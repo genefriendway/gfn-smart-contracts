@@ -18,7 +18,7 @@ contract Configuration is Ownable, IConfiguration {
     struct GNFTRange {
         uint256 lower;
         uint256 upper;
-        uint256 numerOfLIFEToMint;
+        uint256 numberOfLIFEToMint;
     }
     // Mapping from index to GNFTRange
     mapping(uint256 => GNFTRange) private tableOfMintingLIFE;
@@ -56,7 +56,7 @@ contract Configuration is Ownable, IConfiguration {
         for(uint256 index = 0; index < totalGNFTRanges; index++) {
             GNFTRange storage range = tableOfMintingLIFE[index];
             if (totalGNFTTokens >= range.lower && totalGNFTTokens <= range.upper) {
-                return range.numerOfLIFEToMint;
+                return range.numberOfLIFEToMint;
             }
         }
         return 0;
