@@ -1,21 +1,24 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.11;
 
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./interfaces/IGNFTToken.sol";
 import "./interfaces/ILIFEToken.sol";
 import "./interfaces/IContractRegistry.sol";
+import "./interfaces/IConfiguration.sol";
 import "./mixins/LIFETokenRetriever.sol";
 import "./mixins/LIFETreasuryRetriever.sol";
+import "./mixins/ConfigurationRetriever.sol";
 
 
-contract GNFTToken is 
-    ERC721, 
-    Ownable, 
+contract GNFTToken is
+    Ownable,
+    ERC721Enumerable,
     IGNFTToken, 
     LIFETokenRetriever,
-    LIFETreasuryRetriever
+    LIFETreasuryRetriever,
+    ConfigurationRetriever
 {
 
     IContractRegistry public registry;
@@ -24,10 +27,6 @@ contract GNFTToken is
     // this mapping only incrementally
     mapping(uint256 => bool) private _mintedGeneticProfiles;
     uint256 private _totalMintedGeneticProfiles;
-
-    // Total number of current tokens
-    // This value will be updated when minting or burning happens
-    uint256 private _totalCurrentTokens;
 
     // ===== Modifiers =======
     modifier existLIFEToken() {
@@ -61,20 +60,22 @@ contract GNFTToken is
         transferOwnership(gfnOwner);
     }
 
-    function mintGNFT(
+    function _baseURI() internal view override returns (string memory) {
+        IConfiguration config = IConfiguration(_getConfigurationAddress(registry));
+        return config.getBaseGNFTTokenURI();
+    }
+
+    function _mintGNFT(
         address geneticProfileOwner,
         uint256 geneticProfileId
     )
-        public
-        override
+        internal
         onlyOwner
         existLIFEToken
         existLIFETreasury
     {
         // Mint a new G-NFT token for genetic profile owner
         _safeMint(geneticProfileOwner, geneticProfileId);
-        // increase total current tokens by one
-        _totalCurrentTokens += 1;
 
         // only mint LIFE token once per genetic profile id
         if (!_mintedGeneticProfiles[geneticProfileId]){
@@ -94,26 +95,24 @@ contract GNFTToken is
         address[] memory geneticProfileOwners,
         uint256[] memory geneticProfileIds
     )
-        public
+        external
         override
         onlyOwner
         existLIFEToken
         existLIFETreasury
     {
         for (uint256 i = 0; i < geneticProfileOwners.length; i++) {
-            mintGNFT(geneticProfileOwners[i], geneticProfileIds[i]);
+            _mintGNFT(geneticProfileOwners[i], geneticProfileIds[i]);
         }
         emit MintBatchGNFT(geneticProfileOwners, geneticProfileIds);
     }
 
-    function burnGNFT(uint256 geneticProfileId) public override onlyOwner {
+    function burnGNFT(uint256 geneticProfileId) external override onlyOwner {
         // require geneticProfileId must exist
         require(
             _exists(geneticProfileId),
             "GNFTToken: genetic profile id must exist for burning"
         );
-        // decrease total current tokens by one
-        _totalCurrentTokens -= 1;
         // Perform burning the genetic profile id
         _burn(geneticProfileId);
 
@@ -123,9 +122,4 @@ contract GNFTToken is
     function getTotalMintedGeneticProfiles() external view override returns (uint256) {
         return _totalMintedGeneticProfiles;
     }
-
-    function getTotalCurrentTokens() external view override returns (uint256) {
-        return _totalCurrentTokens;
-    }
-
 }
