@@ -9,6 +9,10 @@ import "./interfaces/IConfiguration.sol";
 contract Configuration is Ownable, IConfiguration {
 
     IContractRegistry public registry;
+
+    // ==== START - Properties for G-NFT TokenURI ==========
+    string private baseGNFTTokenURI = "";
+    // ==== END - Properties for G-NFT TokenURI ==========
     
     // ==== START - Properties for mintting LIFE TOKEN ==========
     struct GNFTRange {
@@ -26,6 +30,22 @@ contract Configuration is Ownable, IConfiguration {
         registry = _registry;
         _initializeTableOfMintingLIFE();
         transferOwnership(gfnOwner);
+    }
+
+    function setBaseGNFTTokenURI(
+        string memory uri
+    ) external onlyOwner {
+        require(
+            bytes(uri).length > 0,
+            "Configuration: base G-NFT token URI must be not empty"
+        );
+        baseGNFTTokenURI = uri;
+
+        emit SetBaseGNFTTokenURI(uri);
+    }
+
+    function getBaseGNFTTokenURI() external view returns (string memory) {
+        return baseGNFTTokenURI;
     }
 
     function findNumberOfLIFEToMint(
