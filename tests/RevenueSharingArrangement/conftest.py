@@ -26,8 +26,11 @@ def initial_life_treasury_and_pool(deployment, const):
     gnft_token_id2 = 885647569876
 
     # mint LIFE to Treasury
-    gnft_token.mintGNFT(genetic_owner1, gnft_token_id1, {"from": gfn_owner1})
-    gnft_token.mintGNFT(genetic_owner2, gnft_token_id2, {"from": gfn_owner1})
+    gnft_token.mintBatchGNFT(
+        [genetic_owner1, genetic_owner2],
+        [gnft_token_id1, gnft_token_id2],
+        {"from": gfn_owner1}
+    )
 
     # Actions
     # gfn_owner1 make a transaction to transfer 6666 LIFE to gfn_wallet
