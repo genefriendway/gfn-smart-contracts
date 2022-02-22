@@ -47,7 +47,7 @@ def test_success__mint_batch_gnft__mint_01_new_token(deployment, const):
 
     # Asserts: GNFTToken status
     assert gnft_token.getTotalMintedGeneticProfiles() == 1
-    assert gnft_token.getTotalCurrentTokens() == 1
+    assert gnft_token.totalSupply() == 1
     assert gnft_token.balanceOf(genetic_owner1) == 1
     assert gnft_token.ownerOf(genetic_profile_id1) == genetic_owner1
 
@@ -76,7 +76,7 @@ def test_success__mint_batch_gnft__mint_02_new_token(deployment, const):
 
     # Asserts: GNFTToken status
     assert gnft_token.getTotalMintedGeneticProfiles() == 2
-    assert gnft_token.getTotalCurrentTokens() == 2
+    assert gnft_token.totalSupply() == 2
     assert gnft_token.balanceOf(genetic_owner1) == 1
     assert gnft_token.balanceOf(genetic_owner2) == 1
     assert gnft_token.ownerOf(genetic_profile_id1) == genetic_owner1
@@ -110,7 +110,7 @@ def test_success__mint_batch_gnft__mint_08_new_token(deployment, const):
 
     # Asserts: GNFTToken status
     assert gnft_token.getTotalMintedGeneticProfiles() == 8
-    assert gnft_token.getTotalCurrentTokens() == 8
+    assert gnft_token.totalSupply() == 8
 
     for i in range(2, 10):
         assert gnft_token.balanceOf(accounts[i]) == 1
@@ -144,7 +144,7 @@ def test_success__mint_batch_gnft__mint_24_new_token(deployment, const):
 
     # Asserts: GNFTToken status
     assert gnft_token.getTotalMintedGeneticProfiles() == 24
-    assert gnft_token.getTotalCurrentTokens() == 24
+    assert gnft_token.totalSupply() == 24
 
     for i in range(0, 24):
         assert gnft_token.balanceOf(genetic_profile_owners[i]) == 1
@@ -176,7 +176,7 @@ def test_success__mint_batch_gnft__mint_double_30_new_token(deployment, const):
 
     # Asserts: GNFTToken status
     assert gnft_token.getTotalMintedGeneticProfiles() == 30
-    assert gnft_token.getTotalCurrentTokens() == 30
+    assert gnft_token.totalSupply() == 30
 
     # Asserts: LIFEToken Status
     assert life_token.balanceOf(life_treasury) == 200000000e+18
@@ -196,7 +196,7 @@ def test_success__mint_batch_gnft__mint_double_30_new_token(deployment, const):
 
     # Asserts: GNFTToken status
     assert gnft_token.getTotalMintedGeneticProfiles() == 60
-    assert gnft_token.getTotalCurrentTokens() == 60
+    assert gnft_token.totalSupply() == 60
 
     # Asserts: LIFEToken Status
     assert life_token.balanceOf(life_treasury) == 230000000e+18
