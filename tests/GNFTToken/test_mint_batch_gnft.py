@@ -14,12 +14,31 @@ def isolation(fn_isolation):
     pass
 
 
+@pytest.fixture(scope="module")
+def setup_base_gnft_uri(deployment, const):
+    # Arranges
+    gfn_owner1 = deployment[const.GFN_OWNER1]
+    config = deployment[const.CONFIGURATION]
+
+    # Asserts: before actions
+    assert config.getBaseGNFTTokenURI() == ""
+
+    # Actions
+    config.setBaseGNFTTokenURI(
+        'https://genetica.asia/gnft/', {"from": gfn_owner1}
+    )
+
+    # Asserts: before actions
+    assert config.getBaseGNFTTokenURI() == "https://genetica.asia/gnft/"
+
+
 def test_success__mint_batch_gnft__mint_01_new_token(deployment, const):
     # Arranges
     gfn_owner1 = deployment[const.GFN_OWNER1]
     gnft_token = deployment[const.GNFT_TOKEN]
     life_token = deployment[const.LIFE_TOKEN]
     life_treasury = deployment[const.LIFE_TREASURY]
+    config = deployment[const.CONFIGURATION]
 
     genetic_profile_id1 = 12345678
     genetic_owner1 = accounts[2]
@@ -50,6 +69,43 @@ def test_success__mint_batch_gnft__mint_01_new_token(deployment, const):
     assert gnft_token.totalSupply() == 1
     assert gnft_token.balanceOf(genetic_owner1) == 1
     assert gnft_token.ownerOf(genetic_profile_id1) == genetic_owner1
+
+    assert gnft_token.tokenURI(12345678) == ""
+
+    # Asserts: LIFEToken Status
+    assert life_token.balanceOf(life_treasury) == 90000000e+18
+
+    # Actions: Setup Token URI
+    config.setBaseGNFTTokenURI(
+        'https://genetica.asia/gnft/', {"from": gfn_owner1}
+    )
+    assert gnft_token.tokenURI(12345678) == "https://genetica.asia/gnft/12345678"
+
+
+def test_success__mint_batch_gnft__mint_01_new_token_with_existed_token_uri(
+        deployment, setup_base_gnft_uri, const, 
+):
+    # Arranges
+    gfn_owner1 = deployment[const.GFN_OWNER1]
+    gnft_token = deployment[const.GNFT_TOKEN]
+    life_token = deployment[const.LIFE_TOKEN]
+    life_treasury = deployment[const.LIFE_TREASURY]
+
+    genetic_profile_id1 = 12345678
+    genetic_owner1 = accounts[2]
+
+    # Actions
+    gnft_token.mintBatchGNFT(
+        [genetic_owner1], [genetic_profile_id1], {"from": gfn_owner1}
+    )
+
+    # Asserts: GNFTToken status
+    assert gnft_token.getTotalMintedGeneticProfiles() == 1
+    assert gnft_token.totalSupply() == 1
+    assert gnft_token.balanceOf(genetic_owner1) == 1
+    assert gnft_token.ownerOf(genetic_profile_id1) == genetic_owner1
+
+    assert gnft_token.tokenURI(12345678) == "https://genetica.asia/gnft/12345678"
 
     # Asserts: LIFEToken Status
     assert life_token.balanceOf(life_treasury) == 90000000e+18
