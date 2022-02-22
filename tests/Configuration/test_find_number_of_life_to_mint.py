@@ -186,6 +186,18 @@ def test_success__find_life_to_mint__total_10001_gnft(deployment, const):
     assert number_of_life == 1000e+18
 
 
+def test_success__find_life_to_mint__total_18000_gnft(deployment, const):
+    # Arranges
+    configuration = deployment[const.CONFIGURATION]
+    total_gnft_tokens = 18000
+
+    # Actions
+    number_of_life = configuration.findNumberOfLIFEToMint(total_gnft_tokens)
+
+    # # Asserts
+    assert number_of_life == 1000e+18
+
+
 def test_success__find_life_to_mint__total_100000_gnft(deployment, const):
     # Arranges
     configuration = deployment[const.CONFIGURATION]
@@ -202,6 +214,18 @@ def test_success__find_life_to_mint__total_100001_gnft(deployment, const):
     # Arranges
     configuration = deployment[const.CONFIGURATION]
     total_gnft_tokens = 100001
+
+    # Actions
+    number_of_life = configuration.findNumberOfLIFEToMint(total_gnft_tokens)
+
+    # # Asserts
+    assert number_of_life == 100e+18
+
+
+def test_success__find_life_to_mint__total_148675_gnft(deployment, const):
+    # Arranges
+    configuration = deployment[const.CONFIGURATION]
+    total_gnft_tokens = 148675
 
     # Actions
     number_of_life = configuration.findNumberOfLIFEToMint(total_gnft_tokens)
@@ -246,6 +270,18 @@ def test_success__find_life_to_mint__total_10000001_gnft(deployment, const):
     assert number_of_life == 10**18
 
 
+def test_success__find_life_to_mint__total_100000000_gnft(deployment, const):
+    # Arranges
+    configuration = deployment[const.CONFIGURATION]
+    total_gnft_tokens = 10**8
+
+    # Actions
+    number_of_life = configuration.findNumberOfLIFEToMint(total_gnft_tokens)
+
+    # # Asserts
+    assert number_of_life == 10**18
+
+
 def test_success__find_life_to_mint__total_100000001_gnft(deployment, const):
     # Arranges
     configuration = deployment[const.CONFIGURATION]
@@ -282,10 +318,34 @@ def test_success__find_life_to_mint__total_1000000001_gnft(deployment, const):
     assert number_of_life == 10**16
 
 
+def test_success__find_life_to_mint__total_1e10_gnft(deployment, const):
+    # Arranges
+    configuration = deployment[const.CONFIGURATION]
+    total_gnft_tokens = 10**10
+
+    # Actions
+    number_of_life = configuration.findNumberOfLIFEToMint(total_gnft_tokens)
+
+    # # Asserts
+    assert number_of_life == 10**16
+
+
 def test_success__find_life_to_mint__total_1e10_plus_1_gnft(deployment, const):
     # Arranges
     configuration = deployment[const.CONFIGURATION]
     total_gnft_tokens = 10**10 + 1
+
+    # Actions
+    number_of_life = configuration.findNumberOfLIFEToMint(total_gnft_tokens)
+
+    # # Asserts
+    assert number_of_life == 10**15
+
+
+def test_success__find_life_to_mint__total_1e11_gnft(deployment, const):
+    # Arranges
+    configuration = deployment[const.CONFIGURATION]
+    total_gnft_tokens = 10**11
 
     # Actions
     number_of_life = configuration.findNumberOfLIFEToMint(total_gnft_tokens)
@@ -306,10 +366,34 @@ def test_success__find_life_to_mint__total_1e11_plus_1_gnft(deployment, const):
     assert number_of_life == 10**14
 
 
+def test_success__find_life_to_mint__total_1e12_gnft(deployment, const):
+    # Arranges
+    configuration = deployment[const.CONFIGURATION]
+    total_gnft_tokens = 10**12
+
+    # Actions
+    number_of_life = configuration.findNumberOfLIFEToMint(total_gnft_tokens)
+
+    # # Asserts
+    assert number_of_life == 10**14
+
+
 def test_success__find_life_to_mint__total_1e12_plus_1_gnft(deployment, const):
     # Arranges
     configuration = deployment[const.CONFIGURATION]
     total_gnft_tokens = 10**12 + 1
+
+    # Actions
+    number_of_life = configuration.findNumberOfLIFEToMint(total_gnft_tokens)
+
+    # # Asserts
+    assert number_of_life == 10**13
+
+
+def test_success__find_life_to_mint__total_1e13_gnft(deployment, const):
+    # Arranges
+    configuration = deployment[const.CONFIGURATION]
+    total_gnft_tokens = 10**13
 
     # Actions
     number_of_life = configuration.findNumberOfLIFEToMint(total_gnft_tokens)
@@ -330,10 +414,34 @@ def test_success__find_life_to_mint__total_1e13_plus_1_gnft(deployment, const):
     assert number_of_life == 10**12
 
 
+def test_success__find_life_to_mint__total_1e14_gnft(deployment, const):
+    # Arranges
+    configuration = deployment[const.CONFIGURATION]
+    total_gnft_tokens = 10**14
+
+    # Actions
+    number_of_life = configuration.findNumberOfLIFEToMint(total_gnft_tokens)
+
+    # # Asserts
+    assert number_of_life == 10**12
+
+
 def test_success__find_life_to_mint__total_1e14_plus_1_gnft(deployment, const):
     # Arranges
     configuration = deployment[const.CONFIGURATION]
     total_gnft_tokens = 10**14 + 1
+
+    # Actions
+    number_of_life = configuration.findNumberOfLIFEToMint(total_gnft_tokens)
+
+    # # Asserts
+    assert number_of_life == 10**11
+
+
+def test_success__find_life_to_mint__total_1e15_gnft(deployment, const):
+    # Arranges
+    configuration = deployment[const.CONFIGURATION]
+    total_gnft_tokens = 10**15
 
     # Actions
     number_of_life = configuration.findNumberOfLIFEToMint(total_gnft_tokens)
@@ -394,6 +502,30 @@ def test_success__find_life_to_mint__total_1e17_plus_1_gnft(deployment, const):
     # Arranges
     configuration = deployment[const.CONFIGURATION]
     total_gnft_tokens = 10**17 + 1
+
+    # Actions
+    number_of_life = configuration.findNumberOfLIFEToMint(total_gnft_tokens)
+
+    # # Asserts
+    assert number_of_life == 0
+
+
+def test_success__find_life_to_mint__total_1e18_gnft(deployment, const):
+    # Arranges
+    configuration = deployment[const.CONFIGURATION]
+    total_gnft_tokens = 10**18
+
+    # Actions
+    number_of_life = configuration.findNumberOfLIFEToMint(total_gnft_tokens)
+
+    # # Asserts
+    assert number_of_life == 0
+
+
+def test_success__find_life_to_mint__total_1e18_plus_34235_gnft(deployment, const):
+    # Arranges
+    configuration = deployment[const.CONFIGURATION]
+    total_gnft_tokens = 10**18 + 34235
 
     # Actions
     number_of_life = configuration.findNumberOfLIFEToMint(total_gnft_tokens)
