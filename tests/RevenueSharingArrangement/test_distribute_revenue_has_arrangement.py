@@ -23,7 +23,7 @@ def arrangement_setup(deployment, const):
     revenue_sharing = deployment[const.REVENUE_SHARING_ARRANGEMENT]
 
     # ======== initialize LIFE token for LIFE Treasury =====
-    gnft_token.mintGNFT(accounts.add(), 876545678, {"from": gfn_owner1})
+    gnft_token.mintBatchGNFT([accounts.add()], [876545678], {"from": gfn_owner1})
 
     # ======== initialize LIFE token for GFNWallet =========
     calldata = life_token.transfer.encode_input(gfn_wallet, 6000e+18)
@@ -121,9 +121,11 @@ def arrangement_setup(deployment, const):
     gnft_token_id2 = 885647569876
     gnft_token_id3 = 876546756764
 
-    gnft_token.mintGNFT(genetic_owner1, gnft_token_id1, {"from": gfn_owner1})
-    gnft_token.mintGNFT(genetic_owner2, gnft_token_id2, {"from": gfn_owner1})
-    gnft_token.mintGNFT(genetic_owner3, gnft_token_id3, {"from": gfn_owner1})
+    gnft_token.mintBatchGNFT(
+        [genetic_owner1, genetic_owner2, genetic_owner3],
+        [gnft_token_id1, gnft_token_id2, gnft_token_id3],
+        {"from": gfn_owner1}
+    )
 
     # ========== Link G-NFT Token and Arrangement ========
     revenue_sharing.linkGNFTTokenIdAndOriginalGeneticProfileOwner(

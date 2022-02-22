@@ -24,8 +24,8 @@ def test_success__distribute_revenue__gpo_has_no_arrangement(
     gnft_token_id1 = 4356765432  # this token has no arrangement
 
     # Arranges: Mint G-NFT Token
-    gnft_token.mintGNFT(
-        genetic_owner1, gnft_token_id1, {'from': gfn_owner1}
+    gnft_token.mintBatchGNFT(
+        [genetic_owner1], [gnft_token_id1], {'from': gfn_owner1}
     )
 
     # Asserts before actions
