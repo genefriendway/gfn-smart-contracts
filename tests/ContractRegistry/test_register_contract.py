@@ -20,7 +20,14 @@ def test_success__register_contract(registry_deployment, const):
     assert gnft_name == ''
 
     # Actions
-    registry.registerContract('AnyName', gnft_token.address, {"from": gfn_owner1})
+    tx = registry.registerContract(
+        'AnyName', gnft_token.address, {"from": gfn_owner1}
+    )
+
+    # Assert: RegisterContract Event
+    assert ('RegisterContract' in tx.events) is True
+    assert tx.events['RegisterContract']['name'] == 'AnyName'
+    assert tx.events['RegisterContract']['_address'] == gnft_token.address
 
     # # Asserts: after registering Contract
     gnft_address = registry.getContractAddress('AnyName')
