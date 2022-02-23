@@ -2,11 +2,8 @@
 import os
 from copy import copy
 from dotenv import load_dotenv
-from brownie import network, accounts, ContractRegistry
 
-from utils.datetime import DateTimeUtil
 from scripts.settings import Setting
-from scripts.deployment.base import BaseDeployment
 from scripts.deployment.registry import RegistryDeployment
 from scripts.deployment.configuration import ConfigurationDeployment
 from scripts.deployment.gnft_token import GNFTTokenDeployment
@@ -48,15 +45,15 @@ def validate_deployment_selection(selection):
 def display_env_menu():
     menu_list = [f"=> {index}. {env}" for index, env in ENV_MENU.items()]
     menu_string = '\n'.join(menu_list)
-    print("================= ENV MENU ===============")
+    print("=========================== ENV MENU ==============================")
     print(menu_string)
-    print("==========================================")
 
     selection = input("[?] Select Environment to deploy (Select One): ")
     # validate
     selection = validate_env_selection(selection)
     # print the selection
     print(f"[==>] You selected ENV: {ENV_MENU[selection]}")
+    print("===================================================================")
     print("\n")
     return ENV_MENU[selection]
 
@@ -64,15 +61,15 @@ def display_env_menu():
 def display_deployment_menu():
     menu_list = [f"=> {index}. {deployment_cls.name}" for index, deployment_cls in DEPLOYMENT_MENU.items()]
     menu_string = '\n'.join(menu_list)
-    print("============ Deployment Menu ============")
+    print("=========================== Deployment Menu =======================")
     print(menu_string)
-    print("=========================================")
 
     selection = input("[?] Select contracts you want to deploy"
                       "(Multiple selection separated by comma): ")
     # validate
     selection = validate_deployment_selection(selection)
     # print(f"[==>] You selected deployment: {DEPLOYMENT_MENU[selection[0]]}")
+    print("===================================================================")
     print("\n")
     return [DEPLOYMENT_MENU[int(item)] for item in selection]
 
@@ -86,7 +83,6 @@ def load_settings(env_file):
 
 
 def main():
-    print(DateTimeUtil.now())
     # show menu
     selected_env = display_env_menu()
     selected_deployments = display_deployment_menu()
@@ -96,4 +92,5 @@ def main():
     # initialize Deployment object
     for deployment_class in selected_deployments:
         deployment = deployment_class(setting)
+        print(f"================ Deployment: {deployment.name} ================= ")
         deployment.start()

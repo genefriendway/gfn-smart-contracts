@@ -3,7 +3,7 @@ from utils.datetime import DateTimeUtil
 from brownie import accounts, network
 
 
-OUTPUT_FILE = "deployment_{time}.json"
+OUTPUT_FILE = "deployment_{env}_{time}.json"
 
 
 class Setting:
@@ -22,13 +22,6 @@ class Setting:
         self.LIFE_TOKEN_NAME = env_settings['LIFE_TOKEN_NAME']
         self.LIFE_TOKEN_SYMBOL = env_settings['LIFE_TOKEN_SYMBOL']
 
-        self.DEPLOYMENT_OUTPUT = OUTPUT_FILE.format(
-            time=DateTimeUtil.date_to_text(now, '%Y_%m_%d_%H_%M_%S')
-        )
-        self.DEPLOYMENT_DATETIME = DateTimeUtil.date_to_text(
-            now, fmt='%d/%m/%Y %H:%M:%S'
-        )
-
         # validate settings
         errors = []
         if not self.ENV_NAME:
@@ -44,7 +37,14 @@ class Setting:
 
         if errors:
             raise EnvironmentError('\n'.join(errors))
-        
+
+        self.DEPLOYMENT_OUTPUT = OUTPUT_FILE.format(
+            env=self.ENV_NAME.lower(),
+            time=DateTimeUtil.date_to_text(now, '%Y_%m_%d_%H_%M_%S')
+        )
+        self.DEPLOYMENT_DATETIME = DateTimeUtil.date_to_text(
+            now, fmt='%d/%m/%Y %H:%M:%S'
+        )
         self.GFN_DEPLOYER = accounts.add(self.GFN_DEPLOYER_PRIVATE_KEY)
         self.GFN_DEPLOYER_ADDRESS = self.GFN_DEPLOYER.address
         self.TXN_SENDER = {'from': self.GFN_DEPLOYER_ADDRESS}
