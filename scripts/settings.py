@@ -3,7 +3,7 @@ from utils.datetime import DateTimeUtil
 from brownie import accounts, network
 
 
-OUTPUT_FILE = "deployment_{env}_{time}.json"
+OUTPUT_FILE = "deployment_{env}_{network}_{time}.json"
 
 
 class Setting:
@@ -40,6 +40,7 @@ class Setting:
 
         self.DEPLOYMENT_OUTPUT = OUTPUT_FILE.format(
             env=self.ENV_NAME.lower(),
+            network=self.BLOCKCHAIN_NETWORK,
             time=DateTimeUtil.date_to_text(now, '%Y_%m_%d_%H_%M_%S')
         )
         self.DEPLOYMENT_DATETIME = DateTimeUtil.date_to_text(
