@@ -6,6 +6,9 @@ from brownie import accounts, Contract
 from utils.common import read_json, write_json
 from scripts.settings import Setting
 from constants import ContractName
+from utils.contract import (
+    load_specific_contract_data_from_deployment_output
+)
 
 
 def template_output(name: str, address: str, abi: List):
@@ -17,24 +20,30 @@ def template_output(name: str, address: str, abi: List):
 
 
 class ContractDeployment(ABC):
-    name = None
+    contract_name = None
+    contract_class = None
 
     def __init__(self, setting: Setting):
         self.setting = setting
 
-    def start(self):
-        instance = self._deploy()
+    def start_deployment(self):
+        instance = self.deploy()
         output = template_output(
-            name=self.name,
+            name=self.contract_name,
             address=instance.address,
             abi=instance.abi
         )
         self._write_env_settings()
-        self._write_contract_section(self.name, output)
+        self._write_contract_section(self.contract_name, output)
 
     @abstractmethod
-    def _deploy(self):
+    def deploy(self):
         raise NotImplementedError
+
+    def publish(self, deployment_output):
+        instance = self.get_contract_instance(deployment_output)
+        self.contract_class.publish_source(instance)
+        return instance
 
     def _write_env_settings(self):
         deployment_data = self._read_deployment_output(
@@ -94,5 +103,16 @@ class ContractDeployment(ABC):
             name=registry_data['name'],
             address=registry_data['address'],
             abi=registry_data['abi'],
+            owner=accounts.add(self.setting.GFN_DEPLOYER_PRIVATE_KEY)
+        )
+
+    def get_contract_instance(self, deployment_output):
+        contract_data = load_specific_contract_data_from_deployment_output(
+            self.contract_name, deployment_output
+        )
+        return Contract.from_abi(
+            name=contract_data['name'],
+            address=contract_data['address'],
+            abi=contract_data['abi'],
             owner=accounts.add(self.setting.GFN_DEPLOYER_PRIVATE_KEY)
         )

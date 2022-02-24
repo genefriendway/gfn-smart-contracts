@@ -5,11 +5,12 @@ from brownie import ContractRegistry
 
 
 class RegistryDeployment(ContractDeployment):
-    name = ContractName.REGISTRY
+    contract_name = ContractName.REGISTRY
+    contract_class = ContractRegistry
 
-    def _deploy(self):
-        print(f"==> Deploying {self.name} .....")
-        registry = ContractRegistry.deploy(
+    def deploy(self):
+        print(f"==> Deploying {self.contract_name} .....")
+        registry = self.contract_class.deploy(
             self.setting.GFN_DEPLOYER_ADDRESS,
             self.setting.TXN_SENDER
         )

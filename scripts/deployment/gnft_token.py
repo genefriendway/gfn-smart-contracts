@@ -5,13 +5,14 @@ from brownie import GNFTToken
 
 
 class GNFTTokenDeployment(ContractDeployment):
-    name = ContractName.GNFT_TOKEN
+    contract_name = ContractName.GNFT_TOKEN
+    contract_class = GNFTToken
 
-    def _deploy(self):
+    def deploy(self):
         registry_instance = self.get_registry_instance()
 
-        print(f"==> Deploying {self.name} .....")
-        gnft_token = GNFTToken.deploy(
+        print(f"==> Deploying {self.contract_name} .....")
+        gnft_token = self.contract_class.deploy(
             self.setting.GFN_OWNER_ADDRESS,
             registry_instance.address,
             self.setting.GNFT_TOKEN_NAME,
@@ -19,8 +20,8 @@ class GNFTTokenDeployment(ContractDeployment):
             self.setting.TXN_SENDER
         )
 
-        print(f"==> Registering {self.name} .....")
+        print(f"==> Registering {self.contract_name} .....")
         registry_instance.registerContract(
-            self.name, gnft_token.address, self.setting.TXN_SENDER
+            self.contract_name, gnft_token.address, self.setting.TXN_SENDER
         )
         return gnft_token
