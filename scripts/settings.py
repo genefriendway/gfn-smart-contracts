@@ -12,8 +12,6 @@ class Setting:
         now = DateTimeUtil.now()
 
         self.ENV_NAME = env_settings['ENV_NAME']
-        self.ENV_MENU = env_settings['ENV_MENU']
-        self.DEPLOYMENT_MENU = env_settings['DEPLOYMENT_MENU']
         self.BLOCKCHAIN_NETWORK = network.show_active()
         self.GFN_DEPLOYER_PRIVATE_KEY = env_settings['GFN_DEPLOYER_PRIVATE_KEY']
         self.GFN_OWNER_ADDRESS = env_settings['GFN_OWNER_ADDRESS']
@@ -26,9 +24,6 @@ class Setting:
         errors = []
         if not self.ENV_NAME:
             errors.append("Please setup env: 'ENV_NAME'")
-        if not self.ENV_MENU:
-            errors.append("Please no setting: 'ENV_MENU'")
-        if not self.DEPLOYMENT_MENU:
             errors.append("Please no setting: 'DEPLOYMENT_MENU'")
         if not self.GFN_DEPLOYER_PRIVATE_KEY:
             errors.append("Please setup env: 'GFN_DEPLOYER_PRIVATE_KEY'")

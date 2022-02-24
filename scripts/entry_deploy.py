@@ -117,10 +117,11 @@ def main():
     # load env settings
     setting = load_settings(selected_env)
 
-    print(f"===================== {setting.ENV_NAME} =========================")
-    print(f'=> Network: {setting.BLOCKCHAIN_NETWORK}')
+    print(f"=============== Settings for {setting.ENV_NAME} ==================")
+    print(f'=> ENV         : {setting.ENV_NAME}')
+    print(f'=> Network     : {setting.BLOCKCHAIN_NETWORK}')
     print(f'=> gfn_deployer: {setting.GFN_DEPLOYER_ADDRESS}')
-    print(f'=> gfn_owner: {setting.GFN_OWNER_ADDRESS}')
+    print(f'=> gfn_owner   : {setting.GFN_OWNER_ADDRESS}')
     print("===============================================================")
     while True:
         confirmation = input("[?] Please confirm above information before "
@@ -143,4 +144,4 @@ def main():
 
     if selected_env in [ENV_MENU[ENV_LOCAL], ENV_MENU[ENV_NIGHTLY]]:
         print("================ Running Deployment Tests ===================")
-        run_deployment_tests()
+        run_deployment_tests(setting)
