@@ -12,3 +12,5 @@ dev/*
 node_modules/
 bin/
 contracts/artifacts/
+deployment*.json
+run.py
