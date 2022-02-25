@@ -25,6 +25,20 @@ class ContractDeployment(ABC):
 
     def __init__(self, setting: Setting):
         self.setting = setting
+        errors = self.validate_setting()
+        if errors:
+            raise EnvironmentError('\n'.join(errors))
+
+    def validate_setting(self):
+        errors = []
+        if not self.setting.ENV_NAME:
+            errors.append("Please setup env: 'ENV_NAME'")
+        if not self.setting.GFN_DEPLOYER_PRIVATE_KEY:
+            errors.append("Please setup env: 'GFN_DEPLOYER_PRIVATE_KEY'")
+        if not self.setting.GFN_OWNER_ADDRESS:
+            errors.append("Please setup env: 'GFN_OWNER_ADDRESS'")
+        return errors
+
 
     def start_deployment(self):
         instance = self.deploy()

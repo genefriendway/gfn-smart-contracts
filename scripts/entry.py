@@ -8,6 +8,7 @@ from scripts.deployment.registry import RegistryDeployment
 from scripts.deployment.configuration import ConfigurationDeployment
 from scripts.deployment.gnft_token import GNFTTokenDeployment
 from scripts.deployment.life_token import LIFETokenDeployment
+from scripts.deployment.life_treasury import LIFETreasuryDeployment
 
 ENV_LOCAL = 1
 ENV_NIGHTLY = 2
@@ -24,12 +25,14 @@ REGISTRY = 1
 CONFIGURATION = 2
 GNFT_TOKEN = 3
 LIFE_TOKEN = 4
+LIFE_TREASURY = 5
 
 DEPLOYMENT_MENU = {
     REGISTRY: RegistryDeployment,
     CONFIGURATION: ConfigurationDeployment,
     GNFT_TOKEN: GNFTTokenDeployment,
     LIFE_TOKEN: LIFETokenDeployment,
+    LIFE_TREASURY: LIFETreasuryDeployment
 }
 
 PUBLISH_MENU = DEPLOYMENT_MENU
@@ -214,9 +217,25 @@ def main():
         selected_contract_deployments = display_deployment_menu()
         # initialize Deployment object
         for deployment_class in selected_contract_deployments:
-            deployment = deployment_class(setting)
-            print(f"================ Deployment: {deployment.contract_name} =================")
-            deployment.start_deployment()
+            print(f"================ Deployment: {deployment_class.contract_name} =================")
+            try:
+                deployment = deployment_class(setting)
+                deployment.start_deployment()
+            except Exception as ex:
+                print("===== [ERROR] =======")
+                print(str(ex))
+                print("===== [ERROR] =======")
+                while True:
+                    confirmation = input(
+                        "[?] Do you want to continue depoly? [yes|no] ")
+                    if confirmation.lower().strip() == 'yes':
+                        print("=> You selected 'yes' to continue deployment.")
+                        break
+                    elif confirmation.lower().strip() == 'no':
+                        print("====> You selected 'no' to stop deployment.")
+                        exit(0)
+                    else:
+                        pass
 
         if selected_env in [ENV_MENU[ENV_LOCAL], ENV_MENU[ENV_NIGHTLY]]:
             print("================ Running Deployment Tests ===================")

@@ -15,23 +15,16 @@ class Setting:
         self.BLOCKCHAIN_NETWORK = network.show_active()
         self.GFN_DEPLOYER_PRIVATE_KEY = env_settings['GFN_DEPLOYER_PRIVATE_KEY']
         self.GFN_OWNER_ADDRESS = env_settings['GFN_OWNER_ADDRESS']
-        self.GNFT_TOKEN_NAME = env_settings['GNFT_TOKEN_NAME']
-        self.GNFT_TOKEN_SYMBOL = env_settings['GNFT_TOKEN_SYMBOL']
-        self.LIFE_TOKEN_NAME = env_settings['LIFE_TOKEN_NAME']
-        self.LIFE_TOKEN_SYMBOL = env_settings['LIFE_TOKEN_SYMBOL']
 
-        # validate settings
-        errors = []
-        if not self.ENV_NAME:
-            errors.append("Please setup env: 'ENV_NAME'")
-            errors.append("Please no setting: 'DEPLOYMENT_MENU'")
-        if not self.GFN_DEPLOYER_PRIVATE_KEY:
-            errors.append("Please setup env: 'GFN_DEPLOYER_PRIVATE_KEY'")
-        if not self.GFN_OWNER_ADDRESS:
-            errors.append("Please setup env: 'GFN_OWNER_ADDRESS'")
+        self.GNFT_TOKEN_NAME = env_settings.get('GNFT_TOKEN_NAME')
+        self.GNFT_TOKEN_SYMBOL = env_settings.get('GNFT_TOKEN_SYMBOL')
 
-        if errors:
-            raise EnvironmentError('\n'.join(errors))
+        self.LIFE_TOKEN_NAME = env_settings.get('LIFE_TOKEN_NAME')
+        self.LIFE_TOKEN_SYMBOL = env_settings.get('LIFE_TOKEN_SYMBOL')
+
+        self.GFN_FOUNDER_ADDRESS_ONE = env_settings.get('GFN_FOUNDER_ADDRESS_ONE')
+        self.GFN_FOUNDER_ADDRESS_TWO = env_settings.get('GFN_FOUNDER_ADDRESS_TWO')
+        self.GFN_FOUNDER_ADDRESS_THREE = env_settings.get('GFN_FOUNDER_ADDRESS_THREE')
 
         self.DEPLOYMENT_OUTPUT = OUTPUT_FILE.format(
             env=self.ENV_NAME.lower(),

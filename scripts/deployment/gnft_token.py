@@ -8,6 +8,14 @@ class GNFTTokenDeployment(ContractDeployment):
     contract_name = ContractName.GNFT_TOKEN
     contract_class = GNFTToken
 
+    def validate_setting(self):
+        errors = super().validate_setting()
+        if not self.setting.GNFT_TOKEN_NAME:
+            errors.append("Please setup env: 'GNFT_TOKEN_NAME'")
+        if not self.setting.GNFT_TOKEN_SYMBOL:
+            errors.append("Please setup env: 'GNFT_TOKEN_SYMBOL'")
+        return errors
+
     def deploy(self):
         registry_instance = self.get_registry_instance()
 

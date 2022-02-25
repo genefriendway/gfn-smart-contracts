@@ -8,6 +8,14 @@ class LIFETokenDeployment(ContractDeployment):
     contract_name = ContractName.LIFE_TOKEN
     contract_class = LIFEToken
 
+    def validate_setting(self):
+        errors = super().validate_setting()
+        if not self.setting.LIFE_TOKEN_NAME:
+            errors.append("Please setup env: 'LIFE_TOKEN_NAME'")
+        if not self.setting.LIFE_TOKEN_SYMBOL:
+            errors.append("Please setup env: 'LIFE_TOKEN_SYMBOL'")
+        return errors
+
     def deploy(self):
         registry_instance = self.get_registry_instance()
 
