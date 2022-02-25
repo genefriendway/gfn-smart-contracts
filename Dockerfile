@@ -6,12 +6,12 @@ ENV PYTHONUNBUFFERED=1
 
 WORKDIR /gfn-smart-contracts
 
-COPY requirements.txt /gfn-smart-contracts/requirements.txt
-
 RUN apt-get update \
     && apt-get install npm -y \
-    && npm install -g ganache-cli \
-    && pip install -r requirements.txt \
+    && npm install -g ganache-cli
+
+COPY requirements.txt /gfn-smart-contracts/requirements.txt
+RUN pip install -r requirements.txt \
     && brownie pm install OpenZeppelin/openzeppelin-contracts@4.4.1
 
 ADD . /gfn-smart-contracts/
