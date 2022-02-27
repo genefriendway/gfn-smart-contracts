@@ -1,5 +1,6 @@
 import pytest
 import brownie
+from brownie import accounts
 
 
 @pytest.fixture(autouse=True)
@@ -93,4 +94,20 @@ def test_failure__register_contract__duplicated_contract_address(registry_deploy
     with brownie.reverts('ContractRegistry: contract address is registered'):
         registry.registerContract(
             'LIFEContract', gnft_token.address, {"from": gfn_owner1}
+        )
+
+
+def test_failure__register_contract__not_owner_make_transaction(
+        registry_deployment, const
+):
+    # Arranges
+    registry = registry_deployment[const.REGISTRY]
+    gnft_token = registry_deployment[const.GNFT_TOKEN]
+
+    fake_owner = accounts.add()
+
+    # Actions
+    with brownie.reverts('Ownable: caller is not the owner'):
+        registry.registerContract(
+            'AnyName', gnft_token.address, {"from": fake_owner}
         )
