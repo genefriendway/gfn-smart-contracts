@@ -234,6 +234,7 @@ contract LIFETreasury is ILIFETreasury {
         bytes memory data
     )
         public
+        ownerExists(msg.sender)
         returns (uint256 transactionId)
     {
         // create new a transaction request
