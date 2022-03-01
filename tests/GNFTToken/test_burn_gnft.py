@@ -28,7 +28,7 @@ def setup(deployment, const):
     assert life_token.balanceOf(life_treasury) == 90000000e+18
 
 
-def test_success__burn_token__01_existed_token(setup, deployment, const):
+def test_success__burn_gnft__01_existed_token(setup, deployment, const):
     # Arranges
     gfn_owner1 = deployment[const.GFN_OWNER1]
     gnft_token = deployment[const.GNFT_TOKEN]
@@ -75,7 +75,7 @@ def test_success__burn_token__01_existed_token(setup, deployment, const):
     assert life_token.balanceOf(life_treasury) == 90000000e+18
 
 
-def test_success__burn_token__burn_and_mint_again(setup, deployment, const):
+def test_success__burn_gnft__burn_and_mint_again(setup, deployment, const):
     # Arranges
     gfn_owner1 = deployment[const.GFN_OWNER1]
     gnft_token = deployment[const.GNFT_TOKEN]
@@ -120,7 +120,7 @@ def test_success__burn_token__burn_and_mint_again(setup, deployment, const):
     assert life_token.balanceOf(life_treasury) == 90000000e+18
 
 
-def test_failure__burn_token__not_gfn_owner_burn_token(setup, deployment, const):
+def test_failure__burn_gnft__not_gfn_owner_burn_gnft(setup, deployment, const):
     # Arranges
     gnft_token = deployment[const.GNFT_TOKEN]
     genetic_owner1 = accounts[2]
@@ -131,7 +131,7 @@ def test_failure__burn_token__not_gfn_owner_burn_token(setup, deployment, const)
         gnft_token.burnGNFT(12345678, {"from": genetic_owner1})
 
 
-def test_failure__burn_token__not_existed_genetic_profile_id(setup, deployment, const):
+def test_failure__burn_gnft__not_existed_genetic_profile_id(setup, deployment, const):
     # Arranges
     gfn_owner1 = deployment[const.GFN_OWNER1]
     gnft_token = deployment[const.GNFT_TOKEN]

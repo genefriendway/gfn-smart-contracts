@@ -409,3 +409,18 @@ def test_failure__mint_batch_token__existed_genetic_profile_id(deployment, const
     assert gnft_token.totalSupply() == 1
     assert gnft_token.balanceOf(genetic_owner1) == 1
     assert gnft_token.ownerOf(genetic_profile_id1) == genetic_owner1
+
+
+def test_failure__mint_batch_token__not_same_length_of_owners_and_ids(
+        deployment, const
+):
+    # Arranges
+    gfn_owner1 = deployment[const.GFN_OWNER1]
+    gnft_token = deployment[const.GNFT_TOKEN]
+
+    # Actions
+    with brownie.reverts("GNFTToken: genetic profile owners "
+                         "and genetic profile ids must be same length"):
+        gnft_token.mintBatchGNFT(
+            [accounts.add(), accounts.add()], [2345678], {"from": gfn_owner1}
+        )

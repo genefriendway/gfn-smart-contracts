@@ -28,7 +28,7 @@ def test_success__join_pool__one_investor_join(deployment, initial_life_treasury
 
     # Asserts: InvestorWallet status
     assert investor_wallet.getBalanceOfParticipant(investor1.address) == 88e+18
-    assert life_token.balanceOf(investor_wallet.address) == 338e+18
+    assert life_token.balanceOf(investor_wallet.address) == 1388e+18
 
     # Asserts: ReversePoolWallet status
     assert reserve_pool_wallet.getBalanceOfParticipant(investor1.address) == 12e+18
@@ -59,7 +59,7 @@ def test_success__join_pool__two_investors_join(deployment, initial_life_treasur
     # Asserts: InvestorWallet status
     assert investor_wallet.getBalanceOfParticipant(investor1.address) == 88e+18
     assert investor_wallet.getBalanceOfParticipant(investor2.address) == 200e+18
-    assert life_token.balanceOf(investor_wallet.address) == 288e+18
+    assert life_token.balanceOf(investor_wallet.address) == 1338e+18
 
     # Asserts: ReversePoolWallet status
     assert reserve_pool_wallet.getBalanceOfParticipant(investor1.address) == 12e+18

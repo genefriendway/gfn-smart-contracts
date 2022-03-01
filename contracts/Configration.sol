@@ -14,7 +14,7 @@ contract Configuration is Ownable, IConfiguration {
     string private baseGNFTTokenURI = "";
     // ==== END - Properties for G-NFT TokenURI ==========
     
-    // ==== START - Properties for mintting LIFE TOKEN ==========
+    // ==== START - Properties for minting LIFE TOKEN ==========
     struct GNFTRange {
         uint256 lower;
         uint256 upper;
@@ -23,7 +23,7 @@ contract Configuration is Ownable, IConfiguration {
     // Mapping from index to GNFTRange
     mapping(uint256 => GNFTRange) private tableOfMintingLIFE;
     uint256 private totalGNFTRanges = 18;
-    // ==== END - Properties for mintting LIFE TOKEN ==========
+    // ==== END - Properties for minting LIFE TOKEN ==========
     
     // ==== START - Properties for Distribution Revenue ==========
     struct RevenueRatio {
