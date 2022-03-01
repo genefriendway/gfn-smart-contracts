@@ -30,6 +30,10 @@ contract DataUtilization is
     )
         external onlyOwner
     {
+        require(
+            receivedTokenIds.length == receivedLIFEAmounts.length,
+            "DataUtilization: received token ids and received LIFE amounts must be same length"
+        );
         IRevenueSharingArrangement revenueSharing = IRevenueSharingArrangement(
             _getRevenueSharingArrangementAddress(registry)
         );
