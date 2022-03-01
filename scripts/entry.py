@@ -199,6 +199,10 @@ def main():
     print(f'=> Network     : {setting.BLOCKCHAIN_NETWORK}')
     print(f'=> gfn_deployer: {setting.GFN_DEPLOYER_ADDRESS}')
     print(f'=> gfn_owner   : {setting.GFN_OWNER_ADDRESS}')
+    print(f'=> NFT Token Name       : {setting.GNFT_TOKEN_NAME}')
+    print(f'=> NFT Token SymBol     : {setting.GNFT_TOKEN_SYMBOL}')
+    print(f'=> LIFE Token Name      : {setting.LIFE_TOKEN_NAME}')
+    print(f'=> LIFE Token SymBol    : {setting.LIFE_TOKEN_SYMBOL}')
     print("===============================================================")
     while True:
         confirmation = input("[?] Please confirm above information before "

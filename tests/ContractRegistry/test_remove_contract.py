@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 import pytest
 import brownie
+from brownie import accounts
 
 
 @pytest.fixture(autouse=True)
@@ -96,4 +97,20 @@ def test_failure__remove_contract__not_existed_address(setup, registry_deploymen
     with brownie.reverts('ContractRegistry: contract address is not registered'):
         registry.removeContract(
             'ValidName', life_token.address, {"from": gfn_owner1}
+        )
+
+
+def test_failure__remove_contract__not_owner_make_transaction(
+        setup, registry_deployment, const
+):
+    # Arranges
+    registry = registry_deployment[const.REGISTRY]
+    gnft_token = registry_deployment[const.GNFT_TOKEN]
+
+    fake_owner = accounts.add()
+
+    # Actions
+    with brownie.reverts('Ownable: caller is not the owner'):
+        registry.removeContract(
+            'ValidName', gnft_token.address, {"from": fake_owner}
         )
