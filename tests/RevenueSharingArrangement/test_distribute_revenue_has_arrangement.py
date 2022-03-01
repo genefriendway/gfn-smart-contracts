@@ -223,7 +223,7 @@ def test_success__distribute_revenue__two_co_investors(
     assert investor_wallet.getBalanceOfParticipant(investor2) == 165e+18
 
     # Actions
-    revenue_sharing.distributeRevenue(
+    tx = revenue_sharing.distributeRevenue(
         du_wallet,
         data_utilizer1,
         gnft_token_id2,
@@ -240,8 +240,15 @@ def test_success__distribute_revenue__two_co_investors(
     # Asserts: Arrangement status
     assert revenue_sharing.queryTotalAccumulatedRevenueByTokenId(gnft_token_id2) == 12e+18
     assert gpo_wallet.getBalanceOfParticipant(genetic_owner2) == 0
-    assert investor_wallet.getBalanceOfParticipant(investor1) == 90*10**18 + 4666666666666666666
-    assert investor_wallet.getBalanceOfParticipant(investor2) == 165*10**18 + 7333333333333333333
+
+    # Calculate total distributed revenue
+    total_distributed_revenue = 0
+    for event in tx.events['DistributeRevenueToInvestor']:
+        total_distributed_revenue += event['revenue']
+
+    assert total_distributed_revenue == 12e+18 - 0
+
+    assert investor_wallet.getBalanceOfParticipant(investor1) == 90 * 10 ** 18 + 4666666666666666666
 
 
 def test_success__distribute_revenue__three_co_investors(
@@ -269,13 +276,19 @@ def test_success__distribute_revenue__three_co_investors(
     assert investor_wallet.getBalanceOfParticipant(investor4) == 350e+18
 
     # Actions
-    revenue_sharing.distributeRevenue(
+    tx = revenue_sharing.distributeRevenue(
         du_wallet,
         data_utilizer1,
         gnft_token_id3,
         140e+18,
         {'from': gfn_owner1}
     )
+
+    # Calculate total distributed revenue
+    total_distributed_revenue = 0
+    for event in tx.events['DistributeRevenueToInvestor']:
+        total_distributed_revenue += event['revenue']
+
     # X = 55, Revenue = 140
     # 55 - 100:0 => 55 - 55:0
     # 110 - 80:20 - 55 - 44:11
@@ -285,7 +298,8 @@ def test_success__distribute_revenue__three_co_investors(
 
     # Asserts: Arrangement status
     assert revenue_sharing.queryTotalAccumulatedRevenueByTokenId(gnft_token_id3) == 140e+18
-    assert gpo_wallet.getBalanceOfParticipant(genetic_owner3) == 11e+18 +  12e+18
+    assert gpo_wallet.getBalanceOfParticipant(genetic_owner3) == 11e+18 + 12e+18
+    assert total_distributed_revenue == 140e+18 - (11e+18 + 12e+18)
     assert investor_wallet.getBalanceOfParticipant(investor2) == 216054545454545454545
     # assert investor_wallet.getBalanceOfParticipant(investor3) ==
     # assert investor_wallet.getBalanceOfParticipant(investor4) ==
