@@ -235,12 +235,22 @@ contract RevenueSharingArrangement is
 
             // check and distribute revenue to investors
             if (revenueOfInvestors > 0) {
+                uint256 totalCalculatedRevenue = 0;
+
                 for(uint256 index; index < arrangement.investors.length; index++) {
+
                     address investor = arrangement.investors[index];
-                    // retrieve number of invested LIFE of a investor
-                    uint256 investedLIFEOfSpecificInvestor = arrangement.investedLIFEOfInvestors[investor];
+
                     // calculate revenue of each investor depend on their invested LIFE
-                    uint256 calculatedRevenue = revenueOfInvestors * investedLIFEOfSpecificInvestor / arrangement.totalInvestedLIFEOfInvestors;
+                    uint256 calculatedRevenue = revenueOfInvestors * arrangement.investedLIFEOfInvestors[investor] / arrangement.totalInvestedLIFEOfInvestors;
+
+                    // Handle precision loss for the last investor
+                    if (index == arrangement.investors.length - 1) {
+                        calculatedRevenue = revenueOfInvestors - totalCalculatedRevenue;
+                    } else {
+                        totalCalculatedRevenue += calculatedRevenue;
+                    }
+
                     // transfer LIFE to investor wallet
                     _distributeRevenueToInvestor(
                         fromParticipantWallet,
