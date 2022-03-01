@@ -190,16 +190,22 @@ contract RevenueSharingArrangement is
                 fromSender,
                 arrangement,
                 currentGeneticProfileOwner,
-                revenue
+                revenue,
+                gnftTokenId
             );
         } else {
             _distributeRevenueToGeneticProfileOwner(
                 fromParticipantWallet,
                 fromSender,
                 currentGeneticProfileOwner,
-                revenue
+                revenue,
+                gnftTokenId
             );
         }
+
+        emit DistributeRevenue(
+            fromParticipantWallet, fromSender, gnftTokenId, revenue
+        );
     }
 
     function _distributeRevenueByArrangement(
@@ -207,7 +213,8 @@ contract RevenueSharingArrangement is
         address fromSender,
         Arrangement storage arrangement,
         address currentGeneticProfileOwner,
-        uint256 newRevenue
+        uint256 newRevenue,
+        uint256 gnftTokenId
     )
         private onlyOwner
     {
@@ -239,7 +246,8 @@ contract RevenueSharingArrangement is
                         fromParticipantWallet,
                         fromSender,
                         investor,
-                        calculatedRevenue
+                        calculatedRevenue,
+                        gnftTokenId
                     );
                 }
             }
@@ -250,7 +258,8 @@ contract RevenueSharingArrangement is
                     fromParticipantWallet,
                     fromSender,
                     currentGeneticProfileOwner,
-                    revenueOfGPO
+                    revenueOfGPO,
+                    gnftTokenId
                 );
             }
             // increase more Accumulated Revenue
@@ -262,9 +271,10 @@ contract RevenueSharingArrangement is
         address fromParticipantWallet,
         address fromSender,
         address toGeneticProfileOwner,
-        uint256 revenue
+        uint256 revenue,
+        uint256 byNFTTokenId
     )
-        private onlyOwner
+        private
     {
         IParticipantWallet wallet = IParticipantWallet(fromParticipantWallet);
         wallet.transferToAnotherParticipantWallet(
@@ -273,13 +283,18 @@ contract RevenueSharingArrangement is
             toGeneticProfileOwner,
             revenue
         );
+
+        emit DistributeRevenueToGeneticProfileOwner(
+            fromParticipantWallet, fromSender, toGeneticProfileOwner, revenue, byNFTTokenId
+        );
     }
 
     function _distributeRevenueToInvestor(
         address fromParticipantWallet,
         address fromSender,
         address toInvestor,
-        uint256 revenue
+        uint256 revenue,
+        uint256 byNFTTokenId
     )
         private onlyOwner
     {
@@ -289,6 +304,9 @@ contract RevenueSharingArrangement is
             _getInvestorWalletAddress(registry),
             toInvestor,
             revenue
+        );
+        emit DistributeRevenueToInvestor(
+            fromParticipantWallet, fromSender, toInvestor, revenue, byNFTTokenId
         );
     }
 

@@ -15,6 +15,30 @@ interface IRevenueSharingArrangement {
 
     );
 
+    event DistributeRevenue(
+        address indexed fromParticipantWallet,
+        address indexed fromSender,
+        uint256 gnftTokenId,
+        uint256 revenue
+    );
+
+    event DistributeRevenueToGeneticProfileOwner(
+        address indexed fromParticipantWallet,
+        address indexed fromSender,
+        address toGeneticProfileOwner,
+        uint256 revenue,
+        uint256 byNFTTokenId
+
+    );
+
+    event DistributeRevenueToInvestor(
+        address indexed fromParticipantWallet,
+        address indexed fromSender,
+        address toInvestor,
+        uint256 revenue,
+        uint256 byNFTTokenId
+    );
+
     function makeArrangementBetweenGeneticProfileOwnerAndInvestor(
         address geneticProfileOwner,
         address investor,
