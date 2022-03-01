@@ -21,7 +21,7 @@ def setup(deployment, const):
 
     # Actions
     gnft_token.mintBatchGNFT(
-        [genetic_owner1], [genetic_profile_id], {"from": gfn_owner1}
+        [genetic_owner1], [genetic_profile_id], True, {"from": gfn_owner1}
     )
 
     # Asserts: LIFEToken Status
@@ -112,7 +112,7 @@ def test_success__burn_gnft__burn_and_mint_again(setup, deployment, const):
 
     # Actions: remint GNFT
     gnft_token.mintBatchGNFT(
-        [genetic_owner1], [genetic_profile_id], {"from": gfn_owner1}
+        [genetic_owner1], [genetic_profile_id], True, {"from": gfn_owner1}
     )
 
     # Asserts: LIFEToken Status
