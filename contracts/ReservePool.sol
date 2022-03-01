@@ -175,7 +175,8 @@ contract ReservePool is
                 // move the _poolInfo to the next slot
                 _poolInfo.firstSlotIndex += 1;
             }
-        } while (remainingRequestedNumberOfLIFE > 0);
+        } while (remainingRequestedNumberOfLIFE > 0
+            && _poolInfo.firstSlotIndex < _poolInfo.lastSlotIndex);
 
         // decrease balance of pool after finding out co-investor
         _poolInfo.balanceOfPool -= requestedNumerOfLIFE;
@@ -248,19 +249,20 @@ contract ReservePool is
         // retrieve PoolInfo by PoolId
         PoolInfo storage _poolInfo = poolInfo[poolId];
 
-        uint256 numberOfLIFETemp = numberOfLIFE;
+        uint256 remainingNumberOfLIFE = numberOfLIFE;
         Slot storage _slot;
         for (uint256 index = _poolInfo.firstSlotIndex; index < _poolInfo.lastSlotIndex; index++) {
             _slot = pools[poolId][index];
             if (_slot.investor == investor) {
-                if (numberOfLIFETemp < _slot.availableNumberOfLIFE) {
-                    _slot.availableNumberOfLIFE -= numberOfLIFETemp;
+                if (remainingNumberOfLIFE < _slot.availableNumberOfLIFE) {
+                    _slot.availableNumberOfLIFE -= remainingNumberOfLIFE;
+                    remainingNumberOfLIFE = 0;
                 } else {
-                    numberOfLIFETemp -= _slot.availableNumberOfLIFE;
+                    remainingNumberOfLIFE -= _slot.availableNumberOfLIFE;
                     _slot.availableNumberOfLIFE = 0;
                 }
 
-                if (numberOfLIFETemp == 0) break;
+                if (remainingNumberOfLIFE == 0) break;
             }
         }
 

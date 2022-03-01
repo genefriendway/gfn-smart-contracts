@@ -16,8 +16,11 @@ def initial_life_treasury_and_pool(deployment, const):
     reserve_pool = deployment[const.RESERVE_POOL]
 
     genetic_owner1 = accounts[3]
-    investor1 = accounts[4]
-    investor2 = accounts[5]
+    investor1 = accounts.add()
+    investor2 = accounts.add()
+    investor3 = accounts.add()
+    investor4 = accounts.add()
+    investor5 = accounts.add()
 
     # mint LIFE to Treasury
     gnft_token.mintBatchGNFT([genetic_owner1], [12345678], {"from": gfn_owner1})
@@ -58,6 +61,36 @@ def initial_life_treasury_and_pool(deployment, const):
     assert life_token.balanceOf(investor_wallet.address) == 350e+18
     assert investor_wallet.getBalanceOfParticipant(investor2.address) == 250e+18
 
+    # Actions: Transfer LIFE token to Investor3
+    gfn_wallet.transferToParticipantWallet(
+        investor_wallet, investor3, 400e+18, {"from": gfn_owner1}
+    )
+
+    assert life_token.balanceOf(life_treasury.address) == 89993334e+18
+    assert life_token.balanceOf(gfn_wallet.address) == 5916e+18
+    assert life_token.balanceOf(investor_wallet.address) == 750e+18
+    assert investor_wallet.getBalanceOfParticipant(investor3.address) == 400e+18
+
+    # Actions: Transfer LIFE token to Investor4
+    gfn_wallet.transferToParticipantWallet(
+        investor_wallet, investor4, 600e+18, {"from": gfn_owner1}
+    )
+
+    assert life_token.balanceOf(life_treasury.address) == 89993334e+18
+    assert life_token.balanceOf(gfn_wallet.address) == 5316e+18
+    assert life_token.balanceOf(investor_wallet.address) == 1350e+18
+    assert investor_wallet.getBalanceOfParticipant(investor4.address) == 600e+18
+
+    # Actions: Transfer LIFE token to Investor5
+    gfn_wallet.transferToParticipantWallet(
+        investor_wallet, investor5, 50e+18, {"from": gfn_owner1}
+    )
+
+    assert life_token.balanceOf(life_treasury.address) == 89993334e+18
+    assert life_token.balanceOf(gfn_wallet.address) == 5266e+18
+    assert life_token.balanceOf(investor_wallet.address) == 1400e+18
+    assert investor_wallet.getBalanceOfParticipant(investor5.address) == 50e+18
+
     # create a pool
     pool_id = 'Pool_ID_1'
     reserve_pool.createPool(pool_id, {"from": gfn_owner1})
@@ -65,5 +98,8 @@ def initial_life_treasury_and_pool(deployment, const):
     return {
         'investor1': investor1,
         'investor2': investor2,
+        'investor3': investor3,
+        'investor4': investor4,
+        'investor5': investor5,
         'pool_id': pool_id
     }
