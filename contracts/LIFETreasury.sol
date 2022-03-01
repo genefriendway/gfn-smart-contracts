@@ -234,6 +234,7 @@ contract LIFETreasury is ILIFETreasury {
         bytes memory data
     )
         public
+        ownerExists(msg.sender)
         returns (uint256 transactionId)
     {
         // create new a transaction request
@@ -320,7 +321,6 @@ contract LIFETreasury is ILIFETreasury {
         notNullAddress(destination)
         returns (uint256 transactionId)
     {
-        transactionCount += 1;
         transactionId = transactionCount;
         transactions[transactionId] = Transaction({
             destination: destination,
@@ -328,6 +328,7 @@ contract LIFETreasury is ILIFETreasury {
             data: data,
             executed: false
         });
+        transactionCount += 1;
         emit SubmitTransaction(transactionId, msg.sender, destination, value, data);
     }
 

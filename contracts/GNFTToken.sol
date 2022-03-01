@@ -70,9 +70,6 @@ contract GNFTToken is
         uint256 geneticProfileId
     )
         internal
-        onlyOwner
-        existLIFEToken
-        existLIFETreasury
     {
         // Mint a new G-NFT token for genetic profile owner
         _safeMint(geneticProfileOwner, geneticProfileId);
@@ -101,6 +98,10 @@ contract GNFTToken is
         existLIFEToken
         existLIFETreasury
     {
+        require(
+            geneticProfileOwners.length == geneticProfileIds.length,
+            "GNFTToken: genetic profile owners and genetic profile ids must be same length"
+        );
         for (uint256 i = 0; i < geneticProfileOwners.length; i++) {
             _mintGNFT(geneticProfileOwners[i], geneticProfileIds[i]);
         }
