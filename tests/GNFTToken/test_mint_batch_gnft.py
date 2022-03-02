@@ -114,9 +114,6 @@ def test_success__mint_batch_gnft__no_approval_gfn_owner(deployment, const):
     # Arranges
     gfn_owner1 = deployment[const.GFN_OWNER1]
     gnft_token = deployment[const.GNFT_TOKEN]
-    life_token = deployment[const.LIFE_TOKEN]
-    life_treasury = deployment[const.LIFE_TREASURY]
-    config = deployment[const.CONFIGURATION]
 
     genetic_profile_id1 = 12345678
     genetic_owner1 = accounts[2]

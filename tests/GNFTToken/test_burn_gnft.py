@@ -78,7 +78,6 @@ def test_success__burn_gnft__gfn_owner_burn_existed_nft(setup, deployment, const
 
 def test_success__burn_gnft__nft_owner_burn_existed_nft(setup, deployment, const):
     # Arranges
-    gfn_owner1 = deployment[const.GFN_OWNER1]
     gnft_token = deployment[const.GNFT_TOKEN]
     life_token = deployment[const.LIFE_TOKEN]
     life_treasury = deployment[const.LIFE_TREASURY]
