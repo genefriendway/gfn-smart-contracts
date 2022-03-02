@@ -120,7 +120,7 @@ contract GNFTToken is
     function burnGNFT(uint256 geneticProfileId) external override {
         require(
             _isApprovedOrOwner(_msgSender(), geneticProfileId),
-            "GNFTToken: transfer caller is not owner nor approved"
+            "GNFTToken: caller is not owner nor approved"
         );
         // Perform burning the genetic profile id
         _burn(geneticProfileId);

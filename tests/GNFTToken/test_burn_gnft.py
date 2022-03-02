@@ -175,7 +175,7 @@ def test_failure__burn_gnft__not_gfn_owner_and_not_approvee(setup, deployment, c
 
     # Actions
     # genetic_owner1 make a transaction to burn their token id
-    with brownie.reverts("GNFTToken: transfer caller is not owner nor approved"):
+    with brownie.reverts("GNFTToken: caller is not owner nor approved"):
         gnft_token.burnGNFT(12345678, {"from": genetic_owner2})
 
 
