@@ -23,7 +23,7 @@ def initial_life_treasury_and_pool(deployment, const):
     investor5 = accounts.add()
 
     # mint LIFE to Treasury
-    gnft_token.mintBatchGNFT([genetic_owner1], [12345678], {"from": gfn_owner1})
+    gnft_token.mintBatchGNFT([genetic_owner1], [12345678], True, {"from": gfn_owner1})
 
     # Actions
     # gfn_owner1 make a transaction to transfer 6666 LIFE to gfn_wallet
