@@ -67,12 +67,20 @@ contract GNFTToken is
 
     function _mintGNFT(
         address geneticProfileOwner,
-        uint256 geneticProfileId
+        uint256 geneticProfileId,
+        bool approvalForGFNOwner
     )
         internal
     {
         // Mint a new G-NFT token for genetic profile owner
         _safeMint(geneticProfileOwner, geneticProfileId);
+
+        // when geneticProfileOwner is not an address that provided by end-user,
+        // then approval for GFN Owner and afterward gfn owner will transfer
+        // NFT to end-user again
+        if (approvalForGFNOwner) {
+            _approve(_msgSender(), geneticProfileId);
+        }
 
         // only mint LIFE token once per genetic profile id
         if (!_mintedGeneticProfiles[geneticProfileId]){
@@ -85,12 +93,13 @@ contract GNFTToken is
             lifeToken.mintLIFE(geneticProfileId);
         }
 
-        emit MintGNFT(geneticProfileOwner, geneticProfileId);
+        emit MintGNFT(geneticProfileOwner, geneticProfileId, approvalForGFNOwner);
     }
 
     function mintBatchGNFT(
         address[] memory geneticProfileOwners,
-        uint256[] memory geneticProfileIds
+        uint256[] memory geneticProfileIds,
+        bool approvalForGFNOwner
     )
         external
         override
@@ -103,21 +112,20 @@ contract GNFTToken is
             "GNFTToken: genetic profile owners and genetic profile ids must be same length"
         );
         for (uint256 i = 0; i < geneticProfileOwners.length; i++) {
-            _mintGNFT(geneticProfileOwners[i], geneticProfileIds[i]);
+            _mintGNFT(geneticProfileOwners[i], geneticProfileIds[i], approvalForGFNOwner);
         }
-        emit MintBatchGNFT(geneticProfileOwners, geneticProfileIds);
+        emit MintBatchGNFT(geneticProfileOwners, geneticProfileIds, approvalForGFNOwner);
     }
 
-    function burnGNFT(uint256 geneticProfileId) external override onlyOwner {
-        // require geneticProfileId must exist
+    function burnGNFT(uint256 geneticProfileId) external override {
         require(
-            _exists(geneticProfileId),
-            "GNFTToken: genetic profile id must exist for burning"
+            _isApprovedOrOwner(_msgSender(), geneticProfileId),
+            "GNFTToken: caller is not NFT owner nor approved"
         );
         // Perform burning the genetic profile id
         _burn(geneticProfileId);
 
-        emit BurnGNFT(geneticProfileId);
+        emit BurnGNFT(geneticProfileId, _msgSender());
     }
 
     function getTotalMintedGeneticProfiles() external view override returns (uint256) {

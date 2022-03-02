@@ -21,7 +21,7 @@ def setup(deployment, const):
     genetic_owner2 = accounts[4]
 
     # mint LIFE to Treasury
-    gnft_token.mintBatchGNFT([genetic_owner1], [12345678], {"from": gfn_owner1})
+    gnft_token.mintBatchGNFT([genetic_owner1], [12345678], True, {"from": gfn_owner1})
 
     # Actions
     # gfn_owner1 make a transaction to transfer 5000 LIFE to genetic_owner2
