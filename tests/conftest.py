@@ -12,7 +12,8 @@ from brownie import (
     GeneFriendNetworkWallet,
     ParticipantWallet,
     ReservePool,
-    RevenueSharingArrangement
+    RevenueSharingArrangement,
+    DataUtilization
 )
 
 from constants import ContractName
@@ -56,6 +57,9 @@ def deployment():
     revenue_sharing_arrangement = RevenueSharingArrangement.deploy(
         gfn_owner1, registry, {'from': gfn_deployer}
     )
+    data_utilization = DataUtilization.deploy(
+        gfn_owner1, registry, {'from': gfn_deployer}
+    )
 
     # add deployed smart contracts to ContractRegistry
     registry.registerContract(Constant.CONFIGURATION, configuration.address, {'from': gfn_owner1})
@@ -70,6 +74,7 @@ def deployment():
     registry.registerContract(Constant.RESERVE_POOL_WALLET, reserve_pool_wallet.address, {'from': gfn_owner1})
     registry.registerContract(Constant.RESERVE_POOL, reserve_pool.address, {'from': gfn_owner1})
     registry.registerContract(Constant.REVENUE_SHARING_ARRANGEMENT, revenue_sharing_arrangement.address, {'from': gfn_owner1})
+    registry.registerContract(Constant.DATA_UTILIZATION, data_utilization.address, {'from': gfn_owner1})
 
     results = {
         Constant.GFN_DEPLOYER: gfn_deployer,
@@ -88,6 +93,7 @@ def deployment():
         Constant.RESERVE_POOL_WALLET: reserve_pool_wallet,
         Constant.RESERVE_POOL: reserve_pool,
         Constant.REVENUE_SHARING_ARRANGEMENT: revenue_sharing_arrangement,
+        Constant.DATA_UTILIZATION: data_utilization,
     }
 
     return results

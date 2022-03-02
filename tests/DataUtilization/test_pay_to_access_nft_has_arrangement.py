@@ -160,7 +160,7 @@ def arrangement_setup(deployment, const):
     }
 
 
-def test_success__distribute_revenue__one_co_investor(
+def test_success__pay_to_access__one_nft_has_one_co_investor(
         deployment, arrangement_setup, const
 ):
     # Arranges
@@ -169,6 +169,7 @@ def test_success__distribute_revenue__one_co_investor(
     gpo_wallet = deployment[const.GENETIC_PROFILE_OWNER_WALLET]
     du_wallet = deployment[const.DATA_UTILIZER_WALLET]
     revenue_sharing = deployment[const.REVENUE_SHARING_ARRANGEMENT]
+    data_utilization = deployment[const.DATA_UTILIZATION]
 
     genetic_owner1 = arrangement_setup['genetic_owner1']
     gnft_token_id1 = arrangement_setup['gnft_token_id1']
@@ -181,13 +182,20 @@ def test_success__distribute_revenue__one_co_investor(
     assert investor_wallet.getBalanceOfParticipant(investor1) == 90e+18
 
     # Actions
-    revenue_sharing.distributeRevenue(
+    tx = data_utilization.payToAccess(
         du_wallet,
         data_utilizer1,
-        gnft_token_id1,
-        10e+18,
+        [gnft_token_id1],
+        [10e+18],
         {'from': gfn_owner1}
     )
+    # Assert: PayToAccess Event
+    assert ('PayToAccess' in tx.events) is True
+    assert tx.events['PayToAccess']['fromParticipantWallet'] == du_wallet.address
+    assert tx.events['PayToAccess']['fromSender'] == data_utilizer1.address
+    assert tx.events['PayToAccess']['receivedTokenIds'] == [gnft_token_id1]
+    assert tx.events['PayToAccess']['receivedLIFEAmounts'] == [10e+18]
+
     # X = 3, Revenue = 10
     # 3 - 100:0  => 3 - 3:0
     # 6 - 80:20  => 3 - 2.4:0.6
@@ -201,7 +209,7 @@ def test_success__distribute_revenue__one_co_investor(
     assert investor_wallet.getBalanceOfParticipant(investor1) == 90e+18 + 7.6e+18
 
 
-def test_success__distribute_revenue__two_co_investors(
+def test_success__pay_to_access__one_nft_has_two_co_investors(
         deployment, arrangement_setup, const
 ):
     # Arranges
@@ -210,6 +218,7 @@ def test_success__distribute_revenue__two_co_investors(
     gpo_wallet = deployment[const.GENETIC_PROFILE_OWNER_WALLET]
     du_wallet = deployment[const.DATA_UTILIZER_WALLET]
     revenue_sharing = deployment[const.REVENUE_SHARING_ARRANGEMENT]
+    data_utilization = deployment[const.DATA_UTILIZATION]
 
     genetic_owner2 = arrangement_setup['genetic_owner2']
     gnft_token_id2 = arrangement_setup['gnft_token_id2']
@@ -224,11 +233,11 @@ def test_success__distribute_revenue__two_co_investors(
     assert investor_wallet.getBalanceOfParticipant(investor2) == 165e+18
 
     # Actions
-    tx = revenue_sharing.distributeRevenue(
+    tx = data_utilization.payToAccess(
         du_wallet,
         data_utilizer1,
-        gnft_token_id2,
-        12e+18,
+        [gnft_token_id2],
+        [12e+18],
         {'from': gfn_owner1}
     )
     # X = 18, Revenue = 12
@@ -250,9 +259,10 @@ def test_success__distribute_revenue__two_co_investors(
     assert total_distributed_revenue == 12e+18 - 0
 
     assert investor_wallet.getBalanceOfParticipant(investor1) == 90 * 10 ** 18 + 4666666666666666666
+    assert investor_wallet.getBalanceOfParticipant(investor2) == 165 * 10 ** 18 + (12 * 10 ** 18 - 4666666666666666666)
 
 
-def test_success__distribute_revenue__three_co_investors(
+def test_success__pay_to_access__one_nft_has_three_co_investors(
         deployment, arrangement_setup, const
 ):
     # Arranges
@@ -261,6 +271,7 @@ def test_success__distribute_revenue__three_co_investors(
     gpo_wallet = deployment[const.GENETIC_PROFILE_OWNER_WALLET]
     du_wallet = deployment[const.DATA_UTILIZER_WALLET]
     revenue_sharing = deployment[const.REVENUE_SHARING_ARRANGEMENT]
+    data_utilization = deployment[const.DATA_UTILIZATION]
 
     genetic_owner3 = arrangement_setup['genetic_owner3']
     gnft_token_id3 = arrangement_setup['gnft_token_id3']
@@ -277,11 +288,11 @@ def test_success__distribute_revenue__three_co_investors(
     assert investor_wallet.getBalanceOfParticipant(investor4) == 350e+18
 
     # Actions
-    tx = revenue_sharing.distributeRevenue(
+    tx = data_utilization.payToAccess(
         du_wallet,
         data_utilizer1,
-        gnft_token_id3,
-        140e+18,
+        [gnft_token_id3],
+        [140e+18],
         {'from': gfn_owner1}
     )
 
@@ -302,3 +313,52 @@ def test_success__distribute_revenue__three_co_investors(
     assert gpo_wallet.getBalanceOfParticipant(genetic_owner3) == 11e+18 + 12e+18
     assert total_distributed_revenue == 140e+18 - (11e+18 + 12e+18)
     assert investor_wallet.getBalanceOfParticipant(investor2) == 216054545454545454545
+
+
+def test_success__pay_to_access__two_nft(
+        deployment, arrangement_setup, const
+):
+    # Arranges
+    gfn_owner1 = deployment[const.GFN_OWNER1]
+    investor_wallet = deployment[const.INVESTOR_WALLET]
+    gpo_wallet = deployment[const.GENETIC_PROFILE_OWNER_WALLET]
+    du_wallet = deployment[const.DATA_UTILIZER_WALLET]
+    revenue_sharing = deployment[const.REVENUE_SHARING_ARRANGEMENT]
+    data_utilization = deployment[const.DATA_UTILIZATION]
+
+    genetic_owner3 = arrangement_setup['genetic_owner3']
+    gnft_token_id2 = arrangement_setup['gnft_token_id2']
+    gnft_token_id3 = arrangement_setup['gnft_token_id3']
+    data_utilizer1 = arrangement_setup['data_utilizer1']
+    investor1 = arrangement_setup['investor1']
+    investor2 = arrangement_setup['investor2']
+    investor3 = arrangement_setup['investor3']
+    investor4 = arrangement_setup['investor4']
+
+    # Asserts before actions
+    assert revenue_sharing.queryTotalAccumulatedRevenueByTokenId(gnft_token_id3) == 0
+    assert gpo_wallet.getBalanceOfParticipant(genetic_owner3) == 0
+    assert investor_wallet.getBalanceOfParticipant(investor1) == 90e+18
+    assert investor_wallet.getBalanceOfParticipant(investor2) == 165e+18
+    assert investor_wallet.getBalanceOfParticipant(investor3) == 276e+18
+    assert investor_wallet.getBalanceOfParticipant(investor4) == 350e+18
+
+    # Actions
+    tx = data_utilization.payToAccess(
+        du_wallet,
+        data_utilizer1,
+        [gnft_token_id2, gnft_token_id3],
+        [12e+18, 140e+18],
+        {'from': gfn_owner1}
+    )
+
+    # Calculate total distributed revenue
+    total_distributed_revenue = 0
+    for event in tx.events['DistributeRevenueToInvestor']:
+        total_distributed_revenue += event['revenue']
+
+    assert total_distributed_revenue == 140e+18 + 12e+18 - (11e+18 + 12e+18)
+
+    assert investor_wallet.getBalanceOfParticipant(investor1) == 90 * 10 ** 18 + 4666666666666666666
+    assert revenue_sharing.queryTotalAccumulatedRevenueByTokenId(gnft_token_id3) == 140e+18
+    assert gpo_wallet.getBalanceOfParticipant(genetic_owner3) == 11e+18 + 12e+18
