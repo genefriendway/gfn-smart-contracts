@@ -302,5 +302,3 @@ def test_success__distribute_revenue__three_co_investors(
     assert gpo_wallet.getBalanceOfParticipant(genetic_owner3) == 11e+18 + 12e+18
     assert total_distributed_revenue == 140e+18 - (11e+18 + 12e+18)
     assert investor_wallet.getBalanceOfParticipant(investor2) == 216054545454545454545
-    # assert investor_wallet.getBalanceOfParticipant(investor3) ==
-    # assert investor_wallet.getBalanceOfParticipant(investor4) ==
