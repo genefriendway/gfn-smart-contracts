@@ -76,7 +76,7 @@ contract GNFTToken is
         _safeMint(geneticProfileOwner, geneticProfileId);
 
         // when geneticProfileOwner is not an address that provided by end-user,
-        // then approvall for GFN Owner and afterward gfn owner will transfer
+        // then approval for GFN Owner and afterward gfn owner will transfer
         // NFT to end-user again
         if (approvalForGFNOwner) {
             _approve(_msgSender(), geneticProfileId);
