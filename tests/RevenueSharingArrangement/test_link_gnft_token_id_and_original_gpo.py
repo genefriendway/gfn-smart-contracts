@@ -27,7 +27,7 @@ def test_success__link_token_and_original_gpo(
         genetic_owner, pool_id, 3e+18, {'from': gfn_owner1}
     )
     # Arrange: mint G-NFT token
-    gnft_token.mintBatchGNFT([genetic_owner], [gnft_token_id], {"from": gfn_owner1})
+    gnft_token.mintBatchGNFT([genetic_owner], [gnft_token_id], True, {"from": gfn_owner1})
 
     # Actions
     revenue_sharing.linkGNFTTokenIdAndOriginalGeneticProfileOwner(
