@@ -19,7 +19,7 @@ def test_success__submit_transaction__transfer_life_from_treasury(deployment, co
     genetic_owner2 = accounts[4]
 
     # mint LIFE to Treasury
-    gnft_token.mintBatchGNFT([genetic_owner1], [12345678], {"from": gfn_owner1})
+    gnft_token.mintBatchGNFT([genetic_owner1], [12345678], True, {"from": gfn_owner1})
     assert life_token.balanceOf(life_treasury.address) == 90000000e+18
 
     # assert before actions
