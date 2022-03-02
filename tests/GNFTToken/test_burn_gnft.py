@@ -51,6 +51,7 @@ def test_success__burn_gnft__gfn_owner_burn_existed_nft(setup, deployment, const
     # Assert: BurnGNFT Event
     assert ('BurnGNFT' in tx.events) is True
     assert tx.events['BurnGNFT']['geneticProfileId'] == genetic_profile_id
+    assert tx.events['BurnGNFT']['burnedBy'] == gfn_owner1.address
 
     # Assert: Approval Event
     assert ('Approval' in tx.events) is True
@@ -73,7 +74,6 @@ def test_success__burn_gnft__gfn_owner_burn_existed_nft(setup, deployment, const
 
     # Asserts: LIFEToken Status
     assert life_token.balanceOf(life_treasury) == 90000000e+18
-
 
 
 def test_success__burn_gnft__nft_owner_burn_existed_nft(setup, deployment, const):
@@ -99,6 +99,7 @@ def test_success__burn_gnft__nft_owner_burn_existed_nft(setup, deployment, const
     # Assert: BurnGNFT Event
     assert ('BurnGNFT' in tx.events) is True
     assert tx.events['BurnGNFT']['geneticProfileId'] == genetic_profile_id
+    assert tx.events['BurnGNFT']['burnedBy'] == genetic_owner1.address
 
     # Assert: Approval Event
     assert ('Approval' in tx.events) is True
@@ -175,7 +176,7 @@ def test_failure__burn_gnft__not_gfn_owner_and_not_approvee(setup, deployment, c
 
     # Actions
     # genetic_owner1 make a transaction to burn their token id
-    with brownie.reverts("GNFTToken: caller is not owner nor approved"):
+    with brownie.reverts("GNFTToken: caller is not NFT owner nor approved"):
         gnft_token.burnGNFT(12345678, {"from": genetic_owner2})
 
 
