@@ -117,11 +117,10 @@ contract GNFTToken is
         emit MintBatchGNFT(geneticProfileOwners, geneticProfileIds, approvalForGFNOwner);
     }
 
-    function burnGNFT(uint256 geneticProfileId) external override onlyOwner {
-        // require geneticProfileId must exist
+    function burnGNFT(uint256 geneticProfileId) external override {
         require(
-            _exists(geneticProfileId),
-            "GNFTToken: genetic profile id must exist for burning"
+            _isApprovedOrOwner(_msgSender(), geneticProfileId),
+            "GNFTToken: transfer caller is not owner nor approved"
         );
         // Perform burning the genetic profile id
         _burn(geneticProfileId);
