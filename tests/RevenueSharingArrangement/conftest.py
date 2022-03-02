@@ -29,6 +29,7 @@ def initial_life_treasury_and_pool(deployment, const):
     gnft_token.mintBatchGNFT(
         [genetic_owner1, genetic_owner2],
         [gnft_token_id1, gnft_token_id2],
+        True,
         {"from": gfn_owner1}
     )
 
