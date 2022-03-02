@@ -216,7 +216,7 @@ contract RevenueSharingArrangement is
         uint256 newRevenue,
         uint256 gnftTokenId
     )
-        private onlyOwner
+        private
     {
         IConfiguration config = IConfiguration(_getConfigurationAddress(registry));
         uint256 remainingNotDistributedRevenue = newRevenue;
@@ -306,7 +306,7 @@ contract RevenueSharingArrangement is
         uint256 revenue,
         uint256 byNFTTokenId
     )
-        private onlyOwner
+        private
     {
         IParticipantWallet wallet = IParticipantWallet(fromParticipantWallet);
         wallet.transferToAnotherParticipantWallet(
