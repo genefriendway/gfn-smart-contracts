@@ -12,6 +12,7 @@ import "./mixins/GNFTTokenRetriever.sol";
 import "./mixins/GeneticProfileOwnerWalletRetriever.sol";
 import "./mixins/InvestorWalletRetriever.sol";
 import "./mixins/ConfigurationRetriever.sol";
+import "./mixins/DataUtilizationRetriever.sol";
 import "./GNFTToken.sol";
 
 
@@ -22,7 +23,8 @@ contract RevenueSharingArrangement is
     GNFTTokenRetriever,
     GeneticProfileOwnerWalletRetriever,
     InvestorWalletRetriever,
-    ConfigurationRetriever
+    ConfigurationRetriever,
+    DataUtilizationRetriever
 {
 
     IContractRegistry public registry;
@@ -45,6 +47,14 @@ contract RevenueSharingArrangement is
         require(
             _msgSender() == _getReservePoolAddress(registry),
             "RevenueSharingArrangement: caller must be reserve pool contract"
+        );
+        _;
+    }
+
+    modifier onlyGFNOwnerOrDataUtilization() {
+        require(
+            _msgSender() == owner() || _msgSender() == _getDataUtilizationAddress(registry),
+            "RevenueSharingArrangement: caller must be GFN Owner or DataUtilization contract"
         );
         _;
     }
@@ -168,7 +178,7 @@ contract RevenueSharingArrangement is
         uint256 revenue
     )
         external
-        onlyOwner
+        onlyGFNOwnerOrDataUtilization
         validRevenue(revenue)
     {
         // retrieve current genetic profile owner
