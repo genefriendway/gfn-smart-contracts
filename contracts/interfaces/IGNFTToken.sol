@@ -6,17 +6,20 @@ interface IGNFTToken {
 
     event MintGNFT(
         address indexed geneticProfileOwner,
-        uint256 geneticProfileId
+        uint256 geneticProfileId,
+        bool approvalForGFNOwner
     );
     event MintBatchGNFT(
         address[] geneticProfileOwners,
-        uint256[] geneticProfileIds
+        uint256[] geneticProfileIds,
+        bool approvalForGFNOwner
     );
-    event BurnGNFT(uint256 geneticProfileId);
+    event BurnGNFT(uint256 geneticProfileId, address indexed burnedBy);
 
     function mintBatchGNFT(
         address[] memory geneticProfileOwners,
-        uint256[] memory geneticProfileIds
+        uint256[] memory geneticProfileIds,
+        bool approvalForGFNOwner
     ) external;
 
     function burnGNFT(uint256 geneticProfileId) external;

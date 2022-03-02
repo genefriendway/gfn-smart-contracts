@@ -31,11 +31,20 @@ def test_success__add_owner(deployment, const):
         life_treasury.address, 0, calldata, {"from": gfn_owner1}
     )
     transaction_id = tx.events['SubmitTransaction']['transactionId']
+    assert transaction_id == 0
     assert life_treasury.isConfirmedTransaction(transaction_id) is False
+    assert life_treasury.getConfirmationCount(transaction_id) == 1
+    assert life_treasury.getTransactionCount(True, False) == 1
+    assert life_treasury.getTransactionCount(False, True) == 0
+    assert life_treasury.getTransactionCount(True, True) == 1
 
     # Action: gnf_owner2 confirm the request
     life_treasury.confirmTransaction(transaction_id, {"from": gfn_owner2})
     assert life_treasury.isConfirmedTransaction(transaction_id) is True
+    assert life_treasury.getConfirmationCount(transaction_id) == 2
+    assert life_treasury.getTransactionCount(True, False) == 0
+    assert life_treasury.getTransactionCount(False, True) == 1
+    assert life_treasury.getTransactionCount(True, True) == 1
 
     # assert: after adding one more owner
     owners = life_treasury.getOwners()

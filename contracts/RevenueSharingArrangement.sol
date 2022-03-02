@@ -12,6 +12,7 @@ import "./mixins/GNFTTokenRetriever.sol";
 import "./mixins/GeneticProfileOwnerWalletRetriever.sol";
 import "./mixins/InvestorWalletRetriever.sol";
 import "./mixins/ConfigurationRetriever.sol";
+import "./mixins/DataUtilizationRetriever.sol";
 import "./GNFTToken.sol";
 
 
@@ -22,7 +23,8 @@ contract RevenueSharingArrangement is
     GNFTTokenRetriever,
     GeneticProfileOwnerWalletRetriever,
     InvestorWalletRetriever,
-    ConfigurationRetriever
+    ConfigurationRetriever,
+    DataUtilizationRetriever
 {
 
     IContractRegistry public registry;
@@ -45,6 +47,14 @@ contract RevenueSharingArrangement is
         require(
             _msgSender() == _getReservePoolAddress(registry),
             "RevenueSharingArrangement: caller must be reserve pool contract"
+        );
+        _;
+    }
+
+    modifier onlyGFNOwnerOrDataUtilization() {
+        require(
+            _msgSender() == owner() || _msgSender() == _getDataUtilizationAddress(registry),
+            "RevenueSharingArrangement: caller must be GFN Owner or DataUtilization contract"
         );
         _;
     }
@@ -168,7 +178,7 @@ contract RevenueSharingArrangement is
         uint256 revenue
     )
         external
-        onlyOwner
+        onlyGFNOwnerOrDataUtilization
         validRevenue(revenue)
     {
         // retrieve current genetic profile owner
@@ -190,16 +200,22 @@ contract RevenueSharingArrangement is
                 fromSender,
                 arrangement,
                 currentGeneticProfileOwner,
-                revenue
+                revenue,
+                gnftTokenId
             );
         } else {
             _distributeRevenueToGeneticProfileOwner(
                 fromParticipantWallet,
                 fromSender,
                 currentGeneticProfileOwner,
-                revenue
+                revenue,
+                gnftTokenId
             );
         }
+
+        emit DistributeRevenue(
+            fromParticipantWallet, fromSender, gnftTokenId, revenue
+        );
     }
 
     function _distributeRevenueByArrangement(
@@ -207,9 +223,10 @@ contract RevenueSharingArrangement is
         address fromSender,
         Arrangement storage arrangement,
         address currentGeneticProfileOwner,
-        uint256 newRevenue
+        uint256 newRevenue,
+        uint256 gnftTokenId
     )
-        private onlyOwner
+        private
     {
         IConfiguration config = IConfiguration(_getConfigurationAddress(registry));
         uint256 remainingNotDistributedRevenue = newRevenue;
@@ -228,18 +245,29 @@ contract RevenueSharingArrangement is
 
             // check and distribute revenue to investors
             if (revenueOfInvestors > 0) {
+                uint256 totalCalculatedRevenue = 0;
+
                 for(uint256 index; index < arrangement.investors.length; index++) {
+
                     address investor = arrangement.investors[index];
-                    // retrieve number of invested LIFE of a investor
-                    uint256 investedLIFEOfSpecificInvestor = arrangement.investedLIFEOfInvestors[investor];
+
                     // calculate revenue of each investor depend on their invested LIFE
-                    uint256 calculatedRevenue = revenueOfInvestors * investedLIFEOfSpecificInvestor / arrangement.totalInvestedLIFEOfInvestors;
+                    uint256 calculatedRevenue = revenueOfInvestors * arrangement.investedLIFEOfInvestors[investor] / arrangement.totalInvestedLIFEOfInvestors;
+
+                    // Handle precision loss for the last investor
+                    if (index == arrangement.investors.length - 1) {
+                        calculatedRevenue = revenueOfInvestors - totalCalculatedRevenue;
+                    } else {
+                        totalCalculatedRevenue += calculatedRevenue;
+                    }
+
                     // transfer LIFE to investor wallet
                     _distributeRevenueToInvestor(
                         fromParticipantWallet,
                         fromSender,
                         investor,
-                        calculatedRevenue
+                        calculatedRevenue,
+                        gnftTokenId
                     );
                 }
             }
@@ -250,7 +278,8 @@ contract RevenueSharingArrangement is
                     fromParticipantWallet,
                     fromSender,
                     currentGeneticProfileOwner,
-                    revenueOfGPO
+                    revenueOfGPO,
+                    gnftTokenId
                 );
             }
             // increase more Accumulated Revenue
@@ -262,9 +291,10 @@ contract RevenueSharingArrangement is
         address fromParticipantWallet,
         address fromSender,
         address toGeneticProfileOwner,
-        uint256 revenue
+        uint256 revenue,
+        uint256 byNFTTokenId
     )
-        private onlyOwner
+        private
     {
         IParticipantWallet wallet = IParticipantWallet(fromParticipantWallet);
         wallet.transferToAnotherParticipantWallet(
@@ -273,15 +303,20 @@ contract RevenueSharingArrangement is
             toGeneticProfileOwner,
             revenue
         );
+
+        emit DistributeRevenueToGeneticProfileOwner(
+            fromParticipantWallet, fromSender, toGeneticProfileOwner, revenue, byNFTTokenId
+        );
     }
 
     function _distributeRevenueToInvestor(
         address fromParticipantWallet,
         address fromSender,
         address toInvestor,
-        uint256 revenue
+        uint256 revenue,
+        uint256 byNFTTokenId
     )
-        private onlyOwner
+        private
     {
         IParticipantWallet wallet = IParticipantWallet(fromParticipantWallet);
         wallet.transferToAnotherParticipantWallet(
@@ -289,6 +324,9 @@ contract RevenueSharingArrangement is
             _getInvestorWalletAddress(registry),
             toInvestor,
             revenue
+        );
+        emit DistributeRevenueToInvestor(
+            fromParticipantWallet, fromSender, toInvestor, revenue, byNFTTokenId
         );
     }
 

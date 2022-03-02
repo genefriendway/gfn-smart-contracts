@@ -63,12 +63,8 @@ contract LIFEToken is
         }
     }
 
-    function burnLIFE(uint256 amount) external override onlyOwner {
+    function burnLIFE(uint256 amount) external override {
         address accountToBurn = _msgSender();
-        require(
-            balanceOf(accountToBurn) >= amount,
-            "LIFEToken: burn amount exceeds balance"
-        );
         _burn(accountToBurn, amount);
         emit BurnLIFE(accountToBurn, amount);
     }
