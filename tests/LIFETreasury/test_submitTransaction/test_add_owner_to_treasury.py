@@ -1,9 +1,15 @@
+import pytest
 import brownie
 
 from brownie import (
     accounts,
     LIFETreasury
 )
+
+
+@pytest.fixture(autouse=True)
+def isolation(fn_isolation):
+    pass
 
 
 def test_success__add_owner(deployment, const):
@@ -25,11 +31,20 @@ def test_success__add_owner(deployment, const):
         life_treasury.address, 0, calldata, {"from": gfn_owner1}
     )
     transaction_id = tx.events['SubmitTransaction']['transactionId']
+    assert transaction_id == 0
     assert life_treasury.isConfirmedTransaction(transaction_id) is False
+    assert life_treasury.getConfirmationCount(transaction_id) == 1
+    assert life_treasury.getTransactionCount(True, False) == 1
+    assert life_treasury.getTransactionCount(False, True) == 0
+    assert life_treasury.getTransactionCount(True, True) == 1
 
     # Action: gnf_owner2 confirm the request
     life_treasury.confirmTransaction(transaction_id, {"from": gfn_owner2})
     assert life_treasury.isConfirmedTransaction(transaction_id) is True
+    assert life_treasury.getConfirmationCount(transaction_id) == 2
+    assert life_treasury.getTransactionCount(True, False) == 0
+    assert life_treasury.getTransactionCount(False, True) == 1
+    assert life_treasury.getTransactionCount(True, True) == 1
 
     # assert: after adding one more owner
     owners = life_treasury.getOwners()
@@ -39,7 +54,7 @@ def test_success__add_owner(deployment, const):
     assert owners[2] == gfn_owner3
 
 
-def test_failed__add_owner__not_treasury_call(deployment, const):
+def test_failure__add_owner__not_treasury_call(deployment, const):
     # Arranges
     gfn_owner1 = deployment[const.GFN_OWNER1]
     gfn_owner2 = deployment[const.GFN_OWNER2]
@@ -57,7 +72,7 @@ def test_failed__add_owner__not_treasury_call(deployment, const):
     assert owners[1] == gfn_owner2
 
 
-def test_failed__add_owner__null_owner_address(deployment, const):
+def test_failure__add_owner__null_owner_address(deployment, const):
     # Arranges
     gfn_owner1 = deployment[const.GFN_OWNER1]
     gfn_owner2 = deployment[const.GFN_OWNER2]
@@ -82,7 +97,7 @@ def test_failed__add_owner__null_owner_address(deployment, const):
     assert owners[1] == gfn_owner2
 
 
-def test_failed__add_owner__existed_owner_address(deployment, const):
+def test_failure__add_owner__existed_owner_address(deployment, const):
     # Arranges
     gfn_owner1 = deployment[const.GFN_OWNER1]
     gfn_owner2 = deployment[const.GFN_OWNER2]
@@ -108,7 +123,7 @@ def test_failed__add_owner__existed_owner_address(deployment, const):
     assert owners[1] == gfn_owner2
 
 
-def test_failed__add_owner__exceed_max_owner(deployment, const):
+def test_failure__add_owner__exceed_max_owner(deployment, const):
     # Arranges
     gfn_owner1 = accounts[0]
     gfn_owner2 = accounts[1]

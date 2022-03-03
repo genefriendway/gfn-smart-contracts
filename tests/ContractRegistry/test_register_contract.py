@@ -1,4 +1,11 @@
+import pytest
 import brownie
+from brownie import accounts
+
+
+@pytest.fixture(autouse=True)
+def isolation(fn_isolation):
+    pass
 
 
 def test_success__register_contract(registry_deployment, const):
@@ -14,7 +21,14 @@ def test_success__register_contract(registry_deployment, const):
     assert gnft_name == ''
 
     # Actions
-    registry.registerContract('AnyName', gnft_token.address, {"from": gfn_owner1})
+    tx = registry.registerContract(
+        'AnyName', gnft_token.address, {"from": gfn_owner1}
+    )
+
+    # Assert: RegisterContract Event
+    assert ('RegisterContract' in tx.events) is True
+    assert tx.events['RegisterContract']['name'] == 'AnyName'
+    assert tx.events['RegisterContract']['_address'] == gnft_token.address
 
     # # Asserts: after registering Contract
     gnft_address = registry.getContractAddress('AnyName')
@@ -23,7 +37,7 @@ def test_success__register_contract(registry_deployment, const):
     assert gnft_name == 'AnyName'
 
 
-def test_failed__register_contract__empty_contract_name(registry_deployment, const):
+def test_failure__register_contract__empty_contract_name(registry_deployment, const):
     # Arranges
     gfn_owner1 = registry_deployment[const.GFN_OWNER1]
     registry = registry_deployment[const.REGISTRY]
@@ -34,7 +48,7 @@ def test_failed__register_contract__empty_contract_name(registry_deployment, con
         registry.registerContract('', gnft_token.address, {"from": gfn_owner1})
 
 
-def test_failed__register_contract__duplicated_contract_name(registry_deployment, const):
+def test_failure__register_contract__duplicated_contract_name(registry_deployment, const):
     # Arranges
     gfn_owner1 = registry_deployment[const.GFN_OWNER1]
     registry = registry_deployment[const.REGISTRY]
@@ -53,7 +67,7 @@ def test_failed__register_contract__duplicated_contract_name(registry_deployment
         )
 
 
-def test_failed__register_contract__empty_address(registry_deployment, const):
+def test_failure__register_contract__empty_address(registry_deployment, const):
     # Arranges
     gfn_owner1 = registry_deployment[const.GFN_OWNER1]
     registry = registry_deployment[const.REGISTRY]
@@ -65,7 +79,7 @@ def test_failed__register_contract__empty_address(registry_deployment, const):
         )
 
 
-def test_failed__register_contract__duplicated_contract_address(registry_deployment, const):
+def test_failure__register_contract__duplicated_contract_address(registry_deployment, const):
     # Arranges
     gfn_owner1 = registry_deployment[const.GFN_OWNER1]
     registry = registry_deployment[const.REGISTRY]
@@ -80,4 +94,20 @@ def test_failed__register_contract__duplicated_contract_address(registry_deploym
     with brownie.reverts('ContractRegistry: contract address is registered'):
         registry.registerContract(
             'LIFEContract', gnft_token.address, {"from": gfn_owner1}
+        )
+
+
+def test_failure__register_contract__not_owner_make_transaction(
+        registry_deployment, const
+):
+    # Arranges
+    registry = registry_deployment[const.REGISTRY]
+    gnft_token = registry_deployment[const.GNFT_TOKEN]
+
+    fake_owner = accounts.add()
+
+    # Actions
+    with brownie.reverts('Ownable: caller is not the owner'):
+        registry.registerContract(
+            'AnyName', gnft_token.address, {"from": fake_owner}
         )

@@ -1,10 +1,14 @@
-import brownie
 import pytest
 
 from brownie import (
     accounts,
     LIFETreasury
 )
+
+
+@pytest.fixture(autouse=True)
+def isolation(fn_isolation):
+    pass
 
 
 def test_success__submit_transaction__remove_owner_from_treasury(const):

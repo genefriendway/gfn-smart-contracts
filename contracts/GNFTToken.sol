@@ -1,31 +1,49 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.11;
 
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./interfaces/IGNFTToken.sol";
 import "./interfaces/ILIFEToken.sol";
 import "./interfaces/IContractRegistry.sol";
+import "./interfaces/IConfiguration.sol";
 import "./mixins/LIFETokenRetriever.sol";
+import "./mixins/LIFETreasuryRetriever.sol";
+import "./mixins/ConfigurationRetriever.sol";
 
 
-contract GNFTToken is ERC721, Ownable, IGNFTToken, LIFETokenRetriever{
+contract GNFTToken is
+    Ownable,
+    ERC721Enumerable,
+    IGNFTToken, 
+    LIFETokenRetriever,
+    LIFETreasuryRetriever,
+    ConfigurationRetriever
+{
 
     IContractRegistry public registry;
     // Mapping: genetic Profile Id => ever minted or not
     // This mapping tracks genetic profile of Customer that has been ever minted
     // this mapping only incrementally
-    mapping(string => bool) mintedGeneticProfiles;
+    mapping(uint256 => bool) private _mintedGeneticProfiles;
     uint256 private _totalMintedGeneticProfiles;
 
-    // Total number of current tokens that will be changed when minting or burning
-    uint256 private _totalCurrentTokens;
+    // ===== Modifiers =======
+    modifier existLIFEToken() {
+        address lifeTokenAddress = _getLIFETokenAddress(registry);
+        require(
+            lifeTokenAddress != address(0),
+            "GNFTToken: Please register LIFEToken on ContractRegistry"
+        );
+        _;
+    }
 
     // ===== Modifiers =======
-    modifier notNullGeneticProfileId(string memory geneticProfileId) {
+    modifier existLIFETreasury() {
+        address lifeTreasuryAddress = _getLIFETreasuryAddress(registry);
         require(
-            bytes(geneticProfileId).length > 0,
-            "GNFTToken: genetic profile id must not be null"
+            lifeTreasuryAddress != address(0),
+            "GNFTToken: Please register LIFETreasury on ContractRegistry"
         );
         _;
     }
@@ -42,55 +60,75 @@ contract GNFTToken is ERC721, Ownable, IGNFTToken, LIFETokenRetriever{
         transferOwnership(gfnOwner);
     }
 
-    function mintGNFT(
+    function _baseURI() internal view override returns (string memory) {
+        IConfiguration config = IConfiguration(_getConfigurationAddress(registry));
+        return config.getBaseGNFTTokenURI();
+    }
+
+    function _mintGNFT(
         address geneticProfileOwner,
-        string memory geneticProfileId,
-        uint256 geneticDataId
+        uint256 geneticProfileId,
+        bool approvalForGFNOwner
     )
-        public
-        override
-        onlyOwner
-        notNullGeneticProfileId(geneticProfileId)
+        internal
     {
         // Mint a new G-NFT token for genetic profile owner
-        _safeMint(geneticProfileOwner, geneticDataId);
-        // increase total current tokens by one
-        _totalCurrentTokens += 1;
+        _safeMint(geneticProfileOwner, geneticProfileId);
+
+        // when geneticProfileOwner is not an address that provided by end-user,
+        // then approval for GFN Owner and afterward gfn owner will transfer
+        // NFT to end-user again
+        if (approvalForGFNOwner) {
+            _approve(_msgSender(), geneticProfileId);
+        }
 
         // only mint LIFE token once per genetic profile id
-        if (!mintedGeneticProfiles[geneticProfileId]){
+        if (!_mintedGeneticProfiles[geneticProfileId]){
             // increase total minted genetic profiles by one
             _totalMintedGeneticProfiles += 1;
             // track genetic profile that was minted G-NFT
-            mintedGeneticProfiles[geneticProfileId] = true;
+            _mintedGeneticProfiles[geneticProfileId] = true;
             // When a new G-NFT Token is minted => some of LIFE token also are minted
             ILIFEToken lifeToken = ILIFEToken(_getLIFETokenAddress(registry));
-            lifeToken.mintLIFE(geneticProfileId, geneticDataId);
+            lifeToken.mintLIFE(geneticProfileId);
         }
 
-        emit MintGNFT(geneticProfileOwner, geneticProfileId, geneticDataId);
+        emit MintGNFT(geneticProfileOwner, geneticProfileId, approvalForGFNOwner);
     }
 
-    function burnGNFT(uint256 geneticDataId) public override onlyOwner {
-        // require geneticDataId must exist
+    function mintBatchGNFT(
+        address[] memory geneticProfileOwners,
+        uint256[] memory geneticProfileIds,
+        bool approvalForGFNOwner
+    )
+        external
+        override
+        onlyOwner
+        existLIFEToken
+        existLIFETreasury
+    {
         require(
-            _exists(geneticDataId),
-            "GNFTToken: genetic data id must exist for burning"
+            geneticProfileOwners.length == geneticProfileIds.length,
+            "GNFTToken: genetic profile owners and genetic profile ids must be same length"
         );
-        // Perform burning the genetic data id
-        _burn(geneticDataId);
-        // decrease total current tokens by one
-        _totalCurrentTokens -= 1;
+        for (uint256 i = 0; i < geneticProfileOwners.length; i++) {
+            _mintGNFT(geneticProfileOwners[i], geneticProfileIds[i], approvalForGFNOwner);
+        }
+        emit MintBatchGNFT(geneticProfileOwners, geneticProfileIds, approvalForGFNOwner);
+    }
 
-        emit BurnGNFT(geneticDataId);
+    function burnGNFT(uint256 geneticProfileId) external override {
+        require(
+            _isApprovedOrOwner(_msgSender(), geneticProfileId),
+            "GNFTToken: caller is not NFT owner nor approved"
+        );
+        // Perform burning the genetic profile id
+        _burn(geneticProfileId);
+
+        emit BurnGNFT(geneticProfileId, _msgSender());
     }
 
     function getTotalMintedGeneticProfiles() external view override returns (uint256) {
         return _totalMintedGeneticProfiles;
     }
-
-    function getTotalCurrentTokens() external view override returns (uint256) {
-        return _totalCurrentTokens;
-    }
-
 }

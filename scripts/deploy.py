@@ -8,6 +8,7 @@ from brownie import (
     GNFTToken,
     LIFEToken,
     LIFETreasury,
+    Configuration,
 )
 from constants import ContractName
 
@@ -94,6 +95,25 @@ def deploy_contract_registry():
     return registry
 
 
+def deploy_configuration(registry):
+    print("================== [Deploying Configuration] ==================")
+    configuration = Configuration.deploy(
+        GFN_OWNER_ADDRESS,
+        registry,
+        gfn_deployer_info
+    )
+
+    print("====> [Registering Configuration contract]")
+    registry.registerContract(
+        ContractName.CONFIGURATION, configuration.address, gfn_deployer_info
+    )
+
+    print("====> [Publishing GNFTToken Contract]")
+    Configuration.publish_source(configuration)
+
+    return configuration
+
+
 def deploy_gnft_token(registry):
     print("================== [Deploying GNFTToken] ==================")
     gnft_token = GNFTToken.deploy(
@@ -155,6 +175,7 @@ def deploy_life_treasury(registry):
 def _deployment_flow():
     validate_environment_variables()
     registry = deploy_contract_registry()
+    configuration = deploy_configuration(registry)
     gnft_token = deploy_gnft_token(registry)
     life_token = deploy_life_token(registry)
     life_treasury = deploy_life_treasury(registry)
@@ -166,22 +187,23 @@ def _deployment_flow():
     print(f'=> gfn_deployer: {gfn_deployer}')
     print(f'=> gfn_owner: {GFN_OWNER_ADDRESS}')
     print(f"=> ContractRegistry Address: {registry.address}")
+    print(f"=> Configuration Address: {configuration.address}")
     print(f"=> GNFTToken Address: {gnft_token.address}")
     print(f"=> LIFEToken Address: {life_token.address}")
     print(f"=> LIFETreasury Address: {life_treasury.address}")
     print("================================")
 
 
-def local():
+def env_local():
     load_dotenv('.env.local')
     _deployment_flow()
 
 
-def nightly():
+def env_nightly():
     load_dotenv('.env.nightly')
     _deployment_flow()
 
 
-def production():
+def env_production():
     load_dotenv('.env.production')
     _deployment_flow()

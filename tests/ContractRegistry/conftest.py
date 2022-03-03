@@ -11,7 +11,7 @@ from brownie import (
 )
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture(scope="module")
 def registry_deployment(const):
     gfn_deployer = accounts[0]
     gfn_owner1 = accounts[1]
