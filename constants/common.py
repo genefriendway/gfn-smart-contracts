@@ -11,3 +11,6 @@ class ContractName:
     LAB_SERVICE_PROVIDER_WALLET = 'LabServiceProviderWallet'
     REPORT_SERVICE_PROVIDER_WALLET = 'ReportServiceProviderWallet'
     DATA_UTILIZER_WALLET = 'DataUtilizerWallet'
+    RESERVE_POOL = 'ReservePool'
+    RESERVE_POOL_WALLET = 'ReservePoolWallet'
+    REVENUE_SHARING_ARRANGEMENT = 'RevenueSharingArrangement'

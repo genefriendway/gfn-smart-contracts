@@ -24,11 +24,21 @@ contract Configuration is Ownable, IConfiguration {
     mapping(uint256 => GNFTRange) private tableOfMintingLIFE;
     uint256 private totalGNFTRanges = 18;
     // ==== END - Properties for minting LIFE TOKEN ==========
+    
+    // ==== START - Properties for Distribution Revenue ==========
+    struct RevenueRatio {
+        uint256 percentageForInvestor;
+        uint256 percentageForGeneticProfileOwner;
+    }
+    // index => RevenueRatio
+    mapping(uint256 => RevenueRatio) private revenueRatios;
+    // ==== END - Properties for Distribution Revenue ==========
 
 
     constructor(address gfnOwner, IContractRegistry _registry) {
         registry = _registry;
         _initializeTableOfMintingLIFE();
+        _setupDistributionRatios();
         transferOwnership(gfnOwner);
     }
 
@@ -83,7 +93,68 @@ contract Configuration is Ownable, IConfiguration {
         tableOfMintingLIFE[16] = GNFTRange(10**15 + 1, 10**16, 10**10);
         tableOfMintingLIFE[17] = GNFTRange(10**16 + 1, 10**17, 10**9);
     }
+    
+    function _setupDistributionRatios() private {
+        revenueRatios[0] = RevenueRatio(100, 0);
+        revenueRatios[1] = RevenueRatio(80, 20);
+        revenueRatios[2] = RevenueRatio(60, 40);
+        revenueRatios[3] = RevenueRatio(40, 60);
+        revenueRatios[4] = RevenueRatio(20, 80);
+    }
 
+    function getRevenueDistributionRanges(
+        uint256 totalInvestedLIFEOfInvestors
+    )
+        internal view returns (uint256[3][5] memory)
+    {
+        uint256[3][5] memory revenueDistributionRanges;
+        for(uint256 index = 0; index <= 4; index++) {
+            uint256[3] memory ranges;
+            // first position: revenue milestone
+            ranges[0] = totalInvestedLIFEOfInvestors * (index + 1);
+            // second position: percentage of revenue belong to investors
+            ranges[1] = revenueRatios[index].percentageForInvestor;
+            // third position: percentage of revenue belong to GPO
+            ranges[2] = revenueRatios[index].percentageForGeneticProfileOwner;
 
+            revenueDistributionRanges[index] = ranges;
+        }
+        return revenueDistributionRanges;
+    }
 
+    function getRevenueDistributionRatios(
+        uint256 totalInvestedLIFEOfInvestors,
+        uint256 totalAccumulatedRevenue,
+        uint256 newRevenue
+    )
+        external view returns (uint256[4] memory)
+    {
+        // return [remainingNewRevenue, distributedRevenue, % of Investor, % of GPO]
+
+        uint256[3][5] memory revenueDistributionRanges = getRevenueDistributionRanges(
+            totalInvestedLIFEOfInvestors
+        );
+
+        for(uint256 index = 0; index <= 4; index++) {
+            uint256[3] memory ranges = revenueDistributionRanges[index];
+            uint256 milestoneRevenue = ranges[0];
+            if (totalAccumulatedRevenue < milestoneRevenue) {
+                uint256 revenueToFillUpMilestone = milestoneRevenue - totalAccumulatedRevenue;
+                uint256 distributedRevenue;
+                uint256 remainingNewRevenue;
+
+                if (newRevenue <= revenueToFillUpMilestone) {
+                    distributedRevenue = newRevenue;
+                    remainingNewRevenue = 0;
+                } else {
+                    distributedRevenue = revenueToFillUpMilestone;
+                    remainingNewRevenue = newRevenue - revenueToFillUpMilestone;
+                }
+                return [remainingNewRevenue, distributedRevenue, ranges[1], ranges[2]];
+            }
+        }
+        // if total Accumulated Revenue went through all milestones
+        // => always keep ratio 20 % (investor) - 80 % (GPO)
+        return [0, newRevenue, 20, 80];
+    }
 }
