@@ -14,10 +14,11 @@ import "./mixins/RevenueSharingArrangementRetriever.sol";
 import "./mixins/InvestorWalletRetriever.sol";
 import "./mixins/ReservePoolWalletRetriever.sol";
 import "./mixins/GeneFriendNetworkWalletRetriever.sol";
+import "./mixins/AccessibleRegistry.sol";
 
 
 contract ReservePool is
-    Ownable,
+    AccessibleRegistry,
     IReservePool,
     RevenueSharingArrangementRetriever,
     InvestorWalletRetriever,
@@ -26,7 +27,6 @@ contract ReservePool is
 {
 
     using SafeERC20 for IERC20;
-    IContractRegistry public registry;
 
     uint8 private maxLengthPoolId = 128;
     // poolId -> index -> Slot struct
@@ -52,14 +52,16 @@ contract ReservePool is
         _;
     }
 
-    constructor(address gfnOwner, IContractRegistry _registry) {
-        registry = _registry;
-        transferOwnership(gfnOwner);
-    }
+    constructor(IContractRegistry _registry) AccessibleRegistry(_registry){}
 
     function createPool(
         string memory poolId
-    ) external override onlyOwner validPoolId(poolId) {
+    )
+        external
+        override
+        onlyGFNOperator
+        validPoolId(poolId)
+    {
         // retrieve poolInfo of Pool,
         // if not existing pool => system will initialize by default values
         PoolInfo storage _poolInfo = poolInfo[poolId];
@@ -77,7 +79,12 @@ contract ReservePool is
         address investor,
         string memory poolId,
         uint256 numberOfLIFE
-    ) external override onlyOwner activePoolId(poolId) {
+    )
+        external
+        override
+        onlyGFNOperator
+        activePoolId(poolId)
+    {
         // validate: number of LIFE that investor want to invest into the pool
         require(
             numberOfLIFE > 0,
@@ -121,7 +128,12 @@ contract ReservePool is
         address geneticProfileOwner,
         string memory requestedPoolId,
         uint256 requestedNumerOfLIFE
-    ) external override onlyOwner activePoolId(requestedPoolId) {
+    )
+        external
+        override
+        onlyGFNOperator
+        activePoolId(requestedPoolId)
+    {
         // retrieve PoolInfo by PoolId
         PoolInfo storage _poolInfo = poolInfo[requestedPoolId];
 
@@ -214,7 +226,12 @@ contract ReservePool is
         address investor,
         string memory poolId,
         uint256 exitedNumberOfLIFE
-    ) external override onlyOwner activePoolId(poolId) {
+    )
+        external
+        override
+        onlyGFNOperator
+        activePoolId(poolId)
+    {
         uint256 currentNumberOfLIFE = balanceOfInvestors[investor][poolId];
         require(
             exitedNumberOfLIFE > 0,

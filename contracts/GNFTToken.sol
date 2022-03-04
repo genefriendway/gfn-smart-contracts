@@ -10,18 +10,18 @@ import "./interfaces/IConfiguration.sol";
 import "./mixins/LIFETokenRetriever.sol";
 import "./mixins/LIFETreasuryRetriever.sol";
 import "./mixins/ConfigurationRetriever.sol";
+import "./mixins/AccessibleRegistry.sol";
 
 
 contract GNFTToken is
-    Ownable,
     ERC721Enumerable,
-    IGNFTToken, 
+    IGNFTToken,
+    AccessibleRegistry,
     LIFETokenRetriever,
     LIFETreasuryRetriever,
     ConfigurationRetriever
 {
 
-    IContractRegistry public registry;
     // Mapping: genetic Profile Id => ever minted or not
     // This mapping tracks genetic profile of Customer that has been ever minted
     // this mapping only incrementally
@@ -49,16 +49,13 @@ contract GNFTToken is
     }
 
     constructor(
-        address gfnOwner,
         IContractRegistry _registry,
         string memory name,
         string memory symbol
     )
+        AccessibleRegistry(_registry)
         ERC721(name, symbol)
-    {
-        registry = _registry;
-        transferOwnership(gfnOwner);
-    }
+    {}
 
     function _baseURI() internal view override returns (string memory) {
         IConfiguration config = IConfiguration(_getConfigurationAddress(registry));
@@ -103,7 +100,7 @@ contract GNFTToken is
     )
         external
         override
-        onlyOwner
+        onlyGFNOperator
         existLIFEToken
         existLIFETreasury
     {

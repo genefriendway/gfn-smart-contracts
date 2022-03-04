@@ -14,11 +14,12 @@ import "./mixins/InvestorWalletRetriever.sol";
 import "./mixins/ConfigurationRetriever.sol";
 import "./mixins/DataUtilizationRetriever.sol";
 import "./GNFTToken.sol";
+import "./mixins/AccessibleRegistry.sol";
 
 
 contract RevenueSharingArrangement is
-    Ownable,
     IRevenueSharingArrangement,
+    AccessibleRegistry,
     ReservePoolRetriever,
     GNFTTokenRetriever,
     GeneticProfileOwnerWalletRetriever,
@@ -26,8 +27,6 @@ contract RevenueSharingArrangement is
     ConfigurationRetriever,
     DataUtilizationRetriever
 {
-
-    IContractRegistry public registry;
 
     struct Arrangement {
         address originalGeneticProfileOwner;
@@ -45,15 +44,15 @@ contract RevenueSharingArrangement is
 
     modifier onlyReservePool() {
         require(
-            _msgSender() == _getReservePoolAddress(registry),
+            msg.sender == _getReservePoolAddress(registry),
             "RevenueSharingArrangement: caller must be reserve pool contract"
         );
         _;
     }
 
-    modifier onlyGFNOwnerOrDataUtilization() {
+    modifier onlyGFNOperatorOrDataUtilization() {
         require(
-            _msgSender() == owner() || _msgSender() == _getDataUtilizationAddress(registry),
+            checkSenderIsGFNOperator()|| msg.sender == _getDataUtilizationAddress(registry),
             "RevenueSharingArrangement: caller must be GFN Owner or DataUtilization contract"
         );
         _;
@@ -109,10 +108,7 @@ contract RevenueSharingArrangement is
         _;
     }
 
-    constructor(address gfnOwner, IContractRegistry _registry) {
-        registry = _registry;
-        transferOwnership(gfnOwner);
-    }
+    constructor(IContractRegistry _registry) AccessibleRegistry(_registry){}
 
     function makeArrangementBetweenGeneticProfileOwnerAndInvestor(
         address originalGeneticProfileOwner,
@@ -150,7 +146,7 @@ contract RevenueSharingArrangement is
         address originalGeneticProfileOwner
     )
         external
-        onlyOwner
+        onlyGFNOperator
         validGeneticProfileOwner(originalGeneticProfileOwner)
         existedArrangement(originalGeneticProfileOwner)
         notLinkFromTokenIdToOriginalOwner(gnftTokenId)
@@ -178,7 +174,7 @@ contract RevenueSharingArrangement is
         uint256 revenue
     )
         external
-        onlyGFNOwnerOrDataUtilization
+        onlyGFNOperatorOrDataUtilization
         validRevenue(revenue)
     {
         // retrieve current genetic profile owner

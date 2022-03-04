@@ -4,11 +4,10 @@ pragma solidity 0.8.11;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./interfaces/IContractRegistry.sol";
 import "./interfaces/IConfiguration.sol";
+import "./mixins/AccessibleRegistry.sol";
 
 
-contract Configuration is Ownable, IConfiguration {
-
-    IContractRegistry public registry;
+contract Configuration is IConfiguration, AccessibleRegistry {
 
     // ==== START - Properties for G-NFT TokenURI ==========
     string private baseGNFTTokenURI = "";
@@ -35,16 +34,18 @@ contract Configuration is Ownable, IConfiguration {
     // ==== END - Properties for Distribution Revenue ==========
 
 
-    constructor(address gfnOwner, IContractRegistry _registry) {
-        registry = _registry;
+    constructor(
+        IContractRegistry _registry
+    )
+        AccessibleRegistry(_registry)
+    {
         _initializeTableOfMintingLIFE();
         _setupDistributionRatios();
-        transferOwnership(gfnOwner);
     }
 
     function setBaseGNFTTokenURI(
         string memory uri
-    ) external onlyOwner {
+    ) external onlyGFNOperator {
         require(
             bytes(uri).length > 0,
             "Configuration: base G-NFT token URI must be not empty"

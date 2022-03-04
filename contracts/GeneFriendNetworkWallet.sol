@@ -8,25 +8,24 @@ import "./interfaces/IContractRegistry.sol";
 import "./interfaces/IParticipantWallet.sol";
 import "./interfaces/IGeneFriendNetworkWallet.sol";
 import "./mixins/LIFETokenRetriever.sol";
+import "./mixins/AccessibleRegistry.sol";
 
 
 contract GeneFriendNetworkWallet is
     IGeneFriendNetworkWallet,
-    Ownable,
+    AccessibleRegistry,
     LIFETokenRetriever
 {
     using SafeERC20 for IERC20;
-    IContractRegistry public registry;
 
-    constructor(address gfnOwner, IContractRegistry _registry) {
-        registry = _registry;
-        transferOwnership(gfnOwner);
-    }
+    constructor(IContractRegistry _registry) AccessibleRegistry(_registry) {}
 
     function transfer(
         address receiver,
         uint256 amount
-    ) external override onlyOwner {
+    )
+        external override onlyGFNOperator
+    {
         // validate: must have enough balance of wallet
         require(
             getBalanceOfWallet() >= amount,
@@ -40,7 +39,9 @@ contract GeneFriendNetworkWallet is
         address participantWallet,
         address receiver,
         uint256 amount
-    ) external override onlyOwner {
+    )
+        external override onlyGFNOperator
+    {
         // validate: must have enough balance of wallet
         require(
             getBalanceOfWallet() >= amount,
