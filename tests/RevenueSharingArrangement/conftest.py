@@ -8,6 +8,7 @@ def initial_life_treasury_and_pool(deployment, const):
     # Arranges
     gfn_owner1 = deployment[const.GFN_OWNER1]
     gfn_owner2 = deployment[const.GFN_OWNER2]
+    gfn_operator = deployment[const.GFN_OPERATOR]
     gnft_token = deployment[const.GNFT_TOKEN]
     life_treasury = deployment[const.LIFE_TREASURY]
     life_token = deployment[const.LIFE_TOKEN]
@@ -30,7 +31,7 @@ def initial_life_treasury_and_pool(deployment, const):
         [genetic_owner1, genetic_owner2],
         [gnft_token_id1, gnft_token_id2],
         True,
-        {"from": gfn_owner1}
+        {"from": gfn_operator}
     )
 
     # Actions
@@ -50,7 +51,7 @@ def initial_life_treasury_and_pool(deployment, const):
 
     # Actions: Transfer LIFE token to Investor1
     gfn_wallet.transferToParticipantWallet(
-        investor_wallet, investor1, 100e+18, {"from": gfn_owner1}
+        investor_wallet, investor1, 100e+18, {"from": gfn_operator}
     )
 
     assert life_token.balanceOf(gfn_wallet.address) == 6566e+18
@@ -59,12 +60,12 @@ def initial_life_treasury_and_pool(deployment, const):
 
     # Actions: Transfer LIFE token to Investor2
     gfn_wallet.transferToParticipantWallet(
-        investor_wallet, investor2, 250e+18, {"from": gfn_owner1}
+        investor_wallet, investor2, 250e+18, {"from": gfn_operator}
     )
 
     # Actions: Transfer LIFE token to DataUtilizer1
     gfn_wallet.transferToParticipantWallet(
-        du_wallet, data_utilizer1, 300e+18, {"from": gfn_owner1}
+        du_wallet, data_utilizer1, 300e+18, {"from": gfn_operator}
     )
 
     assert life_token.balanceOf(gfn_wallet.address) == 6016e+18
@@ -75,9 +76,9 @@ def initial_life_treasury_and_pool(deployment, const):
 
     # create a pool
     pool_id = 'Pool_ID_1'
-    reserve_pool.createPool(pool_id, {"from": gfn_owner1})
+    reserve_pool.createPool(pool_id, {"from": gfn_operator})
     # investor 1 join the pool
-    reserve_pool.joinPool(investor1, pool_id, 12e+18, {'from': gfn_owner1})
+    reserve_pool.joinPool(investor1, pool_id, 12e+18, {"from": gfn_operator})
 
     return {
         'genetic_owner1': genetic_owner1,

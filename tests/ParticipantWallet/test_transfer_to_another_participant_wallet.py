@@ -12,7 +12,7 @@ def test_success__transfer_to_another_participant_wallet__amount_less_than_balan
         deployment, initial_life_treasury, const
 ):
     # Arranges
-    gfn_owner1 = deployment[const.GFN_OWNER1]
+    gfn_operator = deployment[const.GFN_OPERATOR]
     life_token = deployment[const.LIFE_TOKEN]
     gpo_wallet = deployment[const.GENETIC_PROFILE_OWNER_WALLET]
     du_wallet = deployment[const.DATA_UTILIZER_WALLET]
@@ -27,7 +27,7 @@ def test_success__transfer_to_another_participant_wallet__amount_less_than_balan
 
     # Action: transfer LIFE to another participant wallet
     gpo_wallet.transferToAnotherParticipantWallet(
-        genetic_owner2, du_wallet, genetic_owner3, 5e+18, {"from": gfn_owner1}
+        genetic_owner2, du_wallet, genetic_owner3, 5e+18, {"from": gfn_operator}
     )
 
     # Asserts after transferring
@@ -41,7 +41,7 @@ def test_success__transfer_to_another_participant_wallet__amount_equal_to_balanc
         deployment, initial_life_treasury, const
 ):
     # Arranges
-    gfn_owner1 = deployment[const.GFN_OWNER1]
+    gfn_operator = deployment[const.GFN_OPERATOR]
     life_token = deployment[const.LIFE_TOKEN]
     gpo_wallet = deployment[const.GENETIC_PROFILE_OWNER_WALLET]
     du_wallet = deployment[const.DATA_UTILIZER_WALLET]
@@ -56,7 +56,7 @@ def test_success__transfer_to_another_participant_wallet__amount_equal_to_balanc
 
     # Action: transfer LIFE to another participant wallet
     gpo_wallet.transferToAnotherParticipantWallet(
-        genetic_owner2, du_wallet, genetic_owner3, 24e+18, {"from": gfn_owner1}
+        genetic_owner2, du_wallet, genetic_owner3, 24e+18, {"from": gfn_operator}
     )
 
     # Asserts after transferring
@@ -99,7 +99,7 @@ def test_failure__transfer_to_another_participant_wallet__amount_greater_than_ba
         deployment, initial_life_treasury, const
 ):
     # Arranges
-    gfn_owner1 = deployment[const.GFN_OWNER1]
+    gfn_operator = deployment[const.GFN_OPERATOR]
     life_token = deployment[const.LIFE_TOKEN]
     gpo_wallet = deployment[const.GENETIC_PROFILE_OWNER_WALLET]
     du_wallet = deployment[const.DATA_UTILIZER_WALLET]
@@ -116,7 +116,7 @@ def test_failure__transfer_to_another_participant_wallet__amount_greater_than_ba
     with brownie.reverts("ParticipantWallet: sender has not enough amount to "
                          "send to another participant wallet"):
         gpo_wallet.transferToAnotherParticipantWallet(
-            genetic_owner2, du_wallet, genetic_owner3, 25e+18, {"from": gfn_owner1}
+            genetic_owner2, du_wallet, genetic_owner3, 25e+18, {"from": gfn_operator}
         )
 
     # Asserts after transferring

@@ -15,7 +15,7 @@ def test_success__initialize_contract(const):
 
     # deploy LIFE Treasury contract
     life_treasury = LIFETreasury.deploy(
-        [gfn_owner1, gfn_owner2, gfn_owner3], 3, {'from': gfn_owner1}
+        [gfn_owner1, gfn_owner2, gfn_owner3], 3, {"from": gfn_owner1}
     )
 
     # assert: before adding one more owner

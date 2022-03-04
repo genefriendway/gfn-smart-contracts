@@ -10,9 +10,8 @@ def isolation(fn_isolation):
 
 @pytest.fixture(scope="module")
 def pool_setup(deployment, initial_life_treasury_and_pool, const):
-    gfn_owner1 = deployment[const.GFN_OWNER1]
+    gfn_operator = deployment[const.GFN_OPERATOR]
     life_token = deployment[const.LIFE_TOKEN]
-    gfn_wallet = deployment[const.GENE_FRIEND_NETWORK_WALLET]
     reserve_pool = deployment[const.RESERVE_POOL]
     reserve_pool_wallet = deployment[const.RESERVE_POOL_WALLET]
     investor_wallet = deployment[const.INVESTOR_WALLET]
@@ -25,16 +24,16 @@ def pool_setup(deployment, initial_life_treasury_and_pool, const):
     pool_id = initial_life_treasury_and_pool['pool_id']
 
     # Arrange data for pool
-    reserve_pool.joinPool(investor1, pool_id, 12e+18, {'from': gfn_owner1})
-    reserve_pool.joinPool(investor2, pool_id, 50e+18, {'from': gfn_owner1})
-    reserve_pool.joinPool(investor1, pool_id, 10e+18, {'from': gfn_owner1})
-    reserve_pool.joinPool(investor2, pool_id, 30e+18, {'from': gfn_owner1})
-    reserve_pool.joinPool(investor3, pool_id, 30e+18, {'from': gfn_owner1})
-    reserve_pool.joinPool(investor1, pool_id, 60e+18, {'from': gfn_owner1})
-    reserve_pool.joinPool(investor4, pool_id, 80e+18, {'from': gfn_owner1})
-    reserve_pool.joinPool(investor4, pool_id, 80e+18, {'from': gfn_owner1})
-    reserve_pool.joinPool(investor3, pool_id, 150e+18, {'from': gfn_owner1})
-    reserve_pool.joinPool(investor5, pool_id, 50e+18, {'from': gfn_owner1})
+    reserve_pool.joinPool(investor1, pool_id, 12e+18, {"from": gfn_operator})
+    reserve_pool.joinPool(investor2, pool_id, 50e+18, {"from": gfn_operator})
+    reserve_pool.joinPool(investor1, pool_id, 10e+18, {"from": gfn_operator})
+    reserve_pool.joinPool(investor2, pool_id, 30e+18, {"from": gfn_operator})
+    reserve_pool.joinPool(investor3, pool_id, 30e+18, {"from": gfn_operator})
+    reserve_pool.joinPool(investor1, pool_id, 60e+18, {"from": gfn_operator})
+    reserve_pool.joinPool(investor4, pool_id, 80e+18, {"from": gfn_operator})
+    reserve_pool.joinPool(investor4, pool_id, 80e+18, {"from": gfn_operator})
+    reserve_pool.joinPool(investor3, pool_id, 150e+18, {"from": gfn_operator})
+    reserve_pool.joinPool(investor5, pool_id, 50e+18, {"from": gfn_operator})
 
     assert reserve_pool.getBalanceOfInvestor(investor1, pool_id) == 82e+18
     assert reserve_pool.getBalanceOfInvestor(investor2, pool_id) == 80e+18
@@ -63,7 +62,7 @@ def test_success__exit_pool__exited_life_eq_total_available_life_of_investor(
         deployment, initial_life_treasury_and_pool, pool_setup, const
 ):
     # Arranges
-    gfn_owner1 = deployment[const.GFN_OWNER1]
+    gfn_operator = deployment[const.GFN_OPERATOR]
     life_token = deployment[const.LIFE_TOKEN]
     gfn_wallet = deployment[const.GENE_FRIEND_NETWORK_WALLET]
     reserve_pool = deployment[const.RESERVE_POOL]
@@ -75,7 +74,7 @@ def test_success__exit_pool__exited_life_eq_total_available_life_of_investor(
 
     # Actions: request co-investors
     reserve_pool.exitPool(
-        investor5, pool_id, 50e+18, {'from': gfn_owner1}
+        investor5, pool_id, 50e+18, {"from": gfn_operator}
     )
 
     # Asserts: ReversePool status
@@ -95,7 +94,7 @@ def test_success__exit_pool__exited_life_lt_total_available_life_of_investor(
         deployment, initial_life_treasury_and_pool, pool_setup, const
 ):
     # Arranges
-    gfn_owner1 = deployment[const.GFN_OWNER1]
+    gfn_operator = deployment[const.GFN_OPERATOR]
     life_token = deployment[const.LIFE_TOKEN]
     gfn_wallet = deployment[const.GENE_FRIEND_NETWORK_WALLET]
     reserve_pool = deployment[const.RESERVE_POOL]
@@ -107,7 +106,7 @@ def test_success__exit_pool__exited_life_lt_total_available_life_of_investor(
 
     # Actions: request co-investors
     reserve_pool.exitPool(
-        investor1, pool_id, 7e+18, {'from': gfn_owner1}
+        investor1, pool_id, 7e+18, {"from": gfn_operator}
     )
 
     # Asserts: ReversePool status

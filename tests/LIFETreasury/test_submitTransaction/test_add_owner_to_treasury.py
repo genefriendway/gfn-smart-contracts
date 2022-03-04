@@ -136,7 +136,7 @@ def test_failure__add_owner__exceed_max_owner(deployment, const):
     life_treasury = LIFETreasury.deploy(
         [gfn_owner1, gfn_owner2, gfn_owner3, gfn_owner4],
         2,
-        {'from': gfn_owner1}
+        {"from": gfn_owner1}
     )
 
     # assert: before adding one more owner

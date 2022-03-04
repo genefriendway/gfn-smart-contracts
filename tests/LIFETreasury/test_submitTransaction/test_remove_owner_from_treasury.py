@@ -19,7 +19,7 @@ def test_success__submit_transaction__remove_owner_from_treasury(const):
 
     # deploy LIFE Treasury contract
     life_treasury = LIFETreasury.deploy(
-        [gfn_owner1, gfn_owner2, gfn_owner3], 2, {'from': gfn_owner1}
+        [gfn_owner1, gfn_owner2, gfn_owner3], 2, {"from": gfn_owner1}
     )
 
     # assert: before adding one more owner

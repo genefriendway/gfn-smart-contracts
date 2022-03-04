@@ -9,7 +9,7 @@ def isolation(fn_isolation):
 
 def test_success__set_base_gnft_token_uri(deployment, const):
     # Arranges
-    gfn_owner1 = deployment[const.GFN_OWNER1]
+    gfn_operator = deployment[const.GFN_OPERATOR]
     config = deployment[const.CONFIGURATION]
 
     # Asserts: before actions
@@ -17,7 +17,7 @@ def test_success__set_base_gnft_token_uri(deployment, const):
 
     # Actions
     tx = config.setBaseGNFTTokenURI(
-        'https://genetica.asis/gnft/', {"from": gfn_owner1}
+        'https://genetica.asis/gnft/', {"from": gfn_operator}
     )
 
     # Assert: SetBaseGNFTTokenURI Event
@@ -28,7 +28,7 @@ def test_success__set_base_gnft_token_uri(deployment, const):
     assert config.getBaseGNFTTokenURI() == "https://genetica.asis/gnft/"
 
     # Actions: continue settings
-    tx = config.setBaseGNFTTokenURI('abc-xyz', {"from": gfn_owner1})
+    tx = config.setBaseGNFTTokenURI('abc-xyz', {"from": gfn_operator})
 
     # Assert: SetBaseGNFTTokenURI Event
     assert ('SetBaseGNFTTokenURI' in tx.events) is True
@@ -41,6 +41,7 @@ def test_success__set_base_gnft_token_uri(deployment, const):
 def test_failure__set_base_gnft_token_uri(deployment, const):
     # Arranges
     gfn_owner1 = deployment[const.GFN_OWNER1]
+    gfn_operator = deployment[const.GFN_OPERATOR]
     config = deployment[const.CONFIGURATION]
 
     # Asserts: before actions
@@ -48,6 +49,6 @@ def test_failure__set_base_gnft_token_uri(deployment, const):
 
     # Actions
     with brownie.reverts("Configuration: base G-NFT token URI must be not empty"):
-        config.setBaseGNFTTokenURI('', {"from": gfn_owner1})
+        config.setBaseGNFTTokenURI('', {"from": gfn_operator})
 
     assert config.getBaseGNFTTokenURI() == ""
