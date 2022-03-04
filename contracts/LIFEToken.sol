@@ -2,7 +2,6 @@
 pragma solidity 0.8.11;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
 import "./interfaces/IContractRegistry.sol";
 import "./interfaces/IConfiguration.sol";
 import "./interfaces/ILIFEToken.sol";
