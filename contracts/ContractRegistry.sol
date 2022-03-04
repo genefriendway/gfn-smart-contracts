@@ -116,8 +116,8 @@ contract ContractRegistry is Ownable, IContractRegistry {
         registeredContractName(name)
         registeredContractAddress(_address)
     {
-        _nameToAddress[name] = address(0);
-        _addressToName[_address] = "";
+        delete _nameToAddress[name];
+        delete _addressToName[_address];
         emit RemoveContract(name, _address);
     }
 
