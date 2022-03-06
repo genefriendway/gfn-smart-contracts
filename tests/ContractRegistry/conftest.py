@@ -7,7 +7,6 @@ from brownie import (
     ContractRegistry,
     GNFTToken,
     LIFEToken,
-    LIFETreasury
 )
 
 

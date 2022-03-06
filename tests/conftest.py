@@ -8,7 +8,7 @@ from brownie import (
     Configuration,
     GNFTToken,
     LIFEToken,
-    LIFETreasury,
+    MultiSignature,
     GeneFriendNetworkWallet,
     ParticipantWallet,
     ReservePool,
@@ -43,7 +43,7 @@ def deployment():
     configuration = Configuration.deploy(gfn_owner1, registry, {"from": gfn_deployer})
     gnft_token = GNFTToken.deploy(registry, "GNFT", "GNFT", {"from": gfn_deployer})
     life_token = LIFEToken.deploy(registry, "LIFE", "LIFE", {"from": gfn_deployer})
-    life_treasury = LIFETreasury.deploy([gfn_owner1, gfn_owner2], 2, {"from": gfn_deployer})
+    life_treasury = MultiSignature.deploy([gfn_owner1, gfn_owner2], 2, {"from": gfn_deployer})
     # GeneFriendNetwork Wallet
     gfn_wallet = GeneFriendNetworkWallet.deploy(registry, {"from": gfn_deployer})
     gfn_sale_wallet = GeneFriendNetworkWallet.deploy(registry, {"from": gfn_deployer})

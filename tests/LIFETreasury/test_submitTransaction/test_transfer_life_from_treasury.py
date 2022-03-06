@@ -59,7 +59,7 @@ def test_failure__submit_transaction__not_owner_submit_transaction(deployment, c
     # Actions
     # genetic_owner2 make a transaction to transfer 888 LIFE to genetic_owner2
     calldata = life_token.transfer.encode_input(genetic_owner2, 888e+18)
-    with brownie.reverts("LIFETreasury: owner must exist"):
+    with brownie.reverts("MultiSignature: owner must exist"):
         life_treasury.submitTransaction(
             life_token.address, 0, calldata, {"from": genetic_owner2}
         )

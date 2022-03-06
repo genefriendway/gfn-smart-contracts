@@ -7,7 +7,6 @@ from brownie import (
     Configuration,
     GNFTToken,
     LIFEToken,
-    LIFETreasury,
 )
 
 
