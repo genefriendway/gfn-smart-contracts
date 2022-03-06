@@ -18,9 +18,9 @@ contract ParticipantWallet is
 
     mapping(address => uint256) private balancesOfParticipant;
 
-    modifier onlyGFNOperatorOrRegisteredContract() {
+    modifier onlyOperatorOrRegisteredContract() {
         require(
-            checkSenderIsGFNOperator() || registry.isRegisteredContract(msg.sender),
+            checkSenderIsOperator() || registry.isRegisteredContract(msg.sender),
             "ParticipantWallet: caller is not the owner or registered contract"
         );
         _;
@@ -32,7 +32,7 @@ contract ParticipantWallet is
         address sender,
         address receiver,
         uint256 amount
-    ) external override onlyGFNOperatorOrRegisteredContract {
+    ) external override onlyOperatorOrRegisteredContract {
         // validate: must have enough balance of sender
         require(
             balancesOfParticipant[sender] >= amount,
@@ -50,7 +50,7 @@ contract ParticipantWallet is
         address participantWallet,
         address receiver,
         uint256 amount
-    ) external override onlyGFNOperatorOrRegisteredContract {
+    ) external override onlyOperatorOrRegisteredContract {
         // validate: must have enough balance of sender
         require(
             balancesOfParticipant[sender] >= amount,
@@ -72,7 +72,7 @@ contract ParticipantWallet is
         address sender,
         address receiver,
         uint256 amount
-    ) external override onlyGFNOperatorOrRegisteredContract {
+    ) external override onlyOperatorOrRegisteredContract {
         // validate: must have enough balance of sender
         require(
             balancesOfParticipant[sender] >= amount,
@@ -91,7 +91,7 @@ contract ParticipantWallet is
     function receiveFromExternal(
         address receiver,
         uint256 amount
-    ) external override onlyGFNOperatorOrRegisteredContract {
+    ) external override onlyOperatorOrRegisteredContract {
         balancesOfParticipant[receiver] += amount;
         emit ReceiveFromExternal(receiver, amount);
     }

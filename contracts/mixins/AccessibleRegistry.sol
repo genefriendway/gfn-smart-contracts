@@ -2,15 +2,17 @@
 pragma solidity 0.8.11;
 
 import "../interfaces/IContractRegistry.sol";
+import "../interfaces/IConfiguration.sol";
+import "./ConfigurationRetriever.sol";
 
 
-abstract contract AccessibleRegistry {
+abstract contract AccessibleRegistry is ConfigurationRetriever {
     IContractRegistry registry;
 
-    modifier onlyGFNOperator() {
+    modifier onlyOperator() {
         require(
-            checkSenderIsGFNOperator(),
-            "AccessibleRegistry: caller must be GFN Operator"
+            checkSenderIsOperator(),
+            "AccessibleRegistry: caller must be operator"
         );
         _;
     }
@@ -19,8 +21,9 @@ abstract contract AccessibleRegistry {
         registry = _registry;
     }
 
-    function checkSenderIsGFNOperator() internal view returns (bool) {
-        return msg.sender == registry.getGFNOperator(address(this));
+    function checkSenderIsOperator() internal view returns (bool) {
+        IConfiguration config = IConfiguration(_getConfigurationAddress(registry));
+        return msg.sender == config.getOperator(address(this));
     }
 }
 

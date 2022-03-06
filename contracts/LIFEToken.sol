@@ -8,7 +8,6 @@ import "./interfaces/ILIFEToken.sol";
 import "./interfaces/IGNFTToken.sol";
 import "./mixins/GNFTTokenRetriever.sol";
 import "./mixins/LIFETreasuryRetriever.sol";
-import "./mixins/ConfigurationRetriever.sol";
 import "./mixins/AccessibleRegistry.sol";
 
 
@@ -17,8 +16,7 @@ contract LIFEToken is
     ILIFEToken,
     AccessibleRegistry,
     GNFTTokenRetriever,
-    LIFETreasuryRetriever,
-    ConfigurationRetriever
+    LIFETreasuryRetriever
 {
 
     modifier onlyGNFTToken() {

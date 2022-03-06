@@ -1,12 +1,20 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.11;
 
+import "@openzeppelin/contracts/access/Ownable.sol";
 import "./interfaces/IContractRegistry.sol";
 import "./interfaces/IConfiguration.sol";
 import "./mixins/AccessibleRegistry.sol";
 
 
-contract Configuration is IConfiguration, AccessibleRegistry {
+contract Configuration is
+    IConfiguration,
+    Ownable,
+    AccessibleRegistry
+{
+    
+     // mapping from Contract address to GFN Operator
+    mapping(address => address) private operators;
 
     // ==== START - Properties for G-NFT TokenURI ==========
     string private baseGNFTTokenURI = "";
@@ -33,25 +41,65 @@ contract Configuration is IConfiguration, AccessibleRegistry {
     // ==== END - Properties for Distribution Revenue ==========
 
 
+    modifier validContractAddress(address contractAddress) {
+        require(
+            registry.isRegisteredContract(contractAddress),
+            "Configuration: can not set operator for invalid contract address"
+        );
+        _;
+    }
+
+    modifier validNewOperator(address newOperator) {
+        require(
+            newOperator != address(0),
+            "Configuration: new operator must be not empty"
+        );
+        _;
+    }
+
     constructor(
+        address gfnOwner,
         IContractRegistry _registry
     )
         AccessibleRegistry(_registry)
     {
         _initializeTableOfMintingLIFE();
         _setupDistributionRatios();
+        transferOwnership(gfnOwner);
+    }
+    
+    function setOperator(
+        address contractAddress,
+        address newOperator
+    )
+        external
+        override
+        onlyOwner
+        validContractAddress(contractAddress)
+        validNewOperator(newOperator)
+    {
+        address oldOperator = operators[contractAddress];
+        operators[contractAddress] = newOperator;
+        emit SetOperator(contractAddress, oldOperator, operators[contractAddress]);
     }
 
     function setBaseGNFTTokenURI(
-        string memory uri
-    ) external onlyGFNOperator {
+        string memory baseURI
+    ) external onlyOwner {
         require(
-            bytes(uri).length > 0,
+            bytes(baseURI).length > 0,
             "Configuration: base G-NFT token URI must be not empty"
         );
-        baseGNFTTokenURI = uri;
+        baseGNFTTokenURI = baseURI;
 
-        emit SetBaseGNFTTokenURI(uri);
+        emit SetBaseGNFTTokenURI(baseURI);
+    }
+    function getOperator(
+        address contractAddress
+    )
+        external override view returns (address)
+    {
+        return operators[contractAddress];
     }
 
     function getBaseGNFTTokenURI() external view returns (string memory) {

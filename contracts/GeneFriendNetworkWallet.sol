@@ -23,7 +23,7 @@ contract GeneFriendNetworkWallet is
         address receiver,
         uint256 amount
     )
-        external override onlyGFNOperator
+        external override onlyOperator
     {
         // validate: must have enough balance of wallet
         require(
@@ -39,7 +39,7 @@ contract GeneFriendNetworkWallet is
         address receiver,
         uint256 amount
     )
-        external override onlyGFNOperator
+        external override onlyOperator
     {
         // validate: must have enough balance of wallet
         require(

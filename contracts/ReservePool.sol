@@ -58,7 +58,7 @@ contract ReservePool is
     )
         external
         override
-        onlyGFNOperator
+        onlyOperator
         validPoolId(poolId)
     {
         // retrieve poolInfo of Pool,
@@ -81,7 +81,7 @@ contract ReservePool is
     )
         external
         override
-        onlyGFNOperator
+        onlyOperator
         activePoolId(poolId)
     {
         // validate: number of LIFE that investor want to invest into the pool
@@ -130,7 +130,7 @@ contract ReservePool is
     )
         external
         override
-        onlyGFNOperator
+        onlyOperator
         activePoolId(requestedPoolId)
     {
         // retrieve PoolInfo by PoolId
@@ -228,7 +228,7 @@ contract ReservePool is
     )
         external
         override
-        onlyGFNOperator
+        onlyOperator
         activePoolId(poolId)
     {
         uint256 currentNumberOfLIFE = balanceOfInvestors[investor][poolId];

@@ -11,17 +11,6 @@ contract ContractRegistry is Ownable, IContractRegistry {
     mapping(string => address) private _nameToAddress;
     // mapping from Contract address to Contract Name
     mapping(address => string) private _addressToName;
-    // mapping from Contract address to GFN Operator
-    mapping(address => address) private _gfnOperators;
-
-
-    modifier validNewGFNOperator(address newGFNOperator) {
-        require(
-            newGFNOperator != address(0),
-            "ContractRegistry: new GFN operator must be not empty"
-        );
-        _;
-    }
 
     modifier registeredContractName(string memory name) {
         require(
@@ -75,21 +64,6 @@ contract ContractRegistry is Ownable, IContractRegistry {
         transferOwnership(gfnOwner);
     }
 
-    function setGFNOperator(
-        address contractAddress,
-        address newGFNOperator
-    )
-        external
-        override
-        onlyOwner
-        registeredContractAddress(contractAddress)
-        validNewGFNOperator(newGFNOperator)
-    {
-        address oldGFNOperator = _gfnOperators[contractAddress];
-        _gfnOperators[contractAddress] = newGFNOperator;
-        emit SetGFNOperator(oldGFNOperator, _gfnOperators[contractAddress]);
-    }
-
     function registerContract(
         string memory name,
         address _address
@@ -119,14 +93,6 @@ contract ContractRegistry is Ownable, IContractRegistry {
         delete _nameToAddress[name];
         delete _addressToName[_address];
         emit RemoveContract(name, _address);
-    }
-
-    function getGFNOperator(
-        address contractAddress
-    )
-        external override view returns (address)
-    {
-        return _gfnOperators[contractAddress];
     }
 
     function isRegisteredContract(

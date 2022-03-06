@@ -22,7 +22,7 @@ contract DataUtilization is
         uint256[] memory receivedTokenIds,
         uint256[] memory receivedLIFEAmounts
     )
-        external onlyGFNOperator
+        external onlyOperator
     {
         require(
             receivedTokenIds.length == receivedLIFEAmounts.length,

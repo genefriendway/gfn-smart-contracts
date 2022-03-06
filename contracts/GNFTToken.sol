@@ -8,7 +8,6 @@ import "./interfaces/IContractRegistry.sol";
 import "./interfaces/IConfiguration.sol";
 import "./mixins/LIFETokenRetriever.sol";
 import "./mixins/LIFETreasuryRetriever.sol";
-import "./mixins/ConfigurationRetriever.sol";
 import "./mixins/AccessibleRegistry.sol";
 
 
@@ -17,8 +16,7 @@ contract GNFTToken is
     IGNFTToken,
     AccessibleRegistry,
     LIFETokenRetriever,
-    LIFETreasuryRetriever,
-    ConfigurationRetriever
+    LIFETreasuryRetriever
 {
 
     // Mapping: genetic Profile Id => ever minted or not
@@ -99,7 +97,7 @@ contract GNFTToken is
     )
         external
         override
-        onlyGFNOperator
+        onlyOperator
         existLIFEToken
         existLIFETreasury
     {
