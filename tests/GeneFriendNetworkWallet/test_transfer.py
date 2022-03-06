@@ -85,7 +85,7 @@ def test_success__transfer_to_another_gfn_wallet__not_gfn_owner_make_transaction
     assert life_token.balanceOf(gfn_sale_wallet) == 0
 
     # Actions
-    with brownie.reverts("AccessibleRegistry: caller must be GFN Operator"):
+    with brownie.reverts("AccessibleRegistry: caller must be operator"):
         gfn_wallet.transfer(gfn_sale_wallet, 6666e+18, {"from": accounts[3]})
 
     # Assert after transfer LIFE Token from GFN-Wallet

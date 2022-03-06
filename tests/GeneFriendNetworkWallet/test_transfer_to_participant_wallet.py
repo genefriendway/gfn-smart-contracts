@@ -74,7 +74,7 @@ def test_success__transfer_to_participant_wallet__not_gfn_owner_make_transaction
     assert gpo_wallet.getBalanceOfParticipant(participant) == 0
 
     # Actions
-    with brownie.reverts("AccessibleRegistry: caller must be GFN Operator"):
+    with brownie.reverts("AccessibleRegistry: caller must be operator"):
         gfn_wallet.transferToParticipantWallet(
             gpo_wallet, participant, 6666e+18, {"from": accounts[3]}
         )

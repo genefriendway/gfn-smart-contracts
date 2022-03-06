@@ -40,7 +40,7 @@ def deployment():
 
     # deploy smart contracts and get instance of them
     registry = ContractRegistry.deploy(gfn_owner1, {"from": gfn_deployer})
-    configuration = Configuration.deploy(registry, {"from": gfn_deployer})
+    configuration = Configuration.deploy(gfn_owner1, registry, {"from": gfn_deployer})
     gnft_token = GNFTToken.deploy(registry, "GNFT", "GNFT", {"from": gfn_deployer})
     life_token = LIFEToken.deploy(registry, "LIFE", "LIFE", {"from": gfn_deployer})
     life_treasury = LIFETreasury.deploy([gfn_owner1, gfn_owner2], 2, {"from": gfn_deployer})
@@ -65,43 +65,42 @@ def deployment():
 
     # add deployed smart contracts to ContractRegistry
     registry.registerContract(Constant.CONFIGURATION, configuration.address, {"from": gfn_owner1})
-    registry.setGFNOperator(configuration.address, gfn_operator, {"from": gfn_owner1})
 
     registry.registerContract(Constant.GNFT_TOKEN, gnft_token.address, {"from": gfn_owner1})
-    registry.setGFNOperator(gnft_token.address, gfn_operator, {"from": gfn_owner1})
+    configuration.setOperator(gnft_token.address, gfn_operator, {"from": gfn_owner1})
 
     registry.registerContract(Constant.LIFE_TOKEN, life_token.address, {"from": gfn_owner1})
-    registry.setGFNOperator(life_token.address, gfn_operator, {"from": gfn_owner1})
+    configuration.setOperator(life_token.address, gfn_operator, {"from": gfn_owner1})
 
     registry.registerContract(Constant.LIFE_TREASURY, life_treasury.address, {"from": gfn_owner1})
-    registry.setGFNOperator(life_treasury.address, gfn_operator, {"from": gfn_owner1})
+    configuration.setOperator(life_treasury.address, gfn_operator, {"from": gfn_owner1})
 
     registry.registerContract(Constant.GENE_FRIEND_NETWORK_WALLET, gfn_wallet.address, {"from": gfn_owner1})
-    registry.setGFNOperator(gfn_wallet.address, gfn_operator, {"from": gfn_owner1})
+    configuration.setOperator(gfn_wallet.address, gfn_operator, {"from": gfn_owner1})
 
     registry.registerContract(Constant.GFN_SALE_WALLET, gfn_sale_wallet.address, {"from": gfn_owner1})
-    registry.setGFNOperator(gfn_sale_wallet.address, gfn_operator, {"from": gfn_owner1})
+    configuration.setOperator(gfn_sale_wallet.address, gfn_operator, {"from": gfn_owner1})
 
     registry.registerContract(Constant.GENETIC_PROFILE_OWNER_WALLET, gpo_wallet.address, {"from": gfn_owner1})
-    registry.setGFNOperator(gpo_wallet.address, gfn_operator, {"from": gfn_owner1})
+    configuration.setOperator(gpo_wallet.address, gfn_operator, {"from": gfn_owner1})
 
     registry.registerContract(Constant.DATA_UTILIZER_WALLET, du_wallet.address, {"from": gfn_owner1})
-    registry.setGFNOperator(du_wallet.address, gfn_operator, {"from": gfn_owner1})
+    configuration.setOperator(du_wallet.address, gfn_operator, {"from": gfn_owner1})
 
     registry.registerContract(Constant.INVESTOR_WALLET, investor_wallet.address, {"from": gfn_owner1})
-    registry.setGFNOperator(investor_wallet.address, gfn_operator, {"from": gfn_owner1})
+    configuration.setOperator(investor_wallet.address, gfn_operator, {"from": gfn_owner1})
 
     registry.registerContract(Constant.RESERVE_POOL_WALLET, reserve_pool_wallet.address, {"from": gfn_owner1})
-    registry.setGFNOperator(reserve_pool_wallet.address, gfn_operator, {"from": gfn_owner1})
+    configuration.setOperator(reserve_pool_wallet.address, gfn_operator, {"from": gfn_owner1})
 
     registry.registerContract(Constant.RESERVE_POOL, reserve_pool.address, {"from": gfn_owner1})
-    registry.setGFNOperator(reserve_pool.address, gfn_operator, {"from": gfn_owner1})
+    configuration.setOperator(reserve_pool.address, gfn_operator, {"from": gfn_owner1})
 
     registry.registerContract(Constant.REVENUE_SHARING_ARRANGEMENT, revenue_sharing_arrangement.address, {"from": gfn_owner1})
-    registry.setGFNOperator(revenue_sharing_arrangement.address, gfn_operator, {"from": gfn_owner1})
+    configuration.setOperator(revenue_sharing_arrangement.address, gfn_operator, {"from": gfn_owner1})
 
     registry.registerContract(Constant.DATA_UTILIZATION, data_utilization.address, {"from": gfn_owner1})
-    registry.setGFNOperator(data_utilization.address, gfn_operator, {"from": gfn_owner1})
+    configuration.setOperator(data_utilization.address, gfn_operator, {"from": gfn_owner1})
 
     results = {
         Constant.GFN_DEPLOYER: gfn_deployer,

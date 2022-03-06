@@ -4,6 +4,7 @@ import brownie
 from brownie import (
     accounts,
     ContractRegistry,
+    Configuration,
     GNFTToken,
     LIFEToken,
     LIFETreasury,
@@ -18,16 +19,15 @@ def isolation(fn_isolation):
 @pytest.fixture(scope="module")
 def setup_base_gnft_uri(deployment, const):
     # Arranges
-    gfn_operator = deployment[const.GFN_OPERATOR]
+    gfn_owner1 = deployment[const.GFN_OWNER1]
     config = deployment[const.CONFIGURATION]
-    gfn_operator = deployment[const.GFN_OPERATOR]
 
     # Asserts: before actions
     assert config.getBaseGNFTTokenURI() == ""
 
     # Actions
     config.setBaseGNFTTokenURI(
-        'https://genetica.asia/gnft/', {"from": gfn_operator}
+        'https://genetica.asia/gnft/', {"from": gfn_owner1}
     )
 
     # Asserts: before actions
@@ -36,6 +36,7 @@ def setup_base_gnft_uri(deployment, const):
 
 def test_success__mint_batch_gnft__mint_01_new_token(deployment, const):
     # Arranges
+    gfn_owner1 = deployment[const.GFN_OWNER1]
     gfn_operator = deployment[const.GFN_OPERATOR]
     gnft_token = deployment[const.GNFT_TOKEN]
     life_token = deployment[const.LIFE_TOKEN]
@@ -91,7 +92,7 @@ def test_success__mint_batch_gnft__mint_01_new_token(deployment, const):
 
     # Actions: Setup Token URI
     config.setBaseGNFTTokenURI(
-        'https://genetica.asia/gnft/', {"from": gfn_operator}
+        'https://genetica.asia/gnft/', {"from": gfn_owner1}
     )
     assert gnft_token.tokenURI(genetic_profile_id1) == "https://genetica.asia/gnft/12345678"
 
@@ -332,7 +333,7 @@ def test_failure__mint_batch_token__not_gfn_owner_mint_gnft_token(
     genetic_owner1 = accounts[2]
 
     # Actions
-    with brownie.reverts("AccessibleRegistry: caller must be GFN Operator"):
+    with brownie.reverts("AccessibleRegistry: caller must be operator"):
         gnft_token.mintBatchGNFT(
             [genetic_owner1], [genetic_profile_id1], True, {"from": genetic_owner1}
         )
@@ -355,12 +356,18 @@ def test_failure__mint_batch_token__life_token_not_registered(const):
     gnft_token = GNFTToken.deploy(
         registry, "GNFT", "GNFT", {"from": gfn_deployer}
     )
+    configuration = Configuration.deploy(
+        gfn_owner1, registry, {"from": gfn_deployer}
+    )
 
     # add deployed smart contracts to ContractRegistry
     registry.registerContract(
         const.GNFT_TOKEN, gnft_token.address, {"from": gfn_owner1}
     )
-    registry.setGFNOperator(
+    registry.registerContract(
+        const.CONFIGURATION, configuration.address, {"from": gfn_owner1}
+    )
+    configuration.setOperator(
         gnft_token.address, gfn_operator.address, {"from": gfn_owner1}
     )
 
@@ -394,6 +401,9 @@ def test_failure__mint_batch_token__life_treasury_not_registered(const):
     life_token = LIFEToken.deploy(
         registry, "LIFE", "LIFE", {"from": gfn_deployer}
     )
+    configuration = Configuration.deploy(
+        gfn_owner1, registry, {"from": gfn_deployer}
+    )
 
     # add deployed smart contracts to ContractRegistry
     registry.registerContract(
@@ -402,10 +412,13 @@ def test_failure__mint_batch_token__life_treasury_not_registered(const):
     registry.registerContract(
         const.LIFE_TOKEN, life_token.address, {"from": gfn_owner1}
     )
-    registry.setGFNOperator(
+    registry.registerContract(
+        const.CONFIGURATION, configuration.address, {"from": gfn_owner1}
+    )
+    configuration.setOperator(
         gnft_token.address, gfn_operator.address, {"from": gfn_owner1}
     )
-    registry.setGFNOperator(
+    configuration.setOperator(
         life_token.address, gfn_operator.address, {"from": gfn_owner1}
     )
 

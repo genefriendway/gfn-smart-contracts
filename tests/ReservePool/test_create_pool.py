@@ -30,7 +30,7 @@ def test_failure__create_pool__not_gfn_owner_make_transaction(deployment, const)
     pool_id = 'Pool_ID_1'
 
     # Actions
-    with brownie.reverts("AccessibleRegistry: caller must be GFN Operator"):
+    with brownie.reverts("AccessibleRegistry: caller must be operator"):
         reserve_pool.createPool(pool_id, {"from": accounts[5]})
 
     # Asserts
