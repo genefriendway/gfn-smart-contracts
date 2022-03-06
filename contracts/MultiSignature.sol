@@ -2,10 +2,7 @@
 
 pragma solidity 0.8.11;
 
-import "./interfaces/ILIFETreasury.sol";
-
-
-contract LIFETreasury is ILIFETreasury {
+contract MultiSignature {
 
     // ===== Events =====
     event Deposit(address indexed sender, uint amount, uint balance);
@@ -19,7 +16,7 @@ contract LIFETreasury is ILIFETreasury {
         uint256 indexed transactionId,
         address indexed fromOwner,
         address indexed destination,
-        uint value,
+        uint256 value,
         bytes data
     );
     event ConfirmTransaction(address indexed owner, uint256 indexed transactionId);
@@ -53,41 +50,44 @@ contract LIFETreasury is ILIFETreasury {
 
 
     // ===== Modifiers =====
-    modifier onlyTreasury() {
-        require(msg.sender == address(this), "LIFETreasury: caller must be LIFETreasury");
+    modifier onlyMultiSignature() {
+        require(
+            msg.sender == address(this),
+            "MultiSignature: caller must be MultiSignature"
+        );
         _;
     }
 
-    modifier ownerDoesNotExist(address owner) {
-        require(!isOwner[owner], "LIFETreasury: owner must not exist");
+    modifier mustNotExistOwner(address owner) {
+        require(!isOwner[owner], "MultiSignature: owner must not exist");
         _;
     }
 
-    modifier ownerExists(address owner) {
-        require(isOwner[owner], "LIFETreasury: owner must exist") ;
+    modifier mustExistOwner(address owner) {
+        require(isOwner[owner], "MultiSignature: owner must exist") ;
         _;
     }
 
-    modifier transactionExists(uint256 transactionId) {
+    modifier mustExistTransaction(uint256 transactionId) {
         require(
             transactions[transactionId].destination != address(0),
-            "LIFETreasury: transaction id must exist"
+            "MultiSignature: transaction id must exist"
         );
         _;
     }
 
-    modifier ownerConfirmed(uint256 transactionId, address owner) {
+    modifier confirmedByOwner(uint256 transactionId, address owner) {
         require(
             confirmations[transactionId][owner],
-            "LIFETreasury: transaction id must be confirmed by owner"
+            "MultiSignature: transaction id must be confirmed by owner"
         );
         _;
     }
 
-    modifier ownerNotConfirmed(uint256 transactionId, address owner) {
+    modifier notConfirmedByOwner(uint256 transactionId, address owner) {
         require(
             !confirmations[transactionId][owner],
-            "LIFETreasury: transaction id must not be confirmed by owner"
+            "MultiSignature: transaction id must not be confirmed by owner"
         );
         _;
     }
@@ -95,27 +95,31 @@ contract LIFETreasury is ILIFETreasury {
     modifier notExecuted(uint256 transactionId) {
         require(
             !transactions[transactionId].executed,
-            "LIFETreasury: transaction id must be executed"
+            "MultiSignature: transaction id must be executed"
         );
         _;
     }
 
     modifier notNullAddress(address _address) {
-        require(_address != address(0), "LIFETreasury: address must not be null");
+        require(
+            _address != address(0),
+            "MultiSignature: address must not be null"
+        );
         _;
     }
 
     modifier validNumberOfConfirmation(
         uint256 ownerCount, 
-        uint256 _numberOfRequiredConfirmation)
+        uint256 _numberOfRequiredConfirmation
+    )
     {
         require(
             ownerCount > 0 && ownerCount <= MAX_OWNER_COUNT,
-            "LIFETreasury: number of owners must be greater than zero and less than max owners"
+            "MultiSignature: number of owners must be greater than zero and less than max owners"
         );
         require(
             _numberOfRequiredConfirmation > 0 && _numberOfRequiredConfirmation <= ownerCount,
-            "LIFETreasury: number of required confirmations invalid"
+            "MultiSignature: number of required confirmations invalid"
         );
         _;
     }
@@ -123,9 +127,9 @@ contract LIFETreasury is ILIFETreasury {
     /*
     * Public functions
     */
-    // @dev Contract constructor sets initial owners and numberOfRequiredConfirmation number of confirmations.
+    // @dev Contract constructor sets initial owners and number of Confirmations.
     // @param _owners List of initial owners.
-    // @param _numberOfRequiredConfirmation Number of numberOfRequiredConfirmation confirmations.
+    // @param _numberOfRequiredConfirmation number of Confirmations.
     constructor (
         address[] memory _owners,
         uint256 _numberOfRequiredConfirmation
@@ -135,8 +139,8 @@ contract LIFETreasury is ILIFETreasury {
         for (uint256 i = 0; i < _owners.length; i++) {
             address owner = _owners[i];
             
-            require(owner != address(0), "LIFETreasury: invalid owner address");
-            require(!isOwner[owner], "LIFETreasury: existed owner address");
+            require(owner != address(0), "MultiSignature: invalid owner address");
+            require(!isOwner[owner], "MultiSignature: existed owner address");
             
             isOwner[owner] = true;
         }
@@ -154,9 +158,9 @@ contract LIFETreasury is ILIFETreasury {
         address owner
     )
         public
-        onlyTreasury
+        onlyMultiSignature
         notNullAddress(owner)
-        ownerDoesNotExist(owner)
+        mustNotExistOwner(owner)
         validNumberOfConfirmation(owners.length + 1, numberOfRequiredConfirmation)
     {
         isOwner[owner] = true;
@@ -170,8 +174,8 @@ contract LIFETreasury is ILIFETreasury {
         address owner
     )
         public
-        onlyTreasury
-        ownerExists(owner)
+        onlyMultiSignature
+        mustExistOwner(owner)
     {
         isOwner[owner] = false;
         for (uint256 i = 0; i < owners.length - 1; i++)
@@ -195,9 +199,9 @@ contract LIFETreasury is ILIFETreasury {
         address newOwner
     )
         public
-        onlyTreasury
-        ownerExists(oldOwner)
-        ownerDoesNotExist(newOwner)
+        onlyMultiSignature
+        mustExistOwner(oldOwner)
+        mustNotExistOwner(newOwner)
     {
         for (uint256 i = 0; i < owners.length; i++)
             if (owners[i] == oldOwner) {
@@ -216,7 +220,7 @@ contract LIFETreasury is ILIFETreasury {
         uint256 _numberOfRequiredConfirmation
     )
         public
-        onlyTreasury
+        onlyMultiSignature
         validNumberOfConfirmation(owners.length, _numberOfRequiredConfirmation)
     {
         numberOfRequiredConfirmation = _numberOfRequiredConfirmation;
@@ -234,7 +238,7 @@ contract LIFETreasury is ILIFETreasury {
         bytes memory data
     )
         public
-        ownerExists(msg.sender)
+        mustExistOwner(msg.sender)
         returns (uint256 transactionId)
     {
         // create new a transaction request
@@ -249,9 +253,9 @@ contract LIFETreasury is ILIFETreasury {
         uint256 transactionId
     )
         public
-        ownerExists(msg.sender)
-        transactionExists(transactionId)
-        ownerNotConfirmed(transactionId, msg.sender)
+        mustExistOwner(msg.sender)
+        mustExistTransaction(transactionId)
+        notConfirmedByOwner(transactionId, msg.sender)
     {
         // update confirmations: the sender had confirmed
         confirmations[transactionId][msg.sender] = true;
@@ -268,8 +272,8 @@ contract LIFETreasury is ILIFETreasury {
         uint256 transactionId
     )
         public
-        ownerExists(msg.sender)
-        ownerConfirmed(transactionId, msg.sender)
+        mustExistOwner(msg.sender)
+        confirmedByOwner(transactionId, msg.sender)
         notExecuted(transactionId)
     {
         // update the owner not confirmed on the transaction
@@ -284,8 +288,8 @@ contract LIFETreasury is ILIFETreasury {
         uint256 transactionId
     )
         public
-        ownerExists(msg.sender)
-        ownerConfirmed(transactionId, msg.sender)
+        mustExistOwner(msg.sender)
+        confirmedByOwner(transactionId, msg.sender)
         notExecuted(transactionId)
     {
 
@@ -299,7 +303,7 @@ contract LIFETreasury is ILIFETreasury {
             );
 
             // check result after execution
-            require(success, "LIFETreasury: execute transaction failed");
+            require(success, "MultiSignature: execute transaction failed");
             emit ExecuteTransactionSuccess(transactionId);
         }
     }
@@ -411,14 +415,16 @@ contract LIFETreasury is ILIFETreasury {
         address[] memory confirmationsTemp = new address[](owners.length);
         uint256 count = 0;
         uint256 i;
-        for (i=0; i<owners.length; i++)
+        for (i = 0; i < owners.length; i++) {
             if (confirmations[transactionId][owners[i]]) {
                 confirmationsTemp[count] = owners[i];
                 count += 1;
             }
+        }
         _confirmations = new address[](count);
-        for (i=0; i<count; i++)
+        for (i = 0; i < count; i++) {
             _confirmations[i] = confirmationsTemp[i];
+        }
     }
 
     // @dev Returns list of transaction IDs in defined range.
@@ -440,15 +446,17 @@ contract LIFETreasury is ILIFETreasury {
         uint256[] memory transactionIdsTemp = new uint256[](transactionCount);
         uint256 count = 0;
         uint256 i;
-        for (i=0; i<transactionCount; i++)
+        for (i = 0; i < transactionCount; i++) {
             if (   pending && !transactions[i].executed
                 || executed && transactions[i].executed)
             {
                 transactionIdsTemp[count] = i;
                 count += 1;
             }
+        }
         _transactionIds = new uint256[](to - from);
-        for (i=from; i<to; i++)
+        for (i = from; i < to; i++){
             _transactionIds[i - from] = transactionIdsTemp[i];
+        }
     }
 }
