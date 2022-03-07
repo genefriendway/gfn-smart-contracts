@@ -20,7 +20,7 @@ contract ParticipantWallet is
 
     modifier onlyOperatorOrRegisteredContract() {
         require(
-            checkSenderIsOperator() || registry.isRegisteredContract(msg.sender),
+            checkSenderIsOperator() || registry.isRegisteredContract(_msgSender()),
             "ParticipantWallet: caller is not the owner or registered contract"
         );
         _;

@@ -1,12 +1,16 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.11;
 
+import "@openzeppelin/contracts/utils/Context.sol";
 import "../interfaces/IContractRegistry.sol";
 import "../interfaces/IConfiguration.sol";
 import "./ConfigurationRetriever.sol";
 
 
-abstract contract AccessibleRegistry is ConfigurationRetriever {
+abstract contract AccessibleRegistry is
+    Context,
+    ConfigurationRetriever
+{
     IContractRegistry registry;
 
     modifier onlyOperator() {
@@ -23,7 +27,7 @@ abstract contract AccessibleRegistry is ConfigurationRetriever {
 
     function checkSenderIsOperator() internal view returns (bool) {
         IConfiguration config = IConfiguration(_getConfigurationAddress(registry));
-        return msg.sender == config.getOperator(address(this));
+        return _msgSender() == config.getOperator(address(this));
     }
 }
 

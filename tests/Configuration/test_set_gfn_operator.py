@@ -80,8 +80,8 @@ def test_failure__set_gfn_operator__invalid_contract_address(deployment, const):
     )
 
     # Actions: set GFN Operator for not registered GNFTToken contract
-    with brownie.reverts("Configuration: can not set operator for "
-                         "invalid contract address"):
+    with brownie.reverts("Configuration: contract address must be registered "
+                         "in registry"):
         configuration.setOperator(
             not_registered_gnft_token.address,
             gfn_operator,
