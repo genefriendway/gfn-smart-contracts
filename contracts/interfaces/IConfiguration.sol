@@ -9,12 +9,15 @@ interface IConfiguration {
         address indexed oldOperator,
         address indexed newOperator
     );
+    event SetNFTHolder(address indexed holder);
 
     function setOperator(address contractAddress, address newOperator) external;
+    function setNFTHolder(address holder) external;
     function setBaseGNFTTokenURI(string memory baseURI) external;
 
     function getBaseGNFTTokenURI() external view returns (string memory);
     function getOperator(address contractAddress) external view returns (address);
+    function getNFTHolder() external view returns (address);
 
     function findNumberOfLIFEToMint(
         uint256 totalGNFTTokens

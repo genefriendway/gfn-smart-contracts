@@ -16,6 +16,8 @@ contract Configuration is
      // mapping from Contract address to GFN Operator
     mapping(address => address) private operators;
 
+    address private NFTHolder;
+
     // ==== START - Properties for G-NFT TokenURI ==========
     string private baseGNFTTokenURI = "";
     // ==== END - Properties for G-NFT TokenURI ==========
@@ -57,15 +59,35 @@ contract Configuration is
         _;
     }
 
+    modifier validNFTHolder(address _NFTHolder) {
+        require(
+            _NFTHolder != address(0),
+            "Configuration: NFT holder's address must be not empty"
+        );
+        _;
+    }
+
     constructor(
         address gfnOwner,
+        address _NFTHolder,
         IContractRegistry _registry
     )
         AccessibleRegistry(_registry)
     {
+        NFTHolder = _NFTHolder;
         _initializeTableOfMintingLIFE();
         _setupDistributionRatios();
         transferOwnership(gfnOwner);
+    }
+
+    function setNFTHolder(
+        address holder
+    )
+        external onlyOwner validNFTHolder(holder)
+    {
+        NFTHolder = holder;
+
+        emit SetNFTHolder(holder);
     }
     
     function setOperator(
@@ -85,7 +107,9 @@ contract Configuration is
 
     function setBaseGNFTTokenURI(
         string memory baseURI
-    ) external onlyOwner {
+    )
+        external onlyOwner
+    {
         require(
             bytes(baseURI).length > 0,
             "Configuration: base G-NFT token URI must be not empty"
@@ -94,6 +118,11 @@ contract Configuration is
 
         emit SetBaseGNFTTokenURI(baseURI);
     }
+
+    function getNFTHolder() external override view returns (address) {
+        return NFTHolder;
+    }
+
     function getOperator(
         address contractAddress
     )
