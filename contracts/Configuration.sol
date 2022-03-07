@@ -46,7 +46,7 @@ contract Configuration is
     modifier validContractAddress(address contractAddress) {
         require(
             registry.isRegisteredContract(contractAddress),
-            "Configuration: can not set operator for invalid contract address"
+            "Configuration: contract address must be registered in registry"
         );
         _;
     }

@@ -40,7 +40,7 @@ contract RevenueSharingArrangement is
 
     modifier onlyReservePool() {
         require(
-            msg.sender == _getReservePoolAddress(registry),
+            _msgSender() == _getReservePoolAddress(registry),
             "RevenueSharingArrangement: caller must be reserve pool contract"
         );
         _;
@@ -48,7 +48,7 @@ contract RevenueSharingArrangement is
 
     modifier onlyOperatorOrDataUtilization() {
         require(
-            checkSenderIsOperator()|| msg.sender == _getDataUtilizationAddress(registry),
+            checkSenderIsOperator()|| _msgSender() == _getDataUtilizationAddress(registry),
             "RevenueSharingArrangement: caller must be GFN Owner or DataUtilization contract"
         );
         _;
