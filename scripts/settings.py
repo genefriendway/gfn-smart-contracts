@@ -15,6 +15,8 @@ class Setting:
         self.BLOCKCHAIN_NETWORK = network.show_active()
         self.GFN_DEPLOYER_PRIVATE_KEY = env_settings['GFN_DEPLOYER_PRIVATE_KEY']
         self.GFN_OWNER_ADDRESS = env_settings['GFN_OWNER_ADDRESS']
+        self.GFN_OPERATOR_ADDRESS = env_settings['GFN_OPERATOR_ADDRESS']
+        self.GFN_NFT_HOLDER_ADDRESS = env_settings['GFN_NFT_HOLDER_ADDRESS']
 
         self.GNFT_TOKEN_NAME = env_settings.get('GNFT_TOKEN_NAME')
         self.GNFT_TOKEN_SYMBOL = env_settings.get('GNFT_TOKEN_SYMBOL')

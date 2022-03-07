@@ -21,7 +21,6 @@ class GNFTTokenDeployment(ContractDeployment):
 
         print(f"==> Deploying {self.contract_name} .....")
         gnft_token = self.contract_class.deploy(
-            self.setting.GFN_OWNER_ADDRESS,
             registry_instance.address,
             self.setting.GNFT_TOKEN_NAME,
             self.setting.GNFT_TOKEN_SYMBOL,

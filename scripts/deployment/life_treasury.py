@@ -1,12 +1,12 @@
 #!/usr/bin/python3
 from scripts.deployment.base import ContractDeployment
 from constants import ContractName
-from brownie import LIFETreasury
+from brownie import MultiSignature
 
 
 class LIFETreasuryDeployment(ContractDeployment):
     contract_name = ContractName.LIFE_TREASURY
-    contract_class = LIFETreasury
+    contract_class = MultiSignature
 
     def validate_setting(self):
         errors = super().validate_setting()
