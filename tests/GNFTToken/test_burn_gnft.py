@@ -30,7 +30,7 @@ def setup(deployment, const):
 
 def test_success__burn_gnft__gfn_owner_burn_existed_nft(setup, deployment, const):
     # Arranges
-    gfn_operator = deployment[const.GFN_OPERATOR]
+    nft_holder = deployment[const.NFT_HOLDER]
     gnft_token = deployment[const.GNFT_TOKEN]
     life_token = deployment[const.LIFE_TOKEN]
     life_treasury = deployment[const.LIFE_TREASURY]
@@ -46,12 +46,12 @@ def test_success__burn_gnft__gfn_owner_burn_existed_nft(setup, deployment, const
     assert gnft_token.ownerOf(12345678) == genetic_owner1
 
     # Actions
-    tx = gnft_token.burnGNFT(genetic_profile_id, {"from": gfn_operator})
+    tx = gnft_token.burnGNFT(genetic_profile_id, {"from": nft_holder})
 
     # Assert: BurnGNFT Event
     assert ('BurnGNFT' in tx.events) is True
     assert tx.events['BurnGNFT']['geneticProfileId'] == genetic_profile_id
-    assert tx.events['BurnGNFT']['burnedBy'] == gfn_operator.address
+    assert tx.events['BurnGNFT']['burnedBy'] == nft_holder.address
 
     # Assert: Approval Event
     assert ('Approval' in tx.events) is True
@@ -126,6 +126,7 @@ def test_success__burn_gnft__nft_owner_burn_existed_nft(setup, deployment, const
 def test_success__burn_gnft__burn_and_mint_again(setup, deployment, const):
     # Arranges
     gfn_operator = deployment[const.GFN_OPERATOR]
+    nft_holder = deployment[const.NFT_HOLDER]
     gnft_token = deployment[const.GNFT_TOKEN]
     life_token = deployment[const.LIFE_TOKEN]
     life_treasury = deployment[const.LIFE_TREASURY]
@@ -141,7 +142,7 @@ def test_success__burn_gnft__burn_and_mint_again(setup, deployment, const):
     assert gnft_token.ownerOf(12345678) == genetic_owner1
 
     # Actions
-    gnft_token.burnGNFT(genetic_profile_id, {"from": gfn_operator})
+    gnft_token.burnGNFT(genetic_profile_id, {"from": nft_holder})
 
     # # Asserts
     assert gnft_token.getTotalMintedGeneticProfiles() == 1

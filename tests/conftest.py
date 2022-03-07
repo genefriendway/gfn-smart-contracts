@@ -24,6 +24,7 @@ class Constant(ContractName):
     GFN_OWNER1 = 'gfn_owner1'
     GFN_OWNER2 = 'gfn_owner2'
     GFN_OPERATOR = 'gfn_operator'
+    NFT_HOLDER = 'nft_holder'
 
 
 @pytest.fixture(scope="module")
@@ -37,10 +38,11 @@ def deployment():
     gfn_owner1 = accounts[1]
     gfn_owner2 = accounts[2]
     gfn_operator = accounts.add()
+    nft_holder = accounts.add()
 
     # deploy smart contracts and get instance of them
     registry = ContractRegistry.deploy(gfn_owner1, {"from": gfn_deployer})
-    configuration = Configuration.deploy(gfn_owner1, registry, {"from": gfn_deployer})
+    configuration = Configuration.deploy(gfn_owner1, nft_holder, registry, {"from": gfn_deployer})
     gnft_token = GNFTToken.deploy(registry, "GNFT", "GNFT", {"from": gfn_deployer})
     life_token = LIFEToken.deploy(registry, "LIFE", "LIFE", {"from": gfn_deployer})
     life_treasury = LIFETreasury.deploy([gfn_owner1, gfn_owner2], 2, {"from": gfn_deployer})
@@ -107,6 +109,7 @@ def deployment():
         Constant.GFN_OWNER1: gfn_owner1,
         Constant.GFN_OWNER2: gfn_owner2,
         Constant.GFN_OPERATOR: gfn_operator,
+        Constant.NFT_HOLDER: nft_holder,
         Constant.REGISTRY: registry,
         Constant.CONFIGURATION: configuration,
         Constant.GNFT_TOKEN: gnft_token,
