@@ -37,6 +37,7 @@ def test_success__mint_batch_gnft__mint_01_new_token(deployment, const):
     # Arranges
     gfn_owner1 = deployment[const.GFN_OWNER1]
     gfn_operator = deployment[const.GFN_OPERATOR]
+    nft_holder = deployment[const.NFT_HOLDER]
     gnft_token = deployment[const.GNFT_TOKEN]
     life_token = deployment[const.LIFE_TOKEN]
     life_treasury = deployment[const.LIFE_TREASURY]
@@ -55,18 +56,18 @@ def test_success__mint_batch_gnft__mint_01_new_token(deployment, const):
     assert ('MintBatchGNFT' in tx.events) is True
     assert tx.events['MintBatchGNFT']['geneticProfileOwners'] == (genetic_owner1,)
     assert tx.events['MintBatchGNFT']['geneticProfileIds'] == (genetic_profile_id1,)
-    assert tx.events['MintBatchGNFT']['approvalForGFNOwner'] is True
+    assert tx.events['MintBatchGNFT']['approvalForGFN'] is True
 
     # Assert: MintGNFT Event
     assert ('MintGNFT' in tx.events) is True
     assert tx.events['MintGNFT']['geneticProfileOwner'] == genetic_owner1
     assert tx.events['MintGNFT']['geneticProfileId'] == genetic_profile_id1
-    assert tx.events['MintGNFT']['approvalForGFNOwner'] is True
+    assert tx.events['MintGNFT']['NFTHolder'] == nft_holder
 
     # Assert: Approval Event
     assert ('Approval' in tx.events) is True
     assert tx.events['Approval']['owner'] == genetic_owner1
-    assert tx.events['Approval']['approved'] == gfn_operator
+    assert tx.events['Approval']['approved'] == nft_holder
     assert tx.events['Approval']['tokenId'] == genetic_profile_id1
 
     # Assert: MintLIFE Event
@@ -96,14 +97,14 @@ def test_success__mint_batch_gnft__mint_01_new_token(deployment, const):
     assert gnft_token.tokenURI(genetic_profile_id1) == "https://genetica.asia/gnft/12345678"
 
     # Assert: Approve
-    assert gnft_token.getApproved(genetic_profile_id1) == gfn_operator.address
+    assert gnft_token.getApproved(genetic_profile_id1) == nft_holder.address
 
     # Actions: gfn owner transfer NFT to another address that provided by user
     gnft_token.safeTransferFrom(
         genetic_owner1,
         another_genetic_owner1,
         12345678,
-        {"from": gfn_operator}
+        {"from": nft_holder}
     )
 
     # Assert: Approve
@@ -128,13 +129,13 @@ def test_success__mint_batch_gnft__no_approval_gfn_owner(deployment, const):
     assert ('MintBatchGNFT' in tx.events) is True
     assert tx.events['MintBatchGNFT']['geneticProfileOwners'] == (genetic_owner1,)
     assert tx.events['MintBatchGNFT']['geneticProfileIds'] == (12345678,)
-    assert tx.events['MintBatchGNFT']['approvalForGFNOwner'] is False
+    assert tx.events['MintBatchGNFT']['approvalForGFN'] is False
 
     # Assert: MintGNFT Event
     assert ('MintGNFT' in tx.events) is True
     assert tx.events['MintGNFT']['geneticProfileOwner'] == genetic_owner1
     assert tx.events['MintGNFT']['geneticProfileId'] == 12345678
-    assert tx.events['MintGNFT']['approvalForGFNOwner'] is False
+    assert tx.events['MintGNFT']['NFTHolder'] == '0x0000000000000000000000000000000000000000'
 
     # Assert: Approval Event
     assert ('Approval' not in tx.events) is True
@@ -347,6 +348,7 @@ def test_failure__mint_batch_token__life_token_not_registered(const):
     gfn_deployer = accounts[0]
     gfn_owner1 = accounts[1]
     gfn_operator = accounts.add()
+    nft_holder = accounts.add()
 
     # deploy smart contracts and get instance of them
     registry = ContractRegistry.deploy(
@@ -356,7 +358,7 @@ def test_failure__mint_batch_token__life_token_not_registered(const):
         registry, "GNFT", "GNFT", {"from": gfn_deployer}
     )
     configuration = Configuration.deploy(
-        gfn_owner1, registry, {"from": gfn_deployer}
+        gfn_owner1, nft_holder, registry, {"from": gfn_deployer}
     )
 
     # add deployed smart contracts to ContractRegistry
@@ -389,6 +391,7 @@ def test_failure__mint_batch_token__life_treasury_not_registered(const):
     gfn_deployer = accounts[0]
     gfn_owner1 = accounts[1]
     gfn_operator = accounts.add()
+    nft_holder = accounts.add()
 
     # deploy smart contracts and get instance of them
     registry = ContractRegistry.deploy(
@@ -401,7 +404,7 @@ def test_failure__mint_batch_token__life_treasury_not_registered(const):
         registry, "LIFE", "LIFE", {"from": gfn_deployer}
     )
     configuration = Configuration.deploy(
-        gfn_owner1, registry, {"from": gfn_deployer}
+        gfn_owner1, nft_holder, registry, {"from": gfn_deployer}
     )
 
     # add deployed smart contracts to ContractRegistry
