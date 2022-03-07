@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.11;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
-
 import "./interfaces/IContractRegistry.sol";
 import "./interfaces/IRevenueSharingArrangement.sol";
 import "./interfaces/IParticipantWallet.sol";
@@ -11,23 +9,20 @@ import "./mixins/ReservePoolRetriever.sol";
 import "./mixins/GNFTTokenRetriever.sol";
 import "./mixins/GeneticProfileOwnerWalletRetriever.sol";
 import "./mixins/InvestorWalletRetriever.sol";
-import "./mixins/ConfigurationRetriever.sol";
 import "./mixins/DataUtilizationRetriever.sol";
 import "./GNFTToken.sol";
+import "./mixins/AccessibleRegistry.sol";
 
 
 contract RevenueSharingArrangement is
-    Ownable,
     IRevenueSharingArrangement,
+    AccessibleRegistry,
     ReservePoolRetriever,
     GNFTTokenRetriever,
     GeneticProfileOwnerWalletRetriever,
     InvestorWalletRetriever,
-    ConfigurationRetriever,
     DataUtilizationRetriever
 {
-
-    IContractRegistry public registry;
 
     struct Arrangement {
         address originalGeneticProfileOwner;
@@ -51,9 +46,9 @@ contract RevenueSharingArrangement is
         _;
     }
 
-    modifier onlyGFNOwnerOrDataUtilization() {
+    modifier onlyOperatorOrDataUtilization() {
         require(
-            _msgSender() == owner() || _msgSender() == _getDataUtilizationAddress(registry),
+            checkSenderIsOperator()|| _msgSender() == _getDataUtilizationAddress(registry),
             "RevenueSharingArrangement: caller must be GFN Owner or DataUtilization contract"
         );
         _;
@@ -109,10 +104,7 @@ contract RevenueSharingArrangement is
         _;
     }
 
-    constructor(address gfnOwner, IContractRegistry _registry) {
-        registry = _registry;
-        transferOwnership(gfnOwner);
-    }
+    constructor(IContractRegistry _registry) AccessibleRegistry(_registry){}
 
     function makeArrangementBetweenGeneticProfileOwnerAndInvestor(
         address originalGeneticProfileOwner,
@@ -150,7 +142,7 @@ contract RevenueSharingArrangement is
         address originalGeneticProfileOwner
     )
         external
-        onlyOwner
+        onlyOperator
         validGeneticProfileOwner(originalGeneticProfileOwner)
         existedArrangement(originalGeneticProfileOwner)
         notLinkFromTokenIdToOriginalOwner(gnftTokenId)
@@ -178,7 +170,7 @@ contract RevenueSharingArrangement is
         uint256 revenue
     )
         external
-        onlyGFNOwnerOrDataUtilization
+        onlyOperatorOrDataUtilization
         validRevenue(revenue)
     {
         // retrieve current genetic profile owner

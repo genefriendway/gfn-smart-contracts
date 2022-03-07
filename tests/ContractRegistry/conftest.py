@@ -7,7 +7,6 @@ from brownie import (
     ContractRegistry,
     GNFTToken,
     LIFEToken,
-    LIFETreasury
 )
 
 
@@ -17,9 +16,11 @@ def registry_deployment(const):
     gfn_owner1 = accounts[1]
 
     # deploy smart contracts and get instance of them
-    registry = ContractRegistry.deploy(gfn_owner1, {'from': gfn_deployer})
-    gnft_token = GNFTToken.deploy(gfn_owner1, registry, "GNFT", "GNFT", {'from': gfn_deployer})
-    life_token = LIFEToken.deploy(gfn_owner1, registry, "LIFE", "LIFE", {'from': gfn_deployer})
+    registry = ContractRegistry.deploy(gfn_owner1, {"from": gfn_deployer})
+    gnft_token = GNFTToken.deploy(registry, "GNFT", "GNFT", {"from": gfn_deployer})
+    life_token = LIFEToken.deploy(registry, "LIFE", "LIFE", {"from": gfn_deployer})
+
+    assert registry.owner() == gfn_owner1.address
 
     results = {
         const.GFN_DEPLOYER: gfn_deployer,

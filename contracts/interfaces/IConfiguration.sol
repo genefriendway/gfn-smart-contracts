@@ -3,9 +3,21 @@ pragma solidity 0.8.11;
 
 interface IConfiguration {
 
-    event SetBaseGNFTTokenURI(string uri);
+    event SetBaseGNFTTokenURI(string baseURI);
+    event SetOperator(
+        address indexed contractAddress,
+        address indexed oldOperator,
+        address indexed newOperator
+    );
+    event SetNFTHolder(address indexed holder);
+
+    function setOperator(address contractAddress, address newOperator) external;
+    function setNFTHolder(address holder) external;
+    function setBaseGNFTTokenURI(string memory baseURI) external;
 
     function getBaseGNFTTokenURI() external view returns (string memory);
+    function getOperator(address contractAddress) external view returns (address);
+    function getNFTHolder() external view returns (address);
 
     function findNumberOfLIFEToMint(
         uint256 totalGNFTTokens

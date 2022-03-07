@@ -3,30 +3,28 @@ pragma solidity 0.8.11;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
 import "./interfaces/IContractRegistry.sol";
 import "./interfaces/IParticipantWallet.sol";
 import "./interfaces/IGeneFriendNetworkWallet.sol";
 import "./mixins/LIFETokenRetriever.sol";
+import "./mixins/AccessibleRegistry.sol";
 
 
 contract GeneFriendNetworkWallet is
     IGeneFriendNetworkWallet,
-    Ownable,
+    AccessibleRegistry,
     LIFETokenRetriever
 {
     using SafeERC20 for IERC20;
-    IContractRegistry public registry;
 
-    constructor(address gfnOwner, IContractRegistry _registry) {
-        registry = _registry;
-        transferOwnership(gfnOwner);
-    }
+    constructor(IContractRegistry _registry) AccessibleRegistry(_registry) {}
 
     function transfer(
         address receiver,
         uint256 amount
-    ) external override onlyOwner {
+    )
+        external override onlyOperator
+    {
         // validate: must have enough balance of wallet
         require(
             getBalanceOfWallet() >= amount,
@@ -40,7 +38,9 @@ contract GeneFriendNetworkWallet is
         address participantWallet,
         address receiver,
         uint256 amount
-    ) external override onlyOwner {
+    )
+        external override onlyOperator
+    {
         // validate: must have enough balance of wallet
         require(
             getBalanceOfWallet() >= amount,

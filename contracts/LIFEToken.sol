@@ -2,26 +2,22 @@
 pragma solidity 0.8.11;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
 import "./interfaces/IContractRegistry.sol";
 import "./interfaces/IConfiguration.sol";
 import "./interfaces/ILIFEToken.sol";
 import "./interfaces/IGNFTToken.sol";
 import "./mixins/GNFTTokenRetriever.sol";
 import "./mixins/LIFETreasuryRetriever.sol";
-import "./mixins/ConfigurationRetriever.sol";
+import "./mixins/AccessibleRegistry.sol";
 
 
 contract LIFEToken is
     ERC20,
-    Ownable,
     ILIFEToken,
+    AccessibleRegistry,
     GNFTTokenRetriever,
-    LIFETreasuryRetriever,
-    ConfigurationRetriever
+    LIFETreasuryRetriever
 {
-
-    IContractRegistry public registry;
 
     modifier onlyGNFTToken() {
         require(
@@ -32,16 +28,13 @@ contract LIFEToken is
     }
 
     constructor(
-        address gfnOwner,
         IContractRegistry _registry,
         string memory name,
         string memory symbol
-    ) 
+    )
+        AccessibleRegistry(_registry)
         ERC20(name, symbol) 
-    {
-        registry = _registry;
-        transferOwnership(gfnOwner);
-    }
+    {}
 
     function mintLIFE(uint256 geneticProfileId) external override onlyGNFTToken {
         address lifeTreasuryAddress = _getLIFETreasuryAddress(registry);

@@ -12,7 +12,7 @@ def test_success__transfer_to_gfn_wallet__amount_less_than_balance_of_sender(
         deployment, initial_life_treasury, const
 ):
     # Arranges
-    gfn_owner1 = deployment[const.GFN_OWNER1]
+    gfn_operator = deployment[const.GFN_OPERATOR]
     life_token = deployment[const.LIFE_TOKEN]
     gpo_wallet = deployment[const.GENETIC_PROFILE_OWNER_WALLET]
     gfn_sale_wallet = deployment[const.GFN_SALE_WALLET]
@@ -25,7 +25,7 @@ def test_success__transfer_to_gfn_wallet__amount_less_than_balance_of_sender(
 
     # Action: transfer LIFE to GFN wallet
     gpo_wallet.transferExternally(
-        genetic_owner2, gfn_sale_wallet, 5e+18, {"from": gfn_owner1}
+        genetic_owner2, gfn_sale_wallet, 5e+18, {"from": gfn_operator}
     )
 
     # Asserts after transferring
@@ -38,7 +38,7 @@ def test_success__transfer_to_gfn_wallet__amount_equal_to_balance_of_sender(
         deployment, initial_life_treasury, const
 ):
     # Arranges
-    gfn_owner1 = deployment[const.GFN_OWNER1]
+    gfn_operator = deployment[const.GFN_OPERATOR]
     life_token = deployment[const.LIFE_TOKEN]
     gpo_wallet = deployment[const.GENETIC_PROFILE_OWNER_WALLET]
     gfn_sale_wallet = deployment[const.GFN_SALE_WALLET]
@@ -51,7 +51,7 @@ def test_success__transfer_to_gfn_wallet__amount_equal_to_balance_of_sender(
 
     # Action: transfer LIFE to GFN wallet
     gpo_wallet.transferExternally(
-        genetic_owner2, gfn_sale_wallet, 24e+18, {"from": gfn_owner1}
+        genetic_owner2, gfn_sale_wallet, 24e+18, {"from": gfn_operator}
     )
 
     # Asserts after transferring
@@ -90,7 +90,7 @@ def test_failure__transfer_to_gfn_wallet__amount_greater_than_balance_of_sender(
         deployment, initial_life_treasury, const
 ):
     # Arranges
-    gfn_owner1 = deployment[const.GFN_OWNER1]
+    gfn_operator = deployment[const.GFN_OPERATOR]
     life_token = deployment[const.LIFE_TOKEN]
     gpo_wallet = deployment[const.GENETIC_PROFILE_OWNER_WALLET]
     gfn_sale_wallet = deployment[const.GFN_SALE_WALLET]
@@ -105,7 +105,7 @@ def test_failure__transfer_to_gfn_wallet__amount_greater_than_balance_of_sender(
     with brownie.reverts("ParticipantWallet: sender has not enough amount "
                          "to send to GFN wallet"):
         gpo_wallet.transferExternally(
-            genetic_owner2, gfn_sale_wallet, 30e+18, {"from": gfn_owner1}
+            genetic_owner2, gfn_sale_wallet, 30e+18, {"from": gfn_operator}
         )
 
     # Asserts after transferring

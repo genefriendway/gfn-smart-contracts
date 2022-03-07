@@ -4,9 +4,9 @@ import brownie
 from brownie import (
     accounts,
     ContractRegistry,
+    Configuration,
     GNFTToken,
     LIFEToken,
-    LIFETreasury,
 )
 
 
@@ -36,6 +36,8 @@ def setup_base_gnft_uri(deployment, const):
 def test_success__mint_batch_gnft__mint_01_new_token(deployment, const):
     # Arranges
     gfn_owner1 = deployment[const.GFN_OWNER1]
+    gfn_operator = deployment[const.GFN_OPERATOR]
+    nft_holder = deployment[const.NFT_HOLDER]
     gnft_token = deployment[const.GNFT_TOKEN]
     life_token = deployment[const.LIFE_TOKEN]
     life_treasury = deployment[const.LIFE_TREASURY]
@@ -47,25 +49,25 @@ def test_success__mint_batch_gnft__mint_01_new_token(deployment, const):
 
     # Actions
     tx = gnft_token.mintBatchGNFT(
-        [genetic_owner1], [genetic_profile_id1], True, {"from": gfn_owner1}
+        [genetic_owner1], [genetic_profile_id1], True, {"from": gfn_operator}
     )
 
     # Assert: MintBatchGNFT Event
     assert ('MintBatchGNFT' in tx.events) is True
     assert tx.events['MintBatchGNFT']['geneticProfileOwners'] == (genetic_owner1,)
     assert tx.events['MintBatchGNFT']['geneticProfileIds'] == (genetic_profile_id1,)
-    assert tx.events['MintBatchGNFT']['approvalForGFNOwner'] is True
+    assert tx.events['MintBatchGNFT']['approvalForGFN'] is True
 
     # Assert: MintGNFT Event
     assert ('MintGNFT' in tx.events) is True
     assert tx.events['MintGNFT']['geneticProfileOwner'] == genetic_owner1
     assert tx.events['MintGNFT']['geneticProfileId'] == genetic_profile_id1
-    assert tx.events['MintGNFT']['approvalForGFNOwner'] is True
+    assert tx.events['MintGNFT']['NFTHolder'] == nft_holder
 
     # Assert: Approval Event
     assert ('Approval' in tx.events) is True
     assert tx.events['Approval']['owner'] == genetic_owner1
-    assert tx.events['Approval']['approved'] == gfn_owner1
+    assert tx.events['Approval']['approved'] == nft_holder
     assert tx.events['Approval']['tokenId'] == genetic_profile_id1
 
     # Assert: MintLIFE Event
@@ -95,14 +97,14 @@ def test_success__mint_batch_gnft__mint_01_new_token(deployment, const):
     assert gnft_token.tokenURI(genetic_profile_id1) == "https://genetica.asia/gnft/12345678"
 
     # Assert: Approve
-    assert gnft_token.getApproved(genetic_profile_id1) == gfn_owner1.address
+    assert gnft_token.getApproved(genetic_profile_id1) == nft_holder.address
 
     # Actions: gfn owner transfer NFT to another address that provided by user
     gnft_token.safeTransferFrom(
         genetic_owner1,
         another_genetic_owner1,
         12345678,
-        {"from": gfn_owner1}
+        {"from": nft_holder}
     )
 
     # Assert: Approve
@@ -112,7 +114,7 @@ def test_success__mint_batch_gnft__mint_01_new_token(deployment, const):
 
 def test_success__mint_batch_gnft__no_approval_gfn_owner(deployment, const):
     # Arranges
-    gfn_owner1 = deployment[const.GFN_OWNER1]
+    gfn_operator = deployment[const.GFN_OPERATOR]
     gnft_token = deployment[const.GNFT_TOKEN]
 
     genetic_profile_id1 = 12345678
@@ -120,20 +122,20 @@ def test_success__mint_batch_gnft__no_approval_gfn_owner(deployment, const):
 
     # Actions
     tx = gnft_token.mintBatchGNFT(
-        [genetic_owner1], [genetic_profile_id1], False, {"from": gfn_owner1}
+        [genetic_owner1], [genetic_profile_id1], False, {"from": gfn_operator}
     )
 
     # Assert: MintBatchGNFT Event
     assert ('MintBatchGNFT' in tx.events) is True
     assert tx.events['MintBatchGNFT']['geneticProfileOwners'] == (genetic_owner1,)
     assert tx.events['MintBatchGNFT']['geneticProfileIds'] == (12345678,)
-    assert tx.events['MintBatchGNFT']['approvalForGFNOwner'] is False
+    assert tx.events['MintBatchGNFT']['approvalForGFN'] is False
 
     # Assert: MintGNFT Event
     assert ('MintGNFT' in tx.events) is True
     assert tx.events['MintGNFT']['geneticProfileOwner'] == genetic_owner1
     assert tx.events['MintGNFT']['geneticProfileId'] == 12345678
-    assert tx.events['MintGNFT']['approvalForGFNOwner'] is False
+    assert tx.events['MintGNFT']['NFTHolder'] == '0x0000000000000000000000000000000000000000'
 
     # Assert: Approval Event
     assert ('Approval' not in tx.events) is True
@@ -146,7 +148,7 @@ def test_success__mint_batch_gnft__mint_01_new_token_with_existed_token_uri(
         deployment, setup_base_gnft_uri, const, 
 ):
     # Arranges
-    gfn_owner1 = deployment[const.GFN_OWNER1]
+    gfn_operator = deployment[const.GFN_OPERATOR]
     gnft_token = deployment[const.GNFT_TOKEN]
     life_token = deployment[const.LIFE_TOKEN]
     life_treasury = deployment[const.LIFE_TREASURY]
@@ -156,7 +158,7 @@ def test_success__mint_batch_gnft__mint_01_new_token_with_existed_token_uri(
 
     # Actions
     gnft_token.mintBatchGNFT(
-        [genetic_owner1], [genetic_profile_id1], True, {"from": gfn_owner1}
+        [genetic_owner1], [genetic_profile_id1], True, {"from": gfn_operator}
     )
 
     # Asserts: GNFTToken status
@@ -173,7 +175,7 @@ def test_success__mint_batch_gnft__mint_01_new_token_with_existed_token_uri(
 
 def test_success__mint_batch_gnft__mint_02_new_token(deployment, const):
     # Arranges
-    gfn_owner1 = deployment[const.GFN_OWNER1]
+    gfn_operator = deployment[const.GFN_OPERATOR]
     gnft_token = deployment[const.GNFT_TOKEN]
     life_token = deployment[const.LIFE_TOKEN]
     life_treasury = deployment[const.LIFE_TREASURY]
@@ -188,7 +190,7 @@ def test_success__mint_batch_gnft__mint_02_new_token(deployment, const):
         [genetic_owner1, genetic_owner2],
         [genetic_profile_id1, genetic_profile_id2],
         True,
-        {"from": gfn_owner1}
+        {"from": gfn_operator}
     )
 
     # Asserts: GNFTToken status
@@ -205,7 +207,7 @@ def test_success__mint_batch_gnft__mint_02_new_token(deployment, const):
 
 def test_success__mint_batch_gnft__mint_08_new_token(deployment, const):
     # Arranges
-    gfn_owner1 = deployment[const.GFN_OWNER1]
+    gfn_operator = deployment[const.GFN_OPERATOR]
     gnft_token = deployment[const.GNFT_TOKEN]
     life_token = deployment[const.LIFE_TOKEN]
     life_treasury = deployment[const.LIFE_TREASURY]
@@ -223,7 +225,7 @@ def test_success__mint_batch_gnft__mint_08_new_token(deployment, const):
         genetic_profile_owners,
         genetic_profile_ids,
         True,
-        {"from": gfn_owner1}
+        {"from": gfn_operator}
     )
 
     # Asserts: GNFTToken status
@@ -240,7 +242,7 @@ def test_success__mint_batch_gnft__mint_08_new_token(deployment, const):
 
 def test_success__mint_batch_gnft__mint_24_new_token(deployment, const):
     # Arranges
-    gfn_owner1 = deployment[const.GFN_OWNER1]
+    gfn_operator = deployment[const.GFN_OPERATOR]
     gnft_token = deployment[const.GNFT_TOKEN]
     life_token = deployment[const.LIFE_TOKEN]
     life_treasury = deployment[const.LIFE_TREASURY]
@@ -258,7 +260,7 @@ def test_success__mint_batch_gnft__mint_24_new_token(deployment, const):
         genetic_profile_owners,
         genetic_profile_ids,
         True,
-        {"from": gfn_owner1}
+        {"from": gfn_operator}
     )
 
     # Asserts: GNFTToken status
@@ -275,7 +277,7 @@ def test_success__mint_batch_gnft__mint_24_new_token(deployment, const):
 
 def test_success__mint_batch_gnft__mint_double_30_new_token(deployment, const):
     # Arranges
-    gfn_owner1 = deployment[const.GFN_OWNER1]
+    gfn_operator = deployment[const.GFN_OPERATOR]
     gnft_token = deployment[const.GNFT_TOKEN]
     life_token = deployment[const.LIFE_TOKEN]
     life_treasury = deployment[const.LIFE_TREASURY]
@@ -290,7 +292,7 @@ def test_success__mint_batch_gnft__mint_double_30_new_token(deployment, const):
 
     # Actions
     gnft_token.mintBatchGNFT(
-        genetic_profile_owners, genetic_profile_ids, True, {"from": gfn_owner1}
+        genetic_profile_owners, genetic_profile_ids, True, {"from": gfn_operator}
     )
 
     # Asserts: GNFTToken status
@@ -310,7 +312,7 @@ def test_success__mint_batch_gnft__mint_double_30_new_token(deployment, const):
 
     # Actions
     gnft_token.mintBatchGNFT(
-        genetic_profile_owners, genetic_profile_ids, True, {"from": gfn_owner1}
+        genetic_profile_owners, genetic_profile_ids, True, {"from": gfn_operator}
     )
 
     # Asserts: GNFTToken status
@@ -331,7 +333,7 @@ def test_failure__mint_batch_token__not_gfn_owner_mint_gnft_token(
     genetic_owner1 = accounts[2]
 
     # Actions
-    with brownie.reverts("Ownable: caller is not the owner"):
+    with brownie.reverts("AccessibleRegistry: caller must be operator"):
         gnft_token.mintBatchGNFT(
             [genetic_owner1], [genetic_profile_id1], True, {"from": genetic_owner1}
         )
@@ -345,18 +347,29 @@ def test_failure__mint_batch_token__life_token_not_registered(const):
     # Arranges
     gfn_deployer = accounts[0]
     gfn_owner1 = accounts[1]
+    gfn_operator = accounts.add()
+    nft_holder = accounts.add()
 
     # deploy smart contracts and get instance of them
     registry = ContractRegistry.deploy(
-        gfn_owner1, {'from': gfn_deployer}
+        gfn_owner1, {"from": gfn_deployer}
     )
     gnft_token = GNFTToken.deploy(
-        gfn_owner1, registry, "GNFT", "GNFT", {'from': gfn_deployer}
+        registry, "GNFT", "GNFT", {"from": gfn_deployer}
+    )
+    configuration = Configuration.deploy(
+        gfn_owner1, nft_holder, registry, {"from": gfn_deployer}
     )
 
     # add deployed smart contracts to ContractRegistry
     registry.registerContract(
-        const.GNFT_TOKEN, gnft_token.address, {'from': gfn_owner1}
+        const.GNFT_TOKEN, gnft_token.address, {"from": gfn_owner1}
+    )
+    registry.registerContract(
+        const.CONFIGURATION, configuration.address, {"from": gfn_owner1}
+    )
+    configuration.setOperator(
+        gnft_token.address, gfn_operator.address, {"from": gfn_owner1}
     )
 
     genetic_profile_id1 = 12345678
@@ -365,7 +378,7 @@ def test_failure__mint_batch_token__life_token_not_registered(const):
     # Actions
     with brownie.reverts("GNFTToken: Please register LIFEToken on ContractRegistry"):
         gnft_token.mintBatchGNFT(
-            [genetic_owner1], [genetic_profile_id1], True, {"from": gfn_owner1}
+            [genetic_owner1], [genetic_profile_id1], True, {"from": gfn_operator}
         )
 
     # Asserts
@@ -377,24 +390,38 @@ def test_failure__mint_batch_token__life_treasury_not_registered(const):
     # Arranges
     gfn_deployer = accounts[0]
     gfn_owner1 = accounts[1]
+    gfn_operator = accounts.add()
+    nft_holder = accounts.add()
 
     # deploy smart contracts and get instance of them
     registry = ContractRegistry.deploy(
-        gfn_owner1, {'from': gfn_deployer}
+        gfn_owner1, {"from": gfn_deployer}
     )
     gnft_token = GNFTToken.deploy(
-        gfn_owner1, registry, "GNFT", "GNFT", {'from': gfn_deployer}
+        registry, "GNFT", "GNFT", {"from": gfn_deployer}
     )
     life_token = LIFEToken.deploy(
-        gfn_owner1, registry, "LIFE", "LIFE", {'from': gfn_deployer}
+        registry, "LIFE", "LIFE", {"from": gfn_deployer}
+    )
+    configuration = Configuration.deploy(
+        gfn_owner1, nft_holder, registry, {"from": gfn_deployer}
     )
 
     # add deployed smart contracts to ContractRegistry
     registry.registerContract(
-        const.GNFT_TOKEN, gnft_token.address, {'from': gfn_owner1}
+        const.GNFT_TOKEN, gnft_token.address, {"from": gfn_owner1}
     )
     registry.registerContract(
-        const.LIFE_TOKEN, life_token.address, {'from': gfn_owner1}
+        const.LIFE_TOKEN, life_token.address, {"from": gfn_owner1}
+    )
+    registry.registerContract(
+        const.CONFIGURATION, configuration.address, {"from": gfn_owner1}
+    )
+    configuration.setOperator(
+        gnft_token.address, gfn_operator.address, {"from": gfn_owner1}
+    )
+    configuration.setOperator(
+        life_token.address, gfn_operator.address, {"from": gfn_owner1}
     )
 
     genetic_profile_id1 = 12345678
@@ -403,7 +430,7 @@ def test_failure__mint_batch_token__life_treasury_not_registered(const):
     # Actions
     with brownie.reverts("GNFTToken: Please register LIFETreasury on ContractRegistry"):
         gnft_token.mintBatchGNFT(
-            [genetic_owner1], [genetic_profile_id1], True, {"from": gfn_owner1}
+            [genetic_owner1], [genetic_profile_id1], True, {"from": gfn_operator}
         )
 
     # Asserts
@@ -415,7 +442,7 @@ def test_failure__mint_batch_token__null_genetic_profile_address(
         deployment, const
 ):
     # Arranges
-    gfn_owner1 = deployment[const.GFN_OWNER1]
+    gfn_operator = deployment[const.GFN_OPERATOR]
     gnft_token = deployment[const.GNFT_TOKEN]
 
     genetic_profile_id1 = 12345678
@@ -430,7 +457,7 @@ def test_failure__mint_batch_token__null_genetic_profile_address(
             [genetic_owner1, genetic_owner2],
             [genetic_profile_id1, genetic_profile_id2],
             True,
-            {"from": gfn_owner1}
+            {"from": gfn_operator}
         )
 
     # Asserts
@@ -440,7 +467,7 @@ def test_failure__mint_batch_token__null_genetic_profile_address(
 
 def test_failure__mint_batch_token__existed_genetic_profile_id(deployment, const):
     # Arranges
-    gfn_owner1 = deployment[const.GFN_OWNER1]
+    gfn_operator = deployment[const.GFN_OPERATOR]
     gnft_token = deployment[const.GNFT_TOKEN]
 
     genetic_profile_id1 = 12345678
@@ -448,7 +475,7 @@ def test_failure__mint_batch_token__existed_genetic_profile_id(deployment, const
 
     # Actions
     gnft_token.mintBatchGNFT(
-        [genetic_owner1], [genetic_profile_id1], True, {"from": gfn_owner1}
+        [genetic_owner1], [genetic_profile_id1], True, {"from": gfn_operator}
     )
 
     # continue to mint same token id again for genetic_owner2
@@ -465,7 +492,7 @@ def test_failure__mint_batch_token__existed_genetic_profile_id(deployment, const
             [genetic_owner2, genetic_owner3],
             [genetic_profile_id2, genetic_profile_id3],
             True,
-            {"from": gfn_owner1}
+            {"from": gfn_operator}
         )
 
     # Asserts
@@ -479,12 +506,12 @@ def test_failure__mint_batch_token__not_same_length_of_owners_and_ids(
         deployment, const
 ):
     # Arranges
-    gfn_owner1 = deployment[const.GFN_OWNER1]
+    gfn_operator = deployment[const.GFN_OPERATOR]
     gnft_token = deployment[const.GNFT_TOKEN]
 
     # Actions
     with brownie.reverts("GNFTToken: genetic profile owners "
                          "and genetic profile ids must be same length"):
         gnft_token.mintBatchGNFT(
-            [accounts.add(), accounts.add()], [2345678], True, {"from": gfn_owner1}
+            [accounts.add(), accounts.add()], [2345678], True, {"from": gfn_operator}
         )

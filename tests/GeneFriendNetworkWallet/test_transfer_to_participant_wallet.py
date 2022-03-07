@@ -10,7 +10,8 @@ def isolation(fn_isolation):
 
 def test_success__transfer_to_participant_wallet__amount_less_than_balance_of_sender(deployment, initial_life_treasury, const):
     # Arranges
-    gfn_owner1 = deployment[const.GFN_OWNER1]
+    gfn_operator = deployment[const.GFN_OPERATOR]
+    gfn_operator = deployment[const.GFN_OPERATOR]
     life_token = deployment[const.LIFE_TOKEN]
     gfn_wallet = deployment[const.GENE_FRIEND_NETWORK_WALLET]
     gpo_wallet = deployment[const.GENETIC_PROFILE_OWNER_WALLET]
@@ -23,7 +24,7 @@ def test_success__transfer_to_participant_wallet__amount_less_than_balance_of_se
 
     # Actions: Transfer LIFE Token from GFN-Wallet to Receiver
     gfn_wallet.transferToParticipantWallet(
-        gpo_wallet, participant, 200e+18, {"from": gfn_owner1}
+        gpo_wallet, participant, 200e+18, {"from": gfn_operator}
     )
 
     # Assert before transfer LIFE Token from GFN-Wallet
@@ -36,7 +37,7 @@ def test_success__transfer_to_participant_wallet__amount_equal_to_balance_of_sen
         deployment, initial_life_treasury, const
 ):
     # Arranges
-    gfn_owner1 = deployment[const.GFN_OWNER1]
+    gfn_operator = deployment[const.GFN_OPERATOR]
     life_token = deployment[const.LIFE_TOKEN]
     gfn_wallet = deployment[const.GENE_FRIEND_NETWORK_WALLET]
     gpo_wallet = deployment[const.GENETIC_PROFILE_OWNER_WALLET]
@@ -49,7 +50,7 @@ def test_success__transfer_to_participant_wallet__amount_equal_to_balance_of_sen
 
     # Actions: Transfer LIFE Token from GFN-Wallet to participant wallet
     gfn_wallet.transferToParticipantWallet(
-        gpo_wallet, participant, 6666e+18, {"from": gfn_owner1}
+        gpo_wallet, participant, 6666e+18, {"from": gfn_operator}
     )
 
     # Assert after transfer LIFE Token from GFN-Wallet
@@ -73,7 +74,7 @@ def test_success__transfer_to_participant_wallet__not_gfn_owner_make_transaction
     assert gpo_wallet.getBalanceOfParticipant(participant) == 0
 
     # Actions
-    with brownie.reverts("Ownable: caller is not the owner"):
+    with brownie.reverts("AccessibleRegistry: caller must be operator"):
         gfn_wallet.transferToParticipantWallet(
             gpo_wallet, participant, 6666e+18, {"from": accounts[3]}
         )
@@ -88,7 +89,7 @@ def test_success__transfer_to_participant_wallet__amount_greater_than_balance_of
         deployment, initial_life_treasury, const
 ):
     # Arranges
-    gfn_owner1 = deployment[const.GFN_OWNER1]
+    gfn_operator = deployment[const.GFN_OPERATOR]
     life_token = deployment[const.LIFE_TOKEN]
     gfn_wallet = deployment[const.GENE_FRIEND_NETWORK_WALLET]
     gpo_wallet = deployment[const.GENETIC_PROFILE_OWNER_WALLET]
@@ -102,7 +103,7 @@ def test_success__transfer_to_participant_wallet__amount_greater_than_balance_of
     # Actions
     with brownie.reverts("GeneFriendNetWorkWallet: Wallet has not enough amount to transfer"):
         gfn_wallet.transferToParticipantWallet(
-            gpo_wallet, participant, 6667e+18, {"from": gfn_owner1}
+            gpo_wallet, participant, 6667e+18, {"from": gfn_operator}
         )
 
     # Assert after transfer LIFE Token from GFN-Wallet

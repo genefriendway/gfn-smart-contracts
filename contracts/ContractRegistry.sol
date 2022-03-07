@@ -7,10 +7,12 @@ import "./interfaces/IContractRegistry.sol";
 
 contract ContractRegistry is Ownable, IContractRegistry {
 
+    // mapping from Contract name to contract address
     mapping(string => address) private _nameToAddress;
+    // mapping from Contract address to Contract Name
     mapping(address => string) private _addressToName;
 
-    modifier registeredName(string memory name) {
+    modifier registeredContractName(string memory name) {
         require(
             bytes(name).length > 0,
             "ContractRegistry: contract name must not be empty"
@@ -22,7 +24,7 @@ contract ContractRegistry is Ownable, IContractRegistry {
         _;
     }
 
-    modifier registeredAddress(address _address) {
+    modifier registeredContractAddress(address _address) {
         require(
             _address != address(0),
             "ContractRegistry: contract address is invalid"
@@ -34,7 +36,7 @@ contract ContractRegistry is Ownable, IContractRegistry {
         _;
     }
 
-    modifier notRegisteredName(string memory name) {
+    modifier notRegisteredContractName(string memory name) {
         require(
             bytes(name).length > 0,
             "ContractRegistry: contract name must not be empty"
@@ -46,7 +48,7 @@ contract ContractRegistry is Ownable, IContractRegistry {
         _;
     }
 
-    modifier notRegisteredAddress(address _address) {
+    modifier notRegisteredContractAddress(address _address) {
         require(
             _address != address(0),
             "ContractRegistry: contract address is invalid"
@@ -58,16 +60,19 @@ contract ContractRegistry is Ownable, IContractRegistry {
         _;
     }
 
-    constructor(address owner) {
-        transferOwnership(owner);
+    constructor(address gfnOwner) {
+        transferOwnership(gfnOwner);
     }
 
     function registerContract(
-        string memory name, 
+        string memory name,
         address _address
-    ) 
+    )
         external
-        override onlyOwner notRegisteredName(name) notRegisteredAddress(_address)
+        override
+        onlyOwner
+        notRegisteredContractName(name)
+        notRegisteredContractAddress(_address)
     {
         _nameToAddress[name] = _address;
         _addressToName[_address] = name;
@@ -79,7 +84,11 @@ contract ContractRegistry is Ownable, IContractRegistry {
         string memory name,
         address _address
     )
-        external override onlyOwner registeredName(name) registeredAddress(_address)
+        external
+        override
+        onlyOwner
+        registeredContractName(name)
+        registeredContractAddress(_address)
     {
         delete _nameToAddress[name];
         delete _addressToName[_address];

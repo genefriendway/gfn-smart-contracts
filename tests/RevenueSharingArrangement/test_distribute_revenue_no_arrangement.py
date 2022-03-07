@@ -12,7 +12,7 @@ def test_success__distribute_revenue__gpo_has_no_arrangement(
         deployment, initial_life_treasury_and_pool, const
 ):
     # Arranges
-    gfn_owner1 = deployment[const.GFN_OWNER1]
+    gfn_operator = deployment[const.GFN_OPERATOR]
     life_token = deployment[const.LIFE_TOKEN]
     gnft_token = deployment[const.GNFT_TOKEN]
     gpo_wallet = deployment[const.GENETIC_PROFILE_OWNER_WALLET]
@@ -25,7 +25,7 @@ def test_success__distribute_revenue__gpo_has_no_arrangement(
 
     # Arranges: Mint G-NFT Token
     gnft_token.mintBatchGNFT(
-        [genetic_owner1], [gnft_token_id1], True, {'from': gfn_owner1}
+        [genetic_owner1], [gnft_token_id1], True, {"from": gfn_operator}
     )
 
     # Asserts before actions
@@ -40,7 +40,7 @@ def test_success__distribute_revenue__gpo_has_no_arrangement(
         data_utilizer1,
         gnft_token_id1,
         20e+18,
-        {'from': gfn_owner1}
+        {"from": gfn_operator}
     )
     # Asserts after actions
     assert gpo_wallet.getBalanceOfParticipant(genetic_owner1) == 20e+18

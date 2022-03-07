@@ -8,6 +8,7 @@ def initial_life_treasury_and_pool(deployment, const):
     # Arranges
     gfn_owner1 = deployment[const.GFN_OWNER1]
     gfn_owner2 = deployment[const.GFN_OWNER2]
+    gfn_operator = deployment[const.GFN_OPERATOR]
     gnft_token = deployment[const.GNFT_TOKEN]
     life_treasury = deployment[const.LIFE_TREASURY]
     life_token = deployment[const.LIFE_TOKEN]
@@ -23,7 +24,7 @@ def initial_life_treasury_and_pool(deployment, const):
     investor5 = accounts.add()
 
     # mint LIFE to Treasury
-    gnft_token.mintBatchGNFT([genetic_owner1], [12345678], True, {"from": gfn_owner1})
+    gnft_token.mintBatchGNFT([genetic_owner1], [12345678], True, {"from": gfn_operator})
 
     # Actions
     # gfn_owner1 make a transaction to transfer 6666 LIFE to gfn_wallet
@@ -43,7 +44,7 @@ def initial_life_treasury_and_pool(deployment, const):
 
     # Actions: Transfer LIFE token to Investor1
     gfn_wallet.transferToParticipantWallet(
-        investor_wallet, investor1, 100e+18, {"from": gfn_owner1}
+        investor_wallet, investor1, 100e+18, {"from": gfn_operator}
     )
 
     assert life_token.balanceOf(life_treasury.address) == 89993334e+18
@@ -53,7 +54,7 @@ def initial_life_treasury_and_pool(deployment, const):
 
     # Actions: Transfer LIFE token to Investor2
     gfn_wallet.transferToParticipantWallet(
-        investor_wallet, investor2, 250e+18, {"from": gfn_owner1}
+        investor_wallet, investor2, 250e+18, {"from": gfn_operator}
     )
 
     assert life_token.balanceOf(life_treasury.address) == 89993334e+18
@@ -63,7 +64,7 @@ def initial_life_treasury_and_pool(deployment, const):
 
     # Actions: Transfer LIFE token to Investor3
     gfn_wallet.transferToParticipantWallet(
-        investor_wallet, investor3, 400e+18, {"from": gfn_owner1}
+        investor_wallet, investor3, 400e+18, {"from": gfn_operator}
     )
 
     assert life_token.balanceOf(life_treasury.address) == 89993334e+18
@@ -73,7 +74,7 @@ def initial_life_treasury_and_pool(deployment, const):
 
     # Actions: Transfer LIFE token to Investor4
     gfn_wallet.transferToParticipantWallet(
-        investor_wallet, investor4, 600e+18, {"from": gfn_owner1}
+        investor_wallet, investor4, 600e+18, {"from": gfn_operator}
     )
 
     assert life_token.balanceOf(life_treasury.address) == 89993334e+18
@@ -83,7 +84,7 @@ def initial_life_treasury_and_pool(deployment, const):
 
     # Actions: Transfer LIFE token to Investor5
     gfn_wallet.transferToParticipantWallet(
-        investor_wallet, investor5, 50e+18, {"from": gfn_owner1}
+        investor_wallet, investor5, 50e+18, {"from": gfn_operator}
     )
 
     assert life_token.balanceOf(life_treasury.address) == 89993334e+18
@@ -93,7 +94,7 @@ def initial_life_treasury_and_pool(deployment, const):
 
     # create a pool
     pool_id = 'Pool_ID_1'
-    reserve_pool.createPool(pool_id, {"from": gfn_owner1})
+    reserve_pool.createPool(pool_id, {"from": gfn_operator})
 
     return {
         'investor1': investor1,
