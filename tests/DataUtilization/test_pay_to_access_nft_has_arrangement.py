@@ -5,6 +5,7 @@ from brownie import accounts
 
 @pytest.fixture(autouse=True)
 def isolation(fn_isolation):
+    """make each function being isolated by common fixtures"""
     pass
 
 
@@ -13,6 +14,7 @@ def arrangement_setup(deployment, const):
     # Arranges
     gfn_owner1 = deployment[const.GFN_OWNER1]
     gfn_owner2 = deployment[const.GFN_OWNER2]
+    gfn_operator = deployment[const.GFN_OPERATOR]
     gnft_token = deployment[const.GNFT_TOKEN]
     life_treasury = deployment[const.LIFE_TREASURY]
     life_token = deployment[const.LIFE_TOKEN]
@@ -23,7 +25,7 @@ def arrangement_setup(deployment, const):
     revenue_sharing = deployment[const.REVENUE_SHARING_ARRANGEMENT]
 
     # ======== initialize LIFE token for LIFE Treasury =====
-    gnft_token.mintBatchGNFT([accounts.add()], [876545678], True, {"from": gfn_owner1})
+    gnft_token.mintBatchGNFT([accounts.add()], [876545678], True, {"from": gfn_operator})
 
     # ======== initialize LIFE token for GFNWallet =========
     calldata = life_token.transfer.encode_input(gfn_wallet, 6000e+18)
@@ -46,19 +48,19 @@ def arrangement_setup(deployment, const):
     investor5 = accounts.add()
 
     gfn_wallet.transferToParticipantWallet(
-        investor_wallet, investor1, 100e+18, {"from": gfn_owner1}
+        investor_wallet, investor1, 100e+18, {"from": gfn_operator}
     )
     gfn_wallet.transferToParticipantWallet(
-        investor_wallet, investor2, 200e+18, {"from": gfn_owner1}
+        investor_wallet, investor2, 200e+18, {"from": gfn_operator}
     )
     gfn_wallet.transferToParticipantWallet(
-        investor_wallet, investor3, 300e+18, {"from": gfn_owner1}
+        investor_wallet, investor3, 300e+18, {"from": gfn_operator}
     )
     gfn_wallet.transferToParticipantWallet(
-        investor_wallet, investor4, 400e+18, {"from": gfn_owner1}
+        investor_wallet, investor4, 400e+18, {"from": gfn_operator}
     )
     gfn_wallet.transferToParticipantWallet(
-        investor_wallet, investor5, 500e+18, {"from": gfn_owner1}
+        investor_wallet, investor5, 500e+18, {"from": gfn_operator}
     )
     assert life_token.balanceOf(gfn_wallet.address) == 4500e+18
     assert life_token.balanceOf(investor_wallet.address) == 1500e+18
@@ -66,7 +68,7 @@ def arrangement_setup(deployment, const):
     # ========== Initialize LIFE token for Data Utilizer =======
     data_utilizer1 = accounts.add()
     gfn_wallet.transferToParticipantWallet(
-        du_wallet, data_utilizer1, 500e+18, {"from": gfn_owner1}
+        du_wallet, data_utilizer1, 500e+18, {"from": gfn_operator}
     )
     assert life_token.balanceOf(gfn_wallet.address) == 4000e+18
     assert life_token.balanceOf(du_wallet.address) == 500e+18
@@ -74,15 +76,15 @@ def arrangement_setup(deployment, const):
     # =========== create Reserve Pool ====
     pool_id1 = 'Pool_ID_1'
     pool_id2 = 'Pool_ID_2'
-    reserve_pool.createPool(pool_id1, {"from": gfn_owner1})
-    reserve_pool.createPool(pool_id2, {"from": gfn_owner1})
+    reserve_pool.createPool(pool_id1, {"from": gfn_operator})
+    reserve_pool.createPool(pool_id2, {"from": gfn_operator})
 
     # =========== Investor Join Pools ====
-    reserve_pool.joinPool(investor1, pool_id1, 10e+18, {'from': gfn_owner1})
-    reserve_pool.joinPool(investor2, pool_id1, 35e+18, {'from': gfn_owner1})
-    reserve_pool.joinPool(investor3, pool_id1, 24e+18, {'from': gfn_owner1})
-    reserve_pool.joinPool(investor4, pool_id1, 50e+18, {'from': gfn_owner1})
-    reserve_pool.joinPool(investor5, pool_id2, 100e+18, {'from': gfn_owner1})
+    reserve_pool.joinPool(investor1, pool_id1, 10e+18, {"from": gfn_operator})
+    reserve_pool.joinPool(investor2, pool_id1, 35e+18, {"from": gfn_operator})
+    reserve_pool.joinPool(investor3, pool_id1, 24e+18, {"from": gfn_operator})
+    reserve_pool.joinPool(investor4, pool_id1, 50e+18, {"from": gfn_operator})
+    reserve_pool.joinPool(investor5, pool_id2, 100e+18, {"from": gfn_operator})
 
     assert reserve_pool.getBalanceOfPool(pool_id1) == 119e+18
     assert reserve_pool.getBalanceOfPool(pool_id2) == 100e+18
@@ -93,13 +95,13 @@ def arrangement_setup(deployment, const):
     genetic_owner3 = accounts.add()
 
     reserve_pool.requestCoInvestors(
-        genetic_owner1, pool_id1, 3e+18, {"from": gfn_owner1}
+        genetic_owner1, pool_id1, 3e+18, {"from": gfn_operator}
     )
     reserve_pool.requestCoInvestors(
-        genetic_owner2, pool_id1, 18e+18, {"from": gfn_owner1}
+        genetic_owner2, pool_id1, 18e+18, {"from": gfn_operator}
     )
     reserve_pool.requestCoInvestors(
-        genetic_owner3, pool_id1, 55e+18, {"from": gfn_owner1}
+        genetic_owner3, pool_id1, 55e+18, {"from": gfn_operator}
     )
 
     co_investors1 = revenue_sharing.queryCoInvestorsByGPO(genetic_owner1)
@@ -125,18 +127,18 @@ def arrangement_setup(deployment, const):
         [genetic_owner1, genetic_owner2, genetic_owner3],
         [gnft_token_id1, gnft_token_id2, gnft_token_id3],
         True,
-        {"from": gfn_owner1}
+        {"from": gfn_operator}
     )
 
     # ========== Link G-NFT Token and Arrangement ========
     revenue_sharing.linkGNFTTokenIdAndOriginalGeneticProfileOwner(
-        gnft_token_id1, genetic_owner1, {"from": gfn_owner1}
+        gnft_token_id1, genetic_owner1, {"from": gfn_operator}
     )
     revenue_sharing.linkGNFTTokenIdAndOriginalGeneticProfileOwner(
-        gnft_token_id2, genetic_owner2, {"from": gfn_owner1}
+        gnft_token_id2, genetic_owner2, {"from": gfn_operator}
     )
     revenue_sharing.linkGNFTTokenIdAndOriginalGeneticProfileOwner(
-        gnft_token_id3, genetic_owner3, {"from": gfn_owner1}
+        gnft_token_id3, genetic_owner3, {"from": gfn_operator}
     )
     assert revenue_sharing.hasArrangementByTokenId(gnft_token_id1) is True
     assert revenue_sharing.hasArrangementByTokenId(gnft_token_id2) is True
@@ -164,7 +166,7 @@ def test_success__pay_to_access__one_nft_has_one_co_investor(
         deployment, arrangement_setup, const
 ):
     # Arranges
-    gfn_owner1 = deployment[const.GFN_OWNER1]
+    gfn_operator = deployment[const.GFN_OPERATOR]
     investor_wallet = deployment[const.INVESTOR_WALLET]
     gpo_wallet = deployment[const.GENETIC_PROFILE_OWNER_WALLET]
     du_wallet = deployment[const.DATA_UTILIZER_WALLET]
@@ -187,7 +189,7 @@ def test_success__pay_to_access__one_nft_has_one_co_investor(
         data_utilizer1,
         [gnft_token_id1],
         [10e+18],
-        {'from': gfn_owner1}
+        {"from": gfn_operator}
     )
     # Assert: PayToAccess Event
     assert ('PayToAccess' in tx.events) is True
@@ -213,7 +215,7 @@ def test_success__pay_to_access__one_nft_has_two_co_investors(
         deployment, arrangement_setup, const
 ):
     # Arranges
-    gfn_owner1 = deployment[const.GFN_OWNER1]
+    gfn_operator = deployment[const.GFN_OPERATOR]
     investor_wallet = deployment[const.INVESTOR_WALLET]
     gpo_wallet = deployment[const.GENETIC_PROFILE_OWNER_WALLET]
     du_wallet = deployment[const.DATA_UTILIZER_WALLET]
@@ -238,7 +240,7 @@ def test_success__pay_to_access__one_nft_has_two_co_investors(
         data_utilizer1,
         [gnft_token_id2],
         [12e+18],
-        {'from': gfn_owner1}
+        {"from": gfn_operator}
     )
     # X = 18, Revenue = 12
     # 18 - 100:0 => 12 - 12:0
@@ -266,7 +268,7 @@ def test_success__pay_to_access__one_nft_has_three_co_investors(
         deployment, arrangement_setup, const
 ):
     # Arranges
-    gfn_owner1 = deployment[const.GFN_OWNER1]
+    gfn_operator = deployment[const.GFN_OPERATOR]
     investor_wallet = deployment[const.INVESTOR_WALLET]
     gpo_wallet = deployment[const.GENETIC_PROFILE_OWNER_WALLET]
     du_wallet = deployment[const.DATA_UTILIZER_WALLET]
@@ -293,7 +295,7 @@ def test_success__pay_to_access__one_nft_has_three_co_investors(
         data_utilizer1,
         [gnft_token_id3],
         [140e+18],
-        {'from': gfn_owner1}
+        {"from": gfn_operator}
     )
 
     # Calculate total distributed revenue
@@ -319,7 +321,7 @@ def test_success__pay_to_access__two_nft(
         deployment, arrangement_setup, const
 ):
     # Arranges
-    gfn_owner1 = deployment[const.GFN_OWNER1]
+    gfn_operator = deployment[const.GFN_OPERATOR]
     investor_wallet = deployment[const.INVESTOR_WALLET]
     gpo_wallet = deployment[const.GENETIC_PROFILE_OWNER_WALLET]
     du_wallet = deployment[const.DATA_UTILIZER_WALLET]
@@ -349,7 +351,7 @@ def test_success__pay_to_access__two_nft(
         data_utilizer1,
         [gnft_token_id2, gnft_token_id3],
         [12e+18, 140e+18],
-        {'from': gfn_owner1}
+        {"from": gfn_operator}
     )
 
     # Calculate total distributed revenue

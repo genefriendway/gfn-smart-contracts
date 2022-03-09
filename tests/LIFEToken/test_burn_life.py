@@ -5,6 +5,7 @@ from brownie import accounts
 
 @pytest.fixture(autouse=True)
 def isolation(fn_isolation):
+    """make each function being isolated by common fixtures"""
     pass
 
 
@@ -13,6 +14,7 @@ def setup(deployment, const):
     # Arranges
     gfn_owner1 = deployment[const.GFN_OWNER1]
     gfn_owner2 = deployment[const.GFN_OWNER2]
+    gfn_operator = deployment[const.GFN_OPERATOR]
     gnft_token = deployment[const.GNFT_TOKEN]
     life_treasury = deployment[const.LIFE_TREASURY]
     life_token = deployment[const.LIFE_TOKEN]
@@ -21,7 +23,7 @@ def setup(deployment, const):
     genetic_owner2 = accounts[4]
 
     # mint LIFE to Treasury
-    gnft_token.mintBatchGNFT([genetic_owner1], [12345678], True, {"from": gfn_owner1})
+    gnft_token.mintBatchGNFT([genetic_owner1], [12345678], True, {"from": gfn_operator})
 
     # Actions
     # gfn_owner1 make a transaction to transfer 5000 LIFE to genetic_owner2
@@ -98,20 +100,20 @@ def test_failure__burn_life_token__has_balance_but_not_enough(setup, deployment,
 
 def test_failure__burn_life_token__no_balance(setup, deployment, const):
     # Arranges
-    gfn_owner1 = deployment[const.GFN_OWNER1]
+    gfn_operator = deployment[const.GFN_OPERATOR]
     life_token = deployment[const.LIFE_TOKEN]
     life_treasury = deployment[const.LIFE_TREASURY]
 
     # asserts before actions
     assert life_token.totalSupply() == 90000000e+18
     assert life_token.balanceOf(life_treasury.address) == 89995000e+18
-    assert life_token.balanceOf(gfn_owner1.address) == 0
+    assert life_token.balanceOf(gfn_operator.address) == 0
 
     # Actions
     with brownie.reverts("ERC20: burn amount exceeds balance"):
-        life_token.burnLIFE(5001e+18, {"from": gfn_owner1})
+        life_token.burnLIFE(5001e+18, {"from": gfn_operator})
 
     # Assert: check balances actions
     assert life_token.totalSupply() == 90000000e+18
     assert life_token.balanceOf(life_treasury.address) == 89995000e+18
-    assert life_token.balanceOf(gfn_owner1.address) == 0
+    assert life_token.balanceOf(gfn_operator.address) == 0

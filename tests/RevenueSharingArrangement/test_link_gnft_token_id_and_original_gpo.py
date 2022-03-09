@@ -5,6 +5,7 @@ from brownie import accounts
 
 @pytest.fixture(autouse=True)
 def isolation(fn_isolation):
+    """make each function being isolated by common fixtures"""
     pass
 
 
@@ -12,7 +13,7 @@ def test_success__link_token_and_original_gpo(
     deployment, initial_life_treasury_and_pool, const
 ):
     # Arranges
-    gfn_owner1 = deployment[const.GFN_OWNER1]
+    gfn_operator = deployment[const.GFN_OPERATOR]
     reserve_pool = deployment[const.RESERVE_POOL]
     gnft_token = deployment[const.GNFT_TOKEN]
     revenue_sharing = deployment[const.REVENUE_SHARING_ARRANGEMENT]
@@ -24,14 +25,14 @@ def test_success__link_token_and_original_gpo(
 
     # Arrange: request co-investors
     reserve_pool.requestCoInvestors(
-        genetic_owner, pool_id, 3e+18, {'from': gfn_owner1}
+        genetic_owner, pool_id, 3e+18, {"from": gfn_operator}
     )
     # Arrange: mint G-NFT token
-    gnft_token.mintBatchGNFT([genetic_owner], [gnft_token_id], True, {"from": gfn_owner1})
+    gnft_token.mintBatchGNFT([genetic_owner], [gnft_token_id], True, {"from": gfn_operator})
 
     # Actions
     revenue_sharing.linkGNFTTokenIdAndOriginalGeneticProfileOwner(
-        gnft_token_id, genetic_owner, {'from': gfn_owner1}
+        gnft_token_id, genetic_owner, {"from": gfn_operator}
     )
 
     # Asserts: RevenueSharingArrangement status

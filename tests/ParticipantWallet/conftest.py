@@ -8,6 +8,7 @@ def initial_life_treasury(deployment, const):
     # Arranges
     gfn_owner1 = deployment[const.GFN_OWNER1]
     gfn_owner2 = deployment[const.GFN_OWNER2]
+    gfn_operator = deployment[const.GFN_OPERATOR]
     gnft_token = deployment[const.GNFT_TOKEN]
     life_treasury = deployment[const.LIFE_TREASURY]
     life_token = deployment[const.LIFE_TOKEN]
@@ -18,7 +19,7 @@ def initial_life_treasury(deployment, const):
     genetic_owner2 = accounts[4]
 
     # mint LIFE to Treasury
-    gnft_token.mintBatchGNFT([genetic_owner1], [12345678], True, {"from": gfn_owner1})
+    gnft_token.mintBatchGNFT([genetic_owner1], [12345678], True, {"from": gfn_operator})
 
     # Actions
     # gfn_owner1 make a transaction to transfer 6666 LIFE to gfn_wallet
@@ -38,7 +39,7 @@ def initial_life_treasury(deployment, const):
 
     # Actions: Transfer LIFE token to GeneProfileOwnerWallet
     gfn_wallet.transferToParticipantWallet(
-        gpo_wallet, genetic_owner2, 24e+18, {"from": gfn_owner1}
+        gpo_wallet, genetic_owner2, 24e+18, {"from": gfn_operator}
     )
 
     # Assert: check balances after transferring to genetic_owner2 in GeneProfileOwnerWallet

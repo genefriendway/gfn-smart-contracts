@@ -199,6 +199,8 @@ def main():
     print(f'=> Network     : {setting.BLOCKCHAIN_NETWORK}')
     print(f'=> gfn_deployer: {setting.GFN_DEPLOYER_ADDRESS}')
     print(f'=> gfn_owner   : {setting.GFN_OWNER_ADDRESS}')
+    print(f'=> gfn_operator: {setting.GFN_OPERATOR_ADDRESS}')
+    print(f'=> NFT Holder  : {setting.GFN_NFT_HOLDER_ADDRESS}')
     print(f'=> NFT Token Name       : {setting.GNFT_TOKEN_NAME}')
     print(f'=> NFT Token SymBol     : {setting.GNFT_TOKEN_SYMBOL}')
     print(f'=> LIFE Token Name      : {setting.LIFE_TOKEN_NAME}')

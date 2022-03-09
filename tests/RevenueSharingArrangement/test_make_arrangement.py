@@ -5,12 +5,13 @@ from brownie import accounts
 
 @pytest.fixture(autouse=True)
 def isolation(fn_isolation):
+    """make each function being isolated by common fixtures"""
     pass
 
 
 def test_success__make_arrangement(deployment, initial_life_treasury_and_pool, const):
     # Arranges
-    gfn_owner1 = deployment[const.GFN_OWNER1]
+    gfn_operator = deployment[const.GFN_OPERATOR]
     life_token = deployment[const.LIFE_TOKEN]
     gfn_wallet = deployment[const.GENE_FRIEND_NETWORK_WALLET]
     reserve_pool = deployment[const.RESERVE_POOL]
@@ -23,7 +24,7 @@ def test_success__make_arrangement(deployment, initial_life_treasury_and_pool, c
 
     # Actions: request co-investors
     reserve_pool.requestCoInvestors(
-        genetic_owner, pool_id, 3e+18, {'from': gfn_owner1}
+        genetic_owner, pool_id, 3e+18, {"from": gfn_operator}
     )
 
     # Asserts: ReversePool status

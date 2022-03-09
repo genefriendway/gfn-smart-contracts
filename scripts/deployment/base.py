@@ -37,8 +37,11 @@ class ContractDeployment(ABC):
             errors.append("Please setup env: 'GFN_DEPLOYER_PRIVATE_KEY'")
         if not self.setting.GFN_OWNER_ADDRESS:
             errors.append("Please setup env: 'GFN_OWNER_ADDRESS'")
+        if not self.setting.GFN_OPERATOR_ADDRESS:
+            errors.append("Please setup env: 'GFN_OPERATOR_ADDRESS'")
+        if not self.setting.GFN_NFT_HOLDER_ADDRESS:
+            errors.append("Please setup env: 'GFN_NFT_HOLDER_ADDRESS'")
         return errors
-
 
     def start_deployment(self):
         instance = self.deploy()

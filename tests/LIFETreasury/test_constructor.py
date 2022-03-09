@@ -3,7 +3,7 @@ import pytest
 
 from brownie import (
     accounts,
-    LIFETreasury
+    MultiSignature
 )
 
 
@@ -14,8 +14,8 @@ def test_success__initialize_contract(const):
     gfn_owner3 = accounts[2]
 
     # deploy LIFE Treasury contract
-    life_treasury = LIFETreasury.deploy(
-        [gfn_owner1, gfn_owner2, gfn_owner3], 3, {'from': gfn_owner1}
+    life_treasury = MultiSignature.deploy(
+        [gfn_owner1, gfn_owner2, gfn_owner3], 3, {"from": gfn_owner1}
     )
 
     # assert: before adding one more owner

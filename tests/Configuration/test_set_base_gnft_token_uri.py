@@ -4,6 +4,7 @@ import brownie
 
 @pytest.fixture(autouse=True)
 def isolation(fn_isolation):
+    """make each function being isolated by common fixtures"""
     pass
 
 
@@ -22,7 +23,7 @@ def test_success__set_base_gnft_token_uri(deployment, const):
 
     # Assert: SetBaseGNFTTokenURI Event
     assert ('SetBaseGNFTTokenURI' in tx.events) is True
-    assert tx.events['SetBaseGNFTTokenURI']['uri'] == 'https://genetica.asis/gnft/'
+    assert tx.events['SetBaseGNFTTokenURI']['baseURI'] == 'https://genetica.asis/gnft/'
 
     # # Asserts: after actions
     assert config.getBaseGNFTTokenURI() == "https://genetica.asis/gnft/"
@@ -32,7 +33,7 @@ def test_success__set_base_gnft_token_uri(deployment, const):
 
     # Assert: SetBaseGNFTTokenURI Event
     assert ('SetBaseGNFTTokenURI' in tx.events) is True
-    assert tx.events['SetBaseGNFTTokenURI']['uri'] == 'abc-xyz'
+    assert tx.events['SetBaseGNFTTokenURI']['baseURI'] == 'abc-xyz'
 
     # # Asserts: after actions
     assert config.getBaseGNFTTokenURI() == 'abc-xyz'

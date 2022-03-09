@@ -5,13 +5,14 @@ from brownie import accounts
 
 @pytest.fixture(autouse=True)
 def isolation(fn_isolation):
+    """make each function being isolated by common fixtures"""
     pass
 
 
 @pytest.fixture(scope="function")
 def setup(deployment, const):
     # Arranges
-    gfn_owner1 = deployment[const.GFN_OWNER1]
+    gfn_operator = deployment[const.GFN_OPERATOR]
     gnft_token = deployment[const.GNFT_TOKEN]
     life_token = deployment[const.LIFE_TOKEN]
     life_treasury = deployment[const.LIFE_TREASURY]
@@ -21,7 +22,7 @@ def setup(deployment, const):
 
     # Actions
     gnft_token.mintBatchGNFT(
-        [genetic_owner1], [genetic_profile_id], True, {"from": gfn_owner1}
+        [genetic_owner1], [genetic_profile_id], True, {"from": gfn_operator}
     )
 
     # Asserts: LIFEToken Status
@@ -30,7 +31,7 @@ def setup(deployment, const):
 
 def test_success__burn_gnft__gfn_owner_burn_existed_nft(setup, deployment, const):
     # Arranges
-    gfn_owner1 = deployment[const.GFN_OWNER1]
+    nft_holder = deployment[const.NFT_HOLDER]
     gnft_token = deployment[const.GNFT_TOKEN]
     life_token = deployment[const.LIFE_TOKEN]
     life_treasury = deployment[const.LIFE_TREASURY]
@@ -46,12 +47,12 @@ def test_success__burn_gnft__gfn_owner_burn_existed_nft(setup, deployment, const
     assert gnft_token.ownerOf(12345678) == genetic_owner1
 
     # Actions
-    tx = gnft_token.burnGNFT(genetic_profile_id, {"from": gfn_owner1})
+    tx = gnft_token.burnGNFT(genetic_profile_id, {"from": nft_holder})
 
     # Assert: BurnGNFT Event
     assert ('BurnGNFT' in tx.events) is True
     assert tx.events['BurnGNFT']['geneticProfileId'] == genetic_profile_id
-    assert tx.events['BurnGNFT']['burnedBy'] == gfn_owner1.address
+    assert tx.events['BurnGNFT']['burnedBy'] == nft_holder.address
 
     # Assert: Approval Event
     assert ('Approval' in tx.events) is True
@@ -125,7 +126,8 @@ def test_success__burn_gnft__nft_owner_burn_existed_nft(setup, deployment, const
 
 def test_success__burn_gnft__burn_and_mint_again(setup, deployment, const):
     # Arranges
-    gfn_owner1 = deployment[const.GFN_OWNER1]
+    gfn_operator = deployment[const.GFN_OPERATOR]
+    nft_holder = deployment[const.NFT_HOLDER]
     gnft_token = deployment[const.GNFT_TOKEN]
     life_token = deployment[const.LIFE_TOKEN]
     life_treasury = deployment[const.LIFE_TREASURY]
@@ -141,7 +143,7 @@ def test_success__burn_gnft__burn_and_mint_again(setup, deployment, const):
     assert gnft_token.ownerOf(12345678) == genetic_owner1
 
     # Actions
-    gnft_token.burnGNFT(genetic_profile_id, {"from": gfn_owner1})
+    gnft_token.burnGNFT(genetic_profile_id, {"from": nft_holder})
 
     # # Asserts
     assert gnft_token.getTotalMintedGeneticProfiles() == 1
@@ -160,7 +162,7 @@ def test_success__burn_gnft__burn_and_mint_again(setup, deployment, const):
 
     # Actions: remint GNFT
     gnft_token.mintBatchGNFT(
-        [genetic_owner1], [genetic_profile_id], True, {"from": gfn_owner1}
+        [genetic_owner1], [genetic_profile_id], True, {"from": gfn_operator}
     )
 
     # Asserts: LIFEToken Status
@@ -181,7 +183,7 @@ def test_failure__burn_gnft__not_gfn_owner_and_not_approvee(setup, deployment, c
 
 def test_failure__burn_gnft__not_existed_genetic_profile_id(setup, deployment, const):
     # Arranges
-    gfn_owner1 = deployment[const.GFN_OWNER1]
+    gfn_operator = deployment[const.GFN_OPERATOR]
     gnft_token = deployment[const.GNFT_TOKEN]
 
     other_genetic_profile_id = 88888888
@@ -195,7 +197,7 @@ def test_failure__burn_gnft__not_existed_genetic_profile_id(setup, deployment, c
 
     # Actions
     with brownie.reverts("ERC721: operator query for nonexistent token"):
-        gnft_token.burnGNFT(other_genetic_profile_id, {"from": gfn_owner1})
+        gnft_token.burnGNFT(other_genetic_profile_id, {"from": gfn_operator})
 
     # Assert after burning token
     assert gnft_token.getTotalMintedGeneticProfiles() == 1

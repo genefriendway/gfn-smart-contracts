@@ -14,6 +14,7 @@ class ConfigurationDeployment(ContractDeployment):
         print(f"==> Deploying {self.contract_name} .....")
         configuration = self.contract_class.deploy(
             self.setting.GFN_OWNER_ADDRESS,
+            self.setting.GFN_NFT_HOLDER_ADDRESS,
             registry_instance.address,
             self.setting.TXN_SENDER
         )

@@ -21,7 +21,6 @@ class LIFETokenDeployment(ContractDeployment):
 
         print(f"==> Deploying {self.contract_name} .....")
         life_token = self.contract_class.deploy(
-            self.setting.GFN_OWNER_ADDRESS,
             registry_instance.address,
             self.setting.LIFE_TOKEN_NAME,
             self.setting.LIFE_TOKEN_SYMBOL,

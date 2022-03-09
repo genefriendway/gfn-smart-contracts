@@ -1,26 +1,20 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.11;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
-
 import "./interfaces/IContractRegistry.sol";
 import "./interfaces/IDataUtilization.sol";
 import "./interfaces/IRevenueSharingArrangement.sol";
 import "./mixins/RevenueSharingArrangementRetriever.sol";
+import "./mixins/AccessibleRegistry.sol";
 
 
 contract DataUtilization is
-    Ownable,
+    AccessibleRegistry,
     IDataUtilization,
     RevenueSharingArrangementRetriever
 {
 
-    IContractRegistry public registry;
-
-    constructor(address gfnOwner, IContractRegistry _registry) {
-        registry = _registry;
-        transferOwnership(gfnOwner);
-    }
+    constructor(IContractRegistry _registry) AccessibleRegistry(_registry){}
 
     function payToAccess(
         address fromParticipantWallet,
@@ -28,7 +22,7 @@ contract DataUtilization is
         uint256[] memory receivedTokenIds,
         uint256[] memory receivedLIFEAmounts
     )
-        external onlyOwner
+        external onlyOperator
     {
         require(
             receivedTokenIds.length == receivedLIFEAmounts.length,

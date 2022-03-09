@@ -3,40 +3,36 @@ pragma solidity 0.8.11;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
 import "./interfaces/IContractRegistry.sol";
 import "./interfaces/IParticipantWallet.sol";
 import "./mixins/LIFETokenRetriever.sol";
+import "./mixins/AccessibleRegistry.sol";
 
 
 contract ParticipantWallet is
     IParticipantWallet,
-    Ownable,
+    AccessibleRegistry,
     LIFETokenRetriever
 {
     using SafeERC20 for IERC20;
-    IContractRegistry public registry;
 
     mapping(address => uint256) private balancesOfParticipant;
 
-    modifier onlyOwnerOrRegisteredContract() {
+    modifier onlyOperatorOrRegisteredContract() {
         require(
-            owner() == _msgSender() || registry.isRegisteredContract(_msgSender()),
+            checkSenderIsOperator() || registry.isRegisteredContract(_msgSender()),
             "ParticipantWallet: caller is not the owner or registered contract"
         );
         _;
     }
 
-    constructor(address gfnOwner, IContractRegistry _registry) {
-        registry = _registry;
-        transferOwnership(gfnOwner);
-    }
+    constructor(IContractRegistry _registry) AccessibleRegistry(_registry) {}
 
     function transferInternally(
         address sender,
         address receiver,
         uint256 amount
-    ) external override onlyOwnerOrRegisteredContract {
+    ) external override onlyOperatorOrRegisteredContract {
         // validate: must have enough balance of sender
         require(
             balancesOfParticipant[sender] >= amount,
@@ -54,7 +50,7 @@ contract ParticipantWallet is
         address participantWallet,
         address receiver,
         uint256 amount
-    ) external override onlyOwnerOrRegisteredContract {
+    ) external override onlyOperatorOrRegisteredContract {
         // validate: must have enough balance of sender
         require(
             balancesOfParticipant[sender] >= amount,
@@ -76,7 +72,7 @@ contract ParticipantWallet is
         address sender,
         address receiver,
         uint256 amount
-    ) external override onlyOwnerOrRegisteredContract {
+    ) external override onlyOperatorOrRegisteredContract {
         // validate: must have enough balance of sender
         require(
             balancesOfParticipant[sender] >= amount,
@@ -95,7 +91,7 @@ contract ParticipantWallet is
     function receiveFromExternal(
         address receiver,
         uint256 amount
-    ) external override onlyOwnerOrRegisteredContract {
+    ) external override onlyOperatorOrRegisteredContract {
         balancesOfParticipant[receiver] += amount;
         emit ReceiveFromExternal(receiver, amount);
     }

@@ -5,12 +5,13 @@ from brownie import accounts
 
 @pytest.fixture(autouse=True)
 def isolation(fn_isolation):
+    """make each function being isolated by common fixtures"""
     pass
 
 
 def test_success__join_pool__one_investor_join(deployment, initial_life_treasury_and_pool, const):
     # Arranges
-    gfn_owner1 = deployment[const.GFN_OWNER1]
+    gfn_operator = deployment[const.GFN_OPERATOR]
     life_token = deployment[const.LIFE_TOKEN]
     reserve_pool = deployment[const.RESERVE_POOL]
     reserve_pool_wallet = deployment[const.RESERVE_POOL_WALLET]
@@ -20,7 +21,7 @@ def test_success__join_pool__one_investor_join(deployment, initial_life_treasury
     pool_id = initial_life_treasury_and_pool['pool_id']
 
     # Actions
-    reserve_pool.joinPool(investor1, pool_id, 12e+18, {'from': gfn_owner1})
+    reserve_pool.joinPool(investor1, pool_id, 12e+18, {"from": gfn_operator})
 
     # Asserts: ReversePool status
     assert reserve_pool.getBalanceOfPool(pool_id) == 12e+18
@@ -37,7 +38,7 @@ def test_success__join_pool__one_investor_join(deployment, initial_life_treasury
 
 def test_success__join_pool__two_investors_join(deployment, initial_life_treasury_and_pool, const):
     # Arranges
-    gfn_owner1 = deployment[const.GFN_OWNER1]
+    gfn_operator = deployment[const.GFN_OPERATOR]
     life_token = deployment[const.LIFE_TOKEN]
     reserve_pool = deployment[const.RESERVE_POOL]
     reserve_pool_wallet = deployment[const.RESERVE_POOL_WALLET]
@@ -48,8 +49,8 @@ def test_success__join_pool__two_investors_join(deployment, initial_life_treasur
     pool_id = initial_life_treasury_and_pool['pool_id']
 
     # Actions
-    reserve_pool.joinPool(investor1, pool_id, 12e+18, {'from': gfn_owner1})
-    reserve_pool.joinPool(investor2, pool_id, 50e+18, {'from': gfn_owner1})
+    reserve_pool.joinPool(investor1, pool_id, 12e+18, {"from": gfn_operator})
+    reserve_pool.joinPool(investor2, pool_id, 50e+18, {"from": gfn_operator})
 
     # Asserts: ReversePool status
     assert reserve_pool.getBalanceOfPool(pool_id) == 62e+18
