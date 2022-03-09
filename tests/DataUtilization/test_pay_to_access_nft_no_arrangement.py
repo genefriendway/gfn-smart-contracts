@@ -4,6 +4,7 @@ from brownie import accounts
 
 @pytest.fixture(autouse=True)
 def isolation(fn_isolation):
+    """make each function being isolated by common fixtures"""
     pass
 
 
@@ -11,7 +12,6 @@ def test_success__pay_to_access__gpo_has_no_arrangement(
         deployment, initial_life_treasury_and_pool, const
 ):
     # Arranges
-    gfn_owner1 = deployment[const.GFN_OWNER1]
     gfn_operator = deployment[const.GFN_OPERATOR]
     life_token = deployment[const.LIFE_TOKEN]
     gnft_token = deployment[const.GNFT_TOKEN]
