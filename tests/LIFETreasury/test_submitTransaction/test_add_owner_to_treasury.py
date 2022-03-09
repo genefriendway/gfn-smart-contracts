@@ -7,8 +7,13 @@ from brownie import (
 )
 
 
+ERROR_WRONG_CALLER = "MultiSignature: caller must be MultiSignature"
+ERROR_TRANSACTION_FAILED = "MultiSignature: execute transaction failed"
+
+
 @pytest.fixture(autouse=True)
 def isolation(fn_isolation):
+    """make each function being isolated by common fixtures"""
     pass
 
 
@@ -67,13 +72,13 @@ def test_failure__add_owner__not_treasury_call(deployment, const):
     gfn_owner3 = accounts[3]
 
     # Actions
-    with brownie.reverts("MultiSignature: caller must be MultiSignature"):
+    with brownie.reverts(ERROR_WRONG_CALLER):
         life_treasury.addOwner(gfn_owner3, {"from": gfn_owner1})
 
-    with brownie.reverts("MultiSignature: caller must be MultiSignature"):
+    with brownie.reverts(ERROR_WRONG_CALLER):
         life_treasury.removeOwner(gfn_owner1, {"from": gfn_owner1})
 
-    with brownie.reverts("MultiSignature: caller must be MultiSignature"):
+    with brownie.reverts(ERROR_WRONG_CALLER):
         life_treasury.changeNumberOfConfirmationRequired(5, {"from": gfn_owner1})
 
     # assert: after adding one more owner
@@ -150,7 +155,6 @@ def test_failure__add_owner__owner_confirm_wrong_transaction_id(deployment, cons
     gfn_owner2 = deployment[const.GFN_OWNER2]
     life_treasury = deployment[const.LIFE_TREASURY]
     gfn_owner3 = accounts.add()
-    fake_owner = accounts.add()
 
     # assert: before adding one more owner
     owners = life_treasury.getOwners()
@@ -263,7 +267,7 @@ def test_failure__add_owner__null_owner_address(deployment, const):
     transaction_id = tx.events['SubmitTransaction']['transactionId']
 
     # Action: gnf_owner2 confirm the request
-    with brownie.reverts("MultiSignature: execute transaction failed"):
+    with brownie.reverts(ERROR_TRANSACTION_FAILED):
         life_treasury.confirmTransaction(transaction_id, {"from": gfn_owner2})
 
     # assert: after adding one more owner
@@ -289,7 +293,7 @@ def test_failure__add_owner__existed_owner_address(deployment, const):
     assert life_treasury.isConfirmedTransaction(transaction_id) is False
 
     # Action: gnf_owner2 confirm the request
-    with brownie.reverts("MultiSignature: execute transaction failed"):
+    with brownie.reverts(ERROR_TRANSACTION_FAILED):
         life_treasury.confirmTransaction(transaction_id, {"from": gfn_owner2})
 
     # assert: after adding one more owner
@@ -345,7 +349,7 @@ def test_failure__add_owner__exceed_max_owner(deployment, const):
     transaction_id = tx.events['SubmitTransaction']['transactionId']
 
     # Action: gnf_owner2 confirm the transaction that add gfn_owner6
-    with brownie.reverts("MultiSignature: execute transaction failed"):
+    with brownie.reverts(ERROR_TRANSACTION_FAILED):
         life_treasury.confirmTransaction(transaction_id, {"from": gfn_owner2})
 
     # assert: after add owner gfn_owner6

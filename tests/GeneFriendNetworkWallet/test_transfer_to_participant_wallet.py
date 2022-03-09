@@ -5,12 +5,12 @@ from brownie import accounts
 
 @pytest.fixture(autouse=True)
 def isolation(fn_isolation):
+    """make each function being isolated by common fixtures"""
     pass
 
 
 def test_success__transfer_to_participant_wallet__amount_less_than_balance_of_sender(deployment, initial_life_treasury, const):
     # Arranges
-    gfn_operator = deployment[const.GFN_OPERATOR]
     gfn_operator = deployment[const.GFN_OPERATOR]
     life_token = deployment[const.LIFE_TOKEN]
     gfn_wallet = deployment[const.GENE_FRIEND_NETWORK_WALLET]
