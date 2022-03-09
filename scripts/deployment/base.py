@@ -25,6 +25,7 @@ class ContractDeployment(ABC):
 
     def __init__(self, setting: Setting):
         self.setting = setting
+        self.contract_instance = None
         errors = self.validate_setting()
         if errors:
             raise EnvironmentError('\n'.join(errors))
@@ -35,13 +36,16 @@ class ContractDeployment(ABC):
             errors.append("Please setup env: 'ENV_NAME'")
         if not self.setting.GFN_DEPLOYER_PRIVATE_KEY:
             errors.append("Please setup env: 'GFN_DEPLOYER_PRIVATE_KEY'")
-        if not self.setting.GFN_OWNER_ADDRESS:
-            errors.append("Please setup env: 'GFN_OWNER_ADDRESS'")
-        if not self.setting.GFN_OPERATOR_ADDRESS:
-            errors.append("Please setup env: 'GFN_OPERATOR_ADDRESS'")
+        if not self.setting.GFN_REGISTRY_OWNER_ADDRESS:
+            errors.append("Please setup env: 'GFN_REGISTRY_OWNER_ADDRESS'")
+        if not self.setting.GFN_GNFT_OPERATOR_ADDRESS:
+            errors.append("Please setup env: 'GFN_GNFT_OPERATOR_ADDRESS'")
         if not self.setting.GFN_NFT_HOLDER_ADDRESS:
             errors.append("Please setup env: 'GFN_NFT_HOLDER_ADDRESS'")
         return errors
+
+    def get_contract_instance(self):
+        return self.contract_instance
 
     def start_deployment(self):
         instance = self.deploy()
@@ -50,8 +54,14 @@ class ContractDeployment(ABC):
             address=instance.address,
             abi=instance.abi
         )
+        self.contract_instance = instance
+        if not self.contract_instance:
+            raise ValueError("No contract instance after deployment!")
+
         self._write_env_settings()
         self._write_contract_section(self.contract_name, output)
+
+        return instance
 
     @abstractmethod
     def deploy(self):
@@ -62,6 +72,9 @@ class ContractDeployment(ABC):
         self.contract_class.publish_source(instance)
         return instance
 
+    def transfer_contract_owner(self):
+        pass
+
     def _write_env_settings(self):
         deployment_data = self._read_deployment_output(
             _from_file=self.setting.DEPLOYMENT_OUTPUT
@@ -70,7 +83,10 @@ class ContractDeployment(ABC):
         deployment_data['env'] = self.setting.ENV_NAME
         deployment_data['network'] = self.setting.BLOCKCHAIN_NETWORK
         deployment_data['gfn_deployer'] = self.setting.GFN_DEPLOYER_ADDRESS
-        deployment_data['gfn_owner'] = self.setting.GFN_OWNER_ADDRESS
+        deployment_data['gfn_registry_owner'] = self.setting.GFN_REGISTRY_OWNER_ADDRESS
+        deployment_data['gfn_configuration_owner'] = self.setting.GFN_CONFIGURATION_OWNER_ADDRESS
+        deployment_data['gfn_gnft_token_operator'] = self.setting.GFN_GNFT_OPERATOR_ADDRESS
+        deployment_data['gfn_nft_holder'] = self.setting.GFN_NFT_HOLDER_ADDRESS
 
         # write to deployment output again
         write_json(self.setting.DEPLOYMENT_OUTPUT, deployment_data)

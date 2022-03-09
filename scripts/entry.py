@@ -4,6 +4,7 @@ from copy import copy
 from dotenv import load_dotenv
 
 from scripts.settings import Setting
+from scripts.verify import verify_deployment
 from scripts.deployment.registry import RegistryDeployment
 from scripts.deployment.configuration import ConfigurationDeployment
 from scripts.deployment.gnft_token import GNFTTokenDeployment
@@ -185,10 +186,6 @@ def load_settings(env_file):
     return Setting(env)
 
 
-def run_deployment_tests(setting: Setting):
-    pass
-
-
 def main():
     main_action = display_main_menu()
     selected_env = display_env_menu()
@@ -197,10 +194,13 @@ def main():
     print(f"=============== Settings for {setting.ENV_NAME} ==================")
     print(f'=> ENV         : {setting.ENV_NAME}')
     print(f'=> Network     : {setting.BLOCKCHAIN_NETWORK}')
-    print(f'=> gfn_deployer: {setting.GFN_DEPLOYER_ADDRESS}')
-    print(f'=> gfn_owner   : {setting.GFN_OWNER_ADDRESS}')
-    print(f'=> gfn_operator: {setting.GFN_OPERATOR_ADDRESS}')
-    print(f'=> NFT Holder  : {setting.GFN_NFT_HOLDER_ADDRESS}')
+    print('----------------------------------------------------------')
+    print(f'=> GFN Deployer             : {setting.GFN_DEPLOYER_ADDRESS}')
+    print(f'=> GFN Registry Owner       : {setting.GFN_REGISTRY_OWNER_ADDRESS}')
+    print(f'=> GFN Configuration Owner  : {setting.GFN_CONFIGURATION_OWNER_ADDRESS}')
+    print(f'=> GFN GNFTToken Operator   : {setting.GFN_GNFT_OPERATOR_ADDRESS}')
+    print(f'=> GFN NFT Holder           : {setting.GFN_NFT_HOLDER_ADDRESS}')
+    print('----------------------------------------------------------')
     print(f'=> NFT Token Name       : {setting.GNFT_TOKEN_NAME}')
     print(f'=> NFT Token SymBol     : {setting.GNFT_TOKEN_SYMBOL}')
     print(f'=> LIFE Token Name      : {setting.LIFE_TOKEN_NAME}')
@@ -220,13 +220,17 @@ def main():
     print("\n")
 
     if main_action == DEPLOY_ACTION:
+        contract_instances = {}
+        deployments = []
         selected_contract_deployments = display_deployment_menu()
         # initialize Deployment object
         for deployment_class in selected_contract_deployments:
             print(f"================ Deployment: {deployment_class.contract_name} =================")
             try:
                 deployment = deployment_class(setting)
-                deployment.start_deployment()
+                contract_instance = deployment.start_deployment()
+                contract_instances[deployment.contract_name] = contract_instance
+                deployments.append(deployment)
             except Exception as ex:
                 print("===== [ERROR] =======")
                 print(str(ex))
@@ -243,9 +247,13 @@ def main():
                     else:
                         pass
 
-        if selected_env in [ENV_MENU[ENV_LOCAL], ENV_MENU[ENV_NIGHTLY]]:
-            print("================ Running Deployment Tests ===================")
-            run_deployment_tests(setting)
+        print("================ Transferring Contract Owner ===================")
+        for deployment in deployments:
+            deployment.transfer_contract_owner()
+
+        # if selected_env in [ENV_MENU[ENV_LOCAL], ENV_MENU[ENV_NIGHTLY]]:
+        print("================ Verifying Deployment ===================")
+        verify_deployment(setting, contract_instances)
 
     elif main_action == PUBLISH_ACTION:
         deployment_output = select_deployment_output()
