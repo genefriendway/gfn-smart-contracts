@@ -13,7 +13,7 @@ class ConfigurationDeployment(ContractDeployment):
 
         print(f"==> Deploying {self.contract_name} .....")
         configuration = self.contract_class.deploy(
-            self.setting.GFN_OWNER_ADDRESS,
+            self.setting.GFN_DEPLOYER_ADDRESS,
             self.setting.GFN_NFT_HOLDER_ADDRESS,
             registry_instance.address,
             self.setting.TXN_SENDER
@@ -24,3 +24,11 @@ class ConfigurationDeployment(ContractDeployment):
         )
 
         return configuration
+
+    def transfer_contract_owner(self):
+        print(f'==> Transferring Owner of {self.contract_name} '
+              f'to {self.setting.GFN_CONFIGURATION_OWNER_ADDRESS}')
+        self.contract_instance.transferOwnership(
+            self.setting.GFN_CONFIGURATION_OWNER_ADDRESS,
+            self.setting.TXN_SENDER
+        )

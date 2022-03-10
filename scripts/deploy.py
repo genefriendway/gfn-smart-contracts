@@ -17,7 +17,7 @@ gfn_deployer_address = None
 gfn_deployer_info = None
 ENV_NAME = None
 GFN_DEPLOYER_PRIVATE_KEY = None
-GFN_OWNER_ADDRESS = None
+GFN_REGISTRY_OWNER_ADDRESS = None
 GFN_FOUNDER_ADDRESS_ONE = None
 GFN_FOUNDER_ADDRESS_TWO = None
 GFN_FOUNDER_ADDRESS_THREE = None
@@ -29,14 +29,14 @@ def validate_environment_variables():
     global gfn_deployer_address
     global GFN_DEPLOYER_PRIVATE_KEY
     global ENV_NAME
-    global GFN_OWNER_ADDRESS
+    global GFN_REGISTRY_OWNER_ADDRESS
     global GFN_FOUNDER_ADDRESS_ONE
     global GFN_FOUNDER_ADDRESS_TWO
     global GFN_FOUNDER_ADDRESS_THREE
 
     ENV_NAME = os.getenv('ENV_NAME')
     GFN_DEPLOYER_PRIVATE_KEY = os.getenv('GFN_DEPLOYER_PRIVATE_KEY')
-    GFN_OWNER_ADDRESS = os.getenv('GFN_OWNER_ADDRESS')
+    GFN_REGISTRY_OWNER_ADDRESS = os.getenv('GFN_REGISTRY_OWNER_ADDRESS')
     GFN_FOUNDER_ADDRESS_ONE = os.getenv('GFN_FOUNDER_ADDRESS_ONE')
     GFN_FOUNDER_ADDRESS_TWO = os.getenv('GFN_FOUNDER_ADDRESS_TWO')
     GFN_FOUNDER_ADDRESS_THREE = os.getenv('GFN_FOUNDER_ADDRESS_THREE')
@@ -44,8 +44,8 @@ def validate_environment_variables():
     errors = []
     if not GFN_DEPLOYER_PRIVATE_KEY:
         errors.append("Please setup env: 'GFN_DEPLOYER_PRIVATE_KEY'")
-    if not GFN_OWNER_ADDRESS:
-        errors.append("Please setup env: 'GFN_OWNER_ADDRESS'")
+    if not GFN_REGISTRY_OWNER_ADDRESS:
+        errors.append("Please setup env: 'GFN_REGISTRY_OWNER_ADDRESS'")
     if not GFN_FOUNDER_ADDRESS_ONE:
         errors.append("Please setup env: 'GFN_FOUNDER_ADDRESS_ONE'")
     if not GFN_FOUNDER_ADDRESS_TWO:
@@ -65,7 +65,7 @@ def validate_environment_variables():
     print(F"===================== {ENV_NAME} =========================")
     print(f'=> Network: {network.show_active()}')
     print(f'=> gfn_deployer: {gfn_deployer}')
-    print(f'=> gfn_owner: {GFN_OWNER_ADDRESS}')
+    print(f'=> gfn_owner: {GFN_REGISTRY_OWNER_ADDRESS}')
     print(f'=> GFN_FOUNDER_ADDRESS_ONE: {GFN_FOUNDER_ADDRESS_ONE}')
     print(f'=> GFN_FOUNDER_ADDRESS_TWO: {GFN_FOUNDER_ADDRESS_TWO}')
     print(f'=> GFN_FOUNDER_ADDRESS_THREE: {GFN_FOUNDER_ADDRESS_THREE}')
@@ -98,7 +98,7 @@ def deploy_contract_registry():
 def deploy_configuration(registry):
     print("================== [Deploying Configuration] ==================")
     configuration = Configuration.deploy(
-        GFN_OWNER_ADDRESS,
+        GFN_REGISTRY_OWNER_ADDRESS,
         registry,
         gfn_deployer_info
     )
@@ -117,7 +117,7 @@ def deploy_configuration(registry):
 def deploy_gnft_token(registry):
     print("================== [Deploying GNFTToken] ==================")
     gnft_token = GNFTToken.deploy(
-        GFN_OWNER_ADDRESS,
+        GFN_REGISTRY_OWNER_ADDRESS,
         registry,
         "Gene Friend Network G-NFT Token",
         "GNFT",
@@ -138,7 +138,7 @@ def deploy_gnft_token(registry):
 def deploy_life_token(registry):
     print("================== [Deploying LIFEToken Contract] ==================")
     life_token = LIFEToken.deploy(
-        GFN_OWNER_ADDRESS,
+        GFN_REGISTRY_OWNER_ADDRESS,
         registry,
         "Gene Friend Network LIFE Token",
         "LIFE",
@@ -185,7 +185,7 @@ def _deployment_flow():
     print("========= RESULTS ==============")
     print(f'=> Network: {network.show_active()}')
     print(f'=> gfn_deployer: {gfn_deployer}')
-    print(f'=> gfn_owner: {GFN_OWNER_ADDRESS}')
+    print(f'=> gfn_owner: {GFN_REGISTRY_OWNER_ADDRESS}')
     print(f"=> ContractRegistry Address: {registry.address}")
     print(f"=> Configuration Address: {configuration.address}")
     print(f"=> GNFTToken Address: {gnft_token.address}")

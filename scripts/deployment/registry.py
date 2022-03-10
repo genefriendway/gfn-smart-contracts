@@ -15,3 +15,11 @@ class RegistryDeployment(ContractDeployment):
             self.setting.TXN_SENDER
         )
         return registry
+
+    def transfer_contract_owner(self):
+        print(f'==> Transferring Owner of {self.contract_name} '
+              f'to {self.setting.GFN_REGISTRY_OWNER_ADDRESS}')
+        self.contract_instance.transferOwnership(
+            self.setting.GFN_REGISTRY_OWNER_ADDRESS,
+            self.setting.TXN_SENDER
+        )
