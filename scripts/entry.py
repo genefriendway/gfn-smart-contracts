@@ -3,6 +3,7 @@ import os
 from copy import copy
 from dotenv import load_dotenv
 
+from constants.common import ContractName
 from scripts.settings import Setting
 from scripts.verify import verify_deployment
 from scripts.deployment.registry import RegistryDeployment
@@ -246,6 +247,16 @@ def main():
                         exit(0)
                     else:
                         pass
+        print("================ Register Contract Operator ===================")
+        configuration = contract_instances[ContractName.CONFIGURATION]
+        for contract_name, operator in setting.CONTRACT_OPERATORS.items():
+            print(f"--------- {contract_name} -----------")
+            contract_instance = contract_instances[contract_name]
+            configuration.setOperator(
+                contract_instance.address,
+                operator,
+                setting.TXN_SENDER
+            )
 
         print("================ Transferring Contract Owner ===================")
         for deployment in deployments:

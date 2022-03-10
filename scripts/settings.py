@@ -2,6 +2,8 @@
 from utils.datetime import DateTimeUtil
 from brownie import accounts, network
 
+from constants.common import ContractName
+
 
 OUTPUT_FILE = "deployment_{env}_{network}_{time}.json"
 
@@ -40,3 +42,6 @@ class Setting:
         self.GFN_DEPLOYER = accounts.add(self.GFN_DEPLOYER_PRIVATE_KEY)
         self.GFN_DEPLOYER_ADDRESS = self.GFN_DEPLOYER.address
         self.TXN_SENDER = {'from': self.GFN_DEPLOYER_ADDRESS}
+        self.CONTRACT_OPERATORS = {
+            ContractName.GNFT_TOKEN: self.GFN_GNFT_OPERATOR_ADDRESS
+        }
