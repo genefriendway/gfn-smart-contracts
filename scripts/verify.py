@@ -30,6 +30,11 @@ def verify_deployment(setting: Setting, contract_instances: dict):
         value1=registry.getContractAddress(ContractName.LIFE_TOKEN),
         value2=life_token.address
     )
+    assert_equal(
+        title=f"Verify Register Contract {ContractName.LIFE_TREASURY}",
+        value1=registry.getContractAddress(ContractName.LIFE_TREASURY),
+        value2=setting.LIFE_TREASURY_ADDRESS
+    )
 
     # Verify Configuration contract
     print("-------------------------")

@@ -31,6 +31,8 @@ class Setting:
         self.GFN_FOUNDER_ADDRESS_TWO = env_settings.get('GFN_FOUNDER_ADDRESS_TWO')
         self.GFN_FOUNDER_ADDRESS_THREE = env_settings.get('GFN_FOUNDER_ADDRESS_THREE')
 
+        self.LIFE_TREASURY_ADDRESS = env_settings['LIFE_TREASURY_ADDRESS']
+
         self.DEPLOYMENT_OUTPUT = OUTPUT_FILE.format(
             env=self.ENV_NAME.lower(),
             network=self.BLOCKCHAIN_NETWORK,

@@ -10,7 +10,6 @@ from scripts.deployment.registry import RegistryDeployment
 from scripts.deployment.configuration import ConfigurationDeployment
 from scripts.deployment.gnft_token import GNFTTokenDeployment
 from scripts.deployment.life_token import LIFETokenDeployment
-from scripts.deployment.life_treasury import LIFETreasuryDeployment
 
 ENV_LOCAL = 1
 ENV_NIGHTLY = 2
@@ -34,7 +33,6 @@ DEPLOYMENT_MENU = {
     CONFIGURATION: ConfigurationDeployment,
     GNFT_TOKEN: GNFTTokenDeployment,
     LIFE_TOKEN: LIFETokenDeployment,
-    LIFE_TREASURY: LIFETreasuryDeployment
 }
 
 PUBLISH_MENU = DEPLOYMENT_MENU
@@ -201,6 +199,7 @@ def main():
     print(f'=> GFN Configuration Owner  : {setting.GFN_CONFIGURATION_OWNER_ADDRESS}')
     print(f'=> GFN GNFTToken Operator   : {setting.GFN_GNFT_OPERATOR_ADDRESS}')
     print(f'=> GFN NFT Holder           : {setting.GFN_NFT_HOLDER_ADDRESS}')
+    print(f'=> LIFE_TREASURY_ADDRESS    : {setting.LIFE_TREASURY_ADDRESS}')
     print('----------------------------------------------------------')
     print(f'=> NFT Token Name       : {setting.GNFT_TOKEN_NAME}')
     print(f'=> NFT Token SymBol     : {setting.GNFT_TOKEN_SYMBOL}')
