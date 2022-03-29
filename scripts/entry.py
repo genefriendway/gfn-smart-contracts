@@ -2,6 +2,12 @@
 import os
 from copy import copy
 from dotenv import load_dotenv
+from brownie import accounts, Contract
+
+from utils.contract import (
+    load_contract_names,
+    load_contracts_from_deployment_output,
+)
 
 from constants.common import ContractName
 from scripts.settings import Setting
@@ -10,6 +16,9 @@ from scripts.deployment.registry import RegistryDeployment
 from scripts.deployment.configuration import ConfigurationDeployment
 from scripts.deployment.gnft_token import GNFTTokenDeployment
 from scripts.deployment.life_token import LIFETokenDeployment
+from scripts.deployment.gfn_exchange_wallet import GFNExchangeWalletDeployment
+from scripts.deployment.gfn_profit_wallet import GFNProfitWalletDeployment
+from scripts.deployment.gfn_exchange_life_bank import GFNExchangeLIFEBankDeployment
 
 ENV_LOCAL = 1
 ENV_NIGHTLY = 2
@@ -27,20 +36,28 @@ CONFIGURATION = 2
 GNFT_TOKEN = 3
 LIFE_TOKEN = 4
 LIFE_TREASURY = 5
+GFN_EXCHANGE_WALLET = 6
+GFN_PROFIT_WALLET = 7
+GFN_EXCHANGE_LIFE_BANK = 8
 
 DEPLOYMENT_MENU = {
     REGISTRY: RegistryDeployment,
     CONFIGURATION: ConfigurationDeployment,
     GNFT_TOKEN: GNFTTokenDeployment,
     LIFE_TOKEN: LIFETokenDeployment,
+    GFN_EXCHANGE_WALLET: GFNExchangeWalletDeployment,
+    GFN_PROFIT_WALLET: GFNProfitWalletDeployment,
+    GFN_EXCHANGE_LIFE_BANK: GFNExchangeLIFEBankDeployment,
 }
 
 PUBLISH_MENU = DEPLOYMENT_MENU
 
 DEPLOY_ACTION = 1
-PUBLISH_ACTION = 2
+VERIFY_DEPLOYMENT_ACTION = 2
+PUBLISH_ACTION = 3
 MAIN_MENU = {
     DEPLOY_ACTION: "Deploy Contract",
+    VERIFY_DEPLOYMENT_ACTION: "Verify Deployment",
     PUBLISH_ACTION: "Publish Contract",
 }
 
@@ -185,6 +202,35 @@ def load_settings(env_file):
     return Setting(env)
 
 
+def load_contracts_data():
+    msg = "[?] Please select deployment output that you want to use: "
+    _file = input(msg)
+    return load_contracts_from_deployment_output(_file)
+
+
+def load_contract_instances(setting: Setting):
+    contracts_data = load_contracts_data()
+    contract_names = load_contract_names()
+    deployer = accounts.add(setting.GFN_DEPLOYER_PRIVATE_KEY)
+    instances = {}
+
+    for contract_name in contract_names:
+        if contract_name not in contracts_data:
+            continue
+
+        # initialize contract instance
+        contract_data = contracts_data[contract_name]
+        contract_instance = Contract.from_abi(
+            name=contract_data['name'],
+            address=contract_data['address'],
+            abi=contract_data['abi'],
+            owner=deployer
+        )
+        instances[contract_name] = contract_instance
+
+    return instances
+
+
 def main():
     main_action = display_main_menu()
     selected_env = display_env_menu()
@@ -194,12 +240,15 @@ def main():
     print(f'=> ENV         : {setting.ENV_NAME}')
     print(f'=> Network     : {setting.BLOCKCHAIN_NETWORK}')
     print('----------------------------------------------------------')
-    print(f'=> GFN Deployer             : {setting.GFN_DEPLOYER_ADDRESS}')
-    print(f'=> GFN Registry Owner       : {setting.GFN_REGISTRY_OWNER_ADDRESS}')
-    print(f'=> GFN Configuration Owner  : {setting.GFN_CONFIGURATION_OWNER_ADDRESS}')
-    print(f'=> GFN GNFTToken Operator   : {setting.GFN_GNFT_OPERATOR_ADDRESS}')
-    print(f'=> GFN NFT Holder           : {setting.GFN_NFT_HOLDER_ADDRESS}')
-    print(f'=> LIFE_TREASURY_ADDRESS    : {setting.LIFE_TREASURY_ADDRESS}')
+    print(f'=> GFN Deployer                 : {setting.GFN_DEPLOYER_ADDRESS}')
+    print(f'=> GFN Owner of Registry        : {setting.GFN_REGISTRY_OWNER_ADDRESS}')
+    print(f'=> GFN Owner of Configuration   : {setting.GFN_CONFIGURATION_OWNER_ADDRESS}')
+    print(f'=> GFN Operator of GNFTToken        : {setting.GFN_GNFT_OPERATOR_ADDRESS}')
+    print(f'=> GFN Operator of Exchange Wallet  : {setting.GFN_EXCHANGE_WALLET_OPERATOR_ADDRESS}')
+    print(f'=> GFN Operator of Profit Wallet    : {setting.GFN_PROFIT_WALLET_OPERATOR_ADDRESS}')
+    print(f'=> GFN Operator of LIFE Bank        : {setting.GFN_EXCHANGE_LIFE_BANK_OPERATOR_ADDRESS}')
+    print(f'=> GFN NFT Holder               : {setting.GFN_NFT_HOLDER_ADDRESS}')
+    print(f'=> LIFE_TREASURY_ADDRESS        : {setting.LIFE_TREASURY_ADDRESS}')
     print('----------------------------------------------------------')
     print(f'=> NFT Token Name       : {setting.GNFT_TOKEN_NAME}')
     print(f'=> NFT Token SymBol     : {setting.GNFT_TOKEN_SYMBOL}')
@@ -246,23 +295,18 @@ def main():
                         exit(0)
                     else:
                         pass
-        print("================ Register Contract Operator ===================")
-        configuration = contract_instances[ContractName.CONFIGURATION]
-        for contract_name, operator in setting.CONTRACT_OPERATORS.items():
-            print(f"--------- {contract_name} -----------")
-            contract_instance = contract_instances[contract_name]
-            configuration.setOperator(
-                contract_instance.address,
-                operator,
-                setting.TXN_SENDER
-            )
 
         print("================ Transferring Contract Owner ===================")
         for deployment in deployments:
-            deployment.transfer_contract_owner()
+            if hasattr(deployment, 'transfer_contract_owner'):
+                deployment.transfer_contract_owner()
 
-        # if selected_env in [ENV_MENU[ENV_LOCAL], ENV_MENU[ENV_NIGHTLY]]:
         print("================ Verifying Deployment ===================")
+        verify_deployment(setting, contract_instances)
+
+    elif main_action == VERIFY_DEPLOYMENT_ACTION:
+        print("================ Verifying Deployment ===================")
+        contract_instances = load_contract_instances(setting)
         verify_deployment(setting, contract_instances)
 
     elif main_action == PUBLISH_ACTION:
