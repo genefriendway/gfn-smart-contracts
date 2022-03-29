@@ -9,9 +9,8 @@ from utils.contract import (
     load_contracts_from_deployment_output,
 )
 
-from constants.common import ContractName
 from scripts.settings import Setting
-from scripts.verify import verify_deployment
+from scripts.verify import Verification
 from scripts.deployment.registry import RegistryDeployment
 from scripts.deployment.configuration import ConfigurationDeployment
 from scripts.deployment.gnft_token import GNFTTokenDeployment
@@ -302,12 +301,14 @@ def main():
                 deployment.transfer_contract_owner()
 
         print("================ Verifying Deployment ===================")
-        verify_deployment(setting, contract_instances)
+        verification = Verification(setting, contract_instances)
+        verification.start()
 
     elif main_action == VERIFY_DEPLOYMENT_ACTION:
         print("================ Verifying Deployment ===================")
         contract_instances = load_contract_instances(setting)
-        verify_deployment(setting, contract_instances)
+        verification = Verification(setting, contract_instances)
+        verification.start()
 
     elif main_action == PUBLISH_ACTION:
         deployment_output = select_deployment_output()
