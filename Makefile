@@ -3,3 +3,6 @@ add_avax_fuji:
 
 add_avax_mainnet:
 	brownie networks add GeneFriendNetwork avax-mainnet host=https://api.avax.network/ext/bc/C/rpc chainid=43114 explorer=https://api.snowtrace.io/api
+
+add_oasis_testnet:
+	brownie networks add GeneFriendNetwork oasis-testnet host=https://testnet.emerald.oasis.dev chainid=42261 explorer=http://testnet.explorer.emerald.oasis.dev/api

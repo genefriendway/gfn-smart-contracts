@@ -8,13 +8,17 @@ class LIFETokenDeployment(ContractDeployment):
     contract_name = ContractName.LIFE_TOKEN
     contract_class = LIFEToken
 
-    def validate_setting(self):
-        errors = super().validate_setting()
+    def validate(self):
+        errors = super().validate()
         if not self.setting.LIFE_TOKEN_NAME:
             errors.append("Please setup env: 'LIFE_TOKEN_NAME'")
         if not self.setting.LIFE_TOKEN_SYMBOL:
             errors.append("Please setup env: 'LIFE_TOKEN_SYMBOL'")
         return errors
+
+    def get_owner(self):
+        """LIFEToken contract has no operator"""
+        pass
 
     def deploy(self):
         registry_instance = self.get_registry_instance()
@@ -27,8 +31,4 @@ class LIFETokenDeployment(ContractDeployment):
             self.setting.TXN_SENDER
         )
 
-        print(f"==> Registering {self.contract_name} .....")
-        registry_instance.registerContract(
-            self.contract_name, life_token.address, self.setting.TXN_SENDER
-        )
         return life_token

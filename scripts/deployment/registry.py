@@ -2,11 +2,22 @@
 from scripts.deployment.base import ContractDeployment
 from constants import ContractName
 from brownie import ContractRegistry
+from .mixins.transfer_ownership import TransferOwnershipMixin
 
 
-class RegistryDeployment(ContractDeployment):
+class RegistryDeployment(ContractDeployment, TransferOwnershipMixin):
     contract_name = ContractName.REGISTRY
     contract_class = ContractRegistry
+
+    def validate(self):
+        errors = super().validate()
+        if not self.setting.GFN_REGISTRY_OWNER_ADDRESS:
+            errors.append(
+                "Please setup env: 'GFN_REGISTRY_OWNER_ADDRESS'")
+        return errors
+
+    def get_owner(self):
+        return self.setting.GFN_REGISTRY_OWNER_ADDRESS
 
     def deploy(self):
         print(f"==> Deploying {self.contract_name} .....")
@@ -15,11 +26,3 @@ class RegistryDeployment(ContractDeployment):
             self.setting.TXN_SENDER
         )
         return registry
-
-    def transfer_contract_owner(self):
-        print(f'==> Transferring Owner of {self.contract_name} '
-              f'to {self.setting.GFN_REGISTRY_OWNER_ADDRESS}')
-        self.contract_instance.transferOwnership(
-            self.setting.GFN_REGISTRY_OWNER_ADDRESS,
-            self.setting.TXN_SENDER
-        )

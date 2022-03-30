@@ -8,8 +8,8 @@ class LIFETreasuryDeployment(ContractDeployment):
     contract_name = ContractName.LIFE_TREASURY
     contract_class = MultiSignature
 
-    def validate_setting(self):
-        errors = super().validate_setting()
+    def validate(self):
+        errors = super().validate()
         if not self.setting.GFN_FOUNDER_ADDRESS_ONE:
             errors.append("Please setup env: 'GFN_FOUNDER_ADDRESS_ONE'")
         if not self.setting.GFN_FOUNDER_ADDRESS_TWO:
@@ -17,6 +17,10 @@ class LIFETreasuryDeployment(ContractDeployment):
         if not self.setting.GFN_FOUNDER_ADDRESS_THREE:
             errors.append("Please setup env: 'GFN_FOUNDER_ADDRESS_THREE'")
         return errors
+
+    def get_owner(self):
+        """LIFEToken contract has no operator"""
+        pass
 
     def deploy(self):
         registry_instance = self.get_registry_instance()

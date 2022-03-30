@@ -11,10 +11,11 @@ from utils.contract import (
 )
 
 
-def template_output(name: str, address: str, abi: List):
+def template_of_contract_data(name: str, address: str, owner: str, abi: List):
     return {
         "name": name,
         "address": address,
+        "owner": owner,
         "abi": abi
     }
 
@@ -26,11 +27,11 @@ class ContractDeployment(ABC):
     def __init__(self, setting: Setting):
         self.setting = setting
         self.contract_instance = None
-        errors = self.validate_setting()
+        errors = self.validate()
         if errors:
             raise EnvironmentError('\n'.join(errors))
 
-    def validate_setting(self):
+    def validate(self):
         errors = []
         if not self.setting.ENV_NAME:
             errors.append("Please setup env: 'ENV_NAME'")
@@ -44,14 +45,12 @@ class ContractDeployment(ABC):
             errors.append("Please setup env: 'GFN_NFT_HOLDER_ADDRESS'")
         return errors
 
-    def get_contract_instance(self):
-        return self.contract_instance
-
     def start_deployment(self):
         instance = self.deploy()
-        output = template_output(
+        contract_data = template_of_contract_data(
             name=self.contract_name,
             address=instance.address,
+            owner=self.get_owner(),
             abi=instance.abi
         )
         self.contract_instance = instance
@@ -59,7 +58,7 @@ class ContractDeployment(ABC):
             raise ValueError("No contract instance after deployment!")
 
         self._write_env_settings()
-        self._write_contract_section(self.contract_name, output)
+        self._write_contract_section(self.contract_name, contract_data)
 
         return instance
 
@@ -67,37 +66,31 @@ class ContractDeployment(ABC):
     def deploy(self):
         raise NotImplementedError
 
+    @abstractmethod
+    def get_owner(self):
+        raise NotImplementedError
+
     def publish(self, deployment_output):
         instance = self.get_contract_instance(deployment_output)
         self.contract_class.publish_source(instance)
         return instance
 
-    def transfer_contract_owner(self):
-        pass
-
     def _write_env_settings(self):
         deployment_data = self._read_deployment_output(
             _from_file=self.setting.DEPLOYMENT_OUTPUT
         )
-        deployment_data['datetime'] = self.setting.DEPLOYMENT_DATETIME
-        deployment_data['env'] = self.setting.ENV_NAME
-        deployment_data['network'] = self.setting.BLOCKCHAIN_NETWORK
-        deployment_data['gfn_deployer'] = self.setting.GFN_DEPLOYER_ADDRESS
-        deployment_data['gfn_registry_owner'] = self.setting.GFN_REGISTRY_OWNER_ADDRESS
-        deployment_data['gfn_configuration_owner'] = self.setting.GFN_CONFIGURATION_OWNER_ADDRESS
-        deployment_data['gfn_gnft_token_operator'] = self.setting.GFN_GNFT_OPERATOR_ADDRESS
-        deployment_data['gfn_nft_holder'] = self.setting.GFN_NFT_HOLDER_ADDRESS
+        deployment_data.update(self.setting.__dict__)
 
         # write to deployment output again
         write_json(self.setting.DEPLOYMENT_OUTPUT, deployment_data)
 
-    def _write_contract_section(self, name: str, output: dict):
+    def _write_contract_section(self, name: str, contract_data: dict):
         deployment_data = self._read_deployment_output(
             _from_file=self.setting.DEPLOYMENT_OUTPUT
         )
         # retrieve and update contract section
         contract_section = deployment_data.get('contracts', {})
-        contract_section[name] = output
+        contract_section[name] = contract_data
 
         # replace by new contract section
         deployment_data['contracts'] = contract_section

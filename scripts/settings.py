@@ -19,6 +19,9 @@ class Setting:
         self.GFN_REGISTRY_OWNER_ADDRESS = env_settings['GFN_REGISTRY_OWNER_ADDRESS']
         self.GFN_CONFIGURATION_OWNER_ADDRESS = env_settings['GFN_CONFIGURATION_OWNER_ADDRESS']
         self.GFN_GNFT_OPERATOR_ADDRESS = env_settings['GFN_GNFT_OPERATOR_ADDRESS']
+        self.GFN_EXCHANGE_WALLET_OPERATOR_ADDRESS = env_settings.get('GFN_EXCHANGE_WALLET_OPERATOR_ADDRESS')
+        self.GFN_PROFIT_WALLET_OPERATOR_ADDRESS = env_settings.get('GFN_PROFIT_WALLET_OPERATOR_ADDRESS')
+        self.GFN_EXCHANGE_LIFE_BANK_OPERATOR_ADDRESS = env_settings.get('GFN_EXCHANGE_LIFE_BANK_OPERATOR_ADDRESS')
         self.GFN_NFT_HOLDER_ADDRESS = env_settings['GFN_NFT_HOLDER_ADDRESS']
 
         self.GNFT_TOKEN_NAME = env_settings.get('GNFT_TOKEN_NAME')
@@ -31,6 +34,8 @@ class Setting:
         self.GFN_FOUNDER_ADDRESS_TWO = env_settings.get('GFN_FOUNDER_ADDRESS_TWO')
         self.GFN_FOUNDER_ADDRESS_THREE = env_settings.get('GFN_FOUNDER_ADDRESS_THREE')
 
+        self.LIFE_TREASURY_ADDRESS = env_settings['LIFE_TREASURY_ADDRESS']
+
         self.DEPLOYMENT_OUTPUT = OUTPUT_FILE.format(
             env=self.ENV_NAME.lower(),
             network=self.BLOCKCHAIN_NETWORK,
@@ -39,9 +44,12 @@ class Setting:
         self.DEPLOYMENT_DATETIME = DateTimeUtil.date_to_text(
             now, fmt='%d/%m/%Y %H:%M:%S'
         )
-        self.GFN_DEPLOYER = accounts.add(self.GFN_DEPLOYER_PRIVATE_KEY)
-        self.GFN_DEPLOYER_ADDRESS = self.GFN_DEPLOYER.address
+        gfn_deployer = accounts.add(self.GFN_DEPLOYER_PRIVATE_KEY)
+        self.GFN_DEPLOYER_ADDRESS = gfn_deployer.address
         self.TXN_SENDER = {'from': self.GFN_DEPLOYER_ADDRESS}
         self.CONTRACT_OPERATORS = {
-            ContractName.GNFT_TOKEN: self.GFN_GNFT_OPERATOR_ADDRESS
+            ContractName.GNFT_TOKEN: self.GFN_GNFT_OPERATOR_ADDRESS,
+            ContractName.GFN_EXCHANGE_WALLET: self.GFN_EXCHANGE_WALLET_OPERATOR_ADDRESS,
+            ContractName.GFN_PROFIT_WALLET: self.GFN_PROFIT_WALLET_OPERATOR_ADDRESS,
+            ContractName.GFN_EXCHANGE_LIFE_BANK: self.GFN_EXCHANGE_LIFE_BANK_OPERATOR_ADDRESS,
         }
