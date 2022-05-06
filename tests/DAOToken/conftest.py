@@ -11,10 +11,17 @@ def dao_deployment():
     owner = accounts[1]
 
     # deploy smart contracts and get instance of them
-    dao_token = DAOToken.deploy(owner, "PCVS", "PCVS", 1000, {"from": deployer})
+    dao_token = DAOToken.deploy(
+        owner,
+        "Post-Covid-Stroke Prevention",
+        "PCSP",
+        1000,
+        {"from": deployer}
+    )
 
     results = {
-        'dao_token': dao_token
+        'dao_token': dao_token,
+        'owner': owner
     }
 
     return results
