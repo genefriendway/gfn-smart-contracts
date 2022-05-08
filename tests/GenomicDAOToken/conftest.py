@@ -6,6 +6,11 @@ from brownie import accounts, GenomicDAOToken
 
 
 @pytest.fixture(scope="module")
+def zero_address():
+    return "0x0000000000000000000000000000000000000000"
+
+
+@pytest.fixture(scope="module")
 def dao_deployment():
     deployer = accounts[0]
     owner = accounts[1]
