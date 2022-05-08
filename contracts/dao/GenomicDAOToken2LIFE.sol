@@ -3,25 +3,25 @@ pragma solidity 0.8.11;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "../interfaces/IDAOTokenLock.sol";
+import "../interfaces/IGenomicDAOToken2LIFE.sol";
 
 /**
  * Lock amount of LIFE token that only can be used to buy DAO Token
  * or amount of DAO token that only can be used to buy LIFE token
  */
 
-contract DAOTokenLock is IDAOTokenLock, Ownable {
+contract GenomicDAOToken2LIFE is IDAOToken2LIFE, Ownable {
     // state variables
     address lifeAddress;
-    address daoTokenAddress;
+    address genomicDaoTokenAddress;
 
     constructor(
         address owner,
         address lifeToken,
-        address daoToken
+        address genomicDaoToken
     ) {
         lifeAddress = lifeToken;
-        daoTokenAddress = daoToken;
+        genomicDaoTokenAddress = genomicDaoToken;
 
         transferOwnership(owner);
     }
@@ -35,7 +35,7 @@ contract DAOTokenLock is IDAOTokenLock, Ownable {
      * - `to` address must not zero address
      * - only owner of the contract can execute function
      */
-    function sellLifeToBuyDaoToken(address to, uint256 amount) external onlyOwner {
+    function sellLifeToBuyGenomicDaoToken(address to, uint256 amount) external onlyOwner {
         require(to != address(0), "To address is  zero address");
 
         IERC20 lifeToken = IERC20(lifeAddress);
@@ -62,10 +62,10 @@ contract DAOTokenLock is IDAOTokenLock, Ownable {
      * - `to` address must not zero address
      * - only owner of the contract can execute function
      */
-    function sellDaoTokenToBuyLife(address to, uint256 amount) external onlyOwner {
+    function sellGenomicDaoTokenToBuyLife(address to, uint256 amount) external onlyOwner {
         require(to != address(0), "To address is  zero address");
 
-        IERC20 daoToken = IERC20(daoTokenAddress);
+        IERC20 daoToken = IERC20(genomicDaoTokenAddress);
 
         require(
             daoToken.balanceOf(address(this)) >= amount,
@@ -76,7 +76,7 @@ contract DAOTokenLock is IDAOTokenLock, Ownable {
         daoToken.transfer(to, amount);
 
         // Emit event
-        emit DaoTokenSoldToBuyLife(amount);
+        emit GenomicDaoTokenSoldToBuyLife(amount);
 
     }
 }

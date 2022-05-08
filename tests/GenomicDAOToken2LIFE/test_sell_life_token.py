@@ -8,26 +8,26 @@ def isolation(fn_isolation):
     pass
 
 
-def test_success__sell_dao_token_to_buy_life(dao_token_lock_deployment):
+def test_success__sell_life_to_buy_dao_token(dao_token_lock_deployment):
     # Arrange
-    dao_token = dao_token_lock_deployment['dao_token']
+    life_token = dao_token_lock_deployment['life_token']
     dao_token_lock = dao_token_lock_deployment['dao_token_lock']
     owner = dao_token_lock_deployment['owner']
     to_account = accounts[2]
 
-    to_account_balance = dao_token.balanceOf(to_account)
-    lock_balance = dao_token.balanceOf(dao_token_lock.address)
+    to_account_balance = life_token.balanceOf(to_account)
+    lock_balance = life_token.balanceOf(dao_token_lock.address)
     sell_amount = 10
 
     # Action
-    dao_token_lock.sellDaoTokenToBuyLife(
+    dao_token_lock.sellLifeToBuyGenomicDaoToken(
         to_account,
         sell_amount,
         {'from': owner}
     )
 
     # Assert
-    assert dao_token.balanceOf(to_account) == to_account_balance + sell_amount
-    assert dao_token.balanceOf(
+    assert life_token.balanceOf(to_account) == to_account_balance + sell_amount
+    assert life_token.balanceOf(
         dao_token_lock.address
     ) == lock_balance - sell_amount
