@@ -12,8 +12,11 @@ def test_success__initialize_life_2_genomic_dao_token(
 ):
     # Arranges
     life_token = life_2_genomic_dao_token_deployment['life_token']
+    dao_token = life_2_genomic_dao_token_deployment['dao_token']
     life_2_genomic_dao_token = \
         life_2_genomic_dao_token_deployment['life_2_genomic_dao_token']
 
     # Assert
+    assert life_2_genomic_dao_token.lifeToken() == life_token.address
+    assert life_2_genomic_dao_token.genomicDaoToken() == dao_token.address
     assert life_token.balanceOf(life_2_genomic_dao_token.address) == 100
