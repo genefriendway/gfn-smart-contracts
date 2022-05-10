@@ -45,7 +45,7 @@ contract GenomicDAOToken2LIFE is IGenomicDAOToken2LIFE, Ownable {
     function exchangeGenomicDaoTokenToLife(
         uint256 amountGenomicDaoToken,
         uint256 amountLife,
-        address from,
+        address fromLifeSource,
         address to
     ) external onlyOwner {
         IERC20 lifeToken = IERC20(lifeAddress);
@@ -54,7 +54,7 @@ contract GenomicDAOToken2LIFE is IGenomicDAOToken2LIFE, Ownable {
         uint256 genomicDaoTokenBalance = genomicDaoToken.balanceOf(
             address(this)
         );
-        uint256 allowance = lifeToken.allowance(from, address(this));
+        uint256 allowance = lifeToken.allowance(fromLifeSource, address(this));
 
         // Validations
         require(
@@ -69,10 +69,10 @@ contract GenomicDAOToken2LIFE is IGenomicDAOToken2LIFE, Ownable {
         // Transfer GenomicDAO token `to` address
         SafeERC20.safeTransfer(genomicDaoToken, to, amountGenomicDaoToken);
 
-        // Transfer LIFE token reserve address
+        // Transfer LIFE token to reserve address
         SafeERC20.safeTransferFrom(
             lifeToken,
-            from,
+            fromLifeSource,
             lifeReserveAddress,
             amountLife
         );
@@ -81,7 +81,7 @@ contract GenomicDAOToken2LIFE is IGenomicDAOToken2LIFE, Ownable {
         emit GenomicDaoTokenExchangedToLife(
             amountGenomicDaoToken,
             amountLife,
-            from,
+            fromLifeSource,
             to
         );
     }
