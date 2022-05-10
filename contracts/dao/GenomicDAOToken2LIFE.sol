@@ -21,12 +21,12 @@ contract GenomicDAOToken2LIFE is IGenomicDAOToken2LIFE, Ownable {
 
     constructor(
         address owner,
-        address lifeToken,
         address genomicDaoToken,
+        address lifeToken,
         address reserve
     ) {
-        lifeAddress = lifeToken;
         genomicDaoTokenAddress = genomicDaoToken;
+        lifeAddress = lifeToken;
         lifeReserveAddress = reserve;
 
         transferOwnership(owner);

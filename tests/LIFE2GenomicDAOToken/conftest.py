@@ -2,11 +2,11 @@
 
 import pytest
 
-from brownie import accounts, GenomicDAOToken, GenomicDAOToken2LIFE
+from brownie import accounts, GenomicDAOToken, LIFE2GenomicDAOToken
 
 
 @pytest.fixture(scope="module")
-def genomic_dao_token_2_life_deployment(deployment, const):
+def life_2_genomic_dao_token_deployment(deployment, const):
     deployer = accounts[0]
     owner = accounts[1]
     life_holder = accounts[2]
@@ -33,36 +33,36 @@ def genomic_dao_token_2_life_deployment(deployment, const):
     )
     life_token.mint(life_holder, 1000, {"from": owner})
 
-    # Deploy dao token lock
-    genomic_dao_token_2_life = GenomicDAOToken2LIFE.deploy(
+    # Deploy LIFE2GenomicDAOToken contract
+    life_2_genomic_dao_token = LIFE2GenomicDAOToken.deploy(
         owner,
-        dao_token.address,
         life_token.address,
+        dao_token.address,
         reserve,
         {"from": deployer}
     )
 
-    # Transfer token contract
-    dao_token.transfer(
-        genomic_dao_token_2_life.address,
-        100,
-        {"from": dao_token_holder}
-    )
-
-    # Allow contract to use life token
-    life_token.approve(
-        genomic_dao_token_2_life.address,
+    # Transfer LIFE to contract
+    life_token.transfer(
+        life_2_genomic_dao_token.address,
         100,
         {"from": life_holder}
+    )
+
+    # Allow contract to use genomic dao token
+    dao_token.approve(
+        life_2_genomic_dao_token.address,
+        100,
+        {"from": dao_token_holder}
     )
 
     results = {
         'dao_token': dao_token,
         'life_token': life_token,
-        'genomic_dao_token_2_life': genomic_dao_token_2_life,
+        'life_2_genomic_dao_token': life_2_genomic_dao_token,
         'owner': owner,
         'reserve': reserve,
-        'life_holder': life_holder
+        'dao_token_holder': dao_token_holder
     }
 
     return results

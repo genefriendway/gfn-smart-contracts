@@ -21,12 +21,12 @@ contract LIFE2GenomicDAOToken is ILIFE2GenomicDAOToken, Ownable {
 
     constructor(
         address owner,
-        address genomicDaoToken,
         address lifeToken,
+        address genomicDaoToken,
         address reserve
     ) {
-        genomicDaoTokenAddress = genomicDaoToken;
         lifeAddress = lifeToken;
+        genomicDaoTokenAddress = genomicDaoToken;
         genomicDaoTokenReserveAddress = reserve;
 
         transferOwnership(owner);
@@ -60,7 +60,7 @@ contract LIFE2GenomicDAOToken is ILIFE2GenomicDAOToken, Ownable {
         // Validations
         require(lifeBalance >= amountLife, "LIFE amount exceeds balance");
 
-        require(to != address(0), "To address is  zero address");
+        require(to != address(0), "To address is zero address");
 
         require(
             allowance >= amountGenomicDaoToken,
