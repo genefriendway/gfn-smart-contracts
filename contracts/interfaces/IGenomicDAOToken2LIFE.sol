@@ -5,13 +5,23 @@ pragma solidity 0.8.11;
  * @dev Interface of the DAOTokenLock
  */
 
-interface IDAOToken2LIFE {
+interface IGenomicDAOToken2LIFE {
     // Events
-    event LifeSoldToBuyDaoToken(uint256 amount);
-    event GenomicDaoTokenSoldToBuyLife(uint256 amount);
+    event GenomicDaoTokenExchangedToLife(
+        uint256 amountGenomicDaoToken,
+        uint256 amountLife,
+        address indexed from,
+        address indexed to
+    );
+    event GenomicDaoTokenWithdrawn(uint256 amount, address indexed to);
 
     // Functions
-    function sellLifeToBuyGenomicDaoToken(address to, uint256 amount) external;
+    function exchangeGenomicDaoTokenToLife(
+        uint256 amountGenomicDaoToken,
+        uint256 amountLife,
+        address from,
+        address to
+    ) external;
 
-    function sellGenomicDaoTokenToBuyLife(address to, uint256 amount) external;
+    function withdrawGenomicDaoToken(uint256 amount, address to) external;
 }
