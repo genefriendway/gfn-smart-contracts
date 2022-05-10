@@ -7,15 +7,13 @@ def isolation(fn_isolation):
     pass
 
 
-def test_success__initialize_dao_token(dao_token_lock_deployment):
+def test_success__initialize_genomic_dao_token_2_life(
+        genomic_dao_token_2_life_deployment
+):
     # Arranges
-    dao_token = dao_token_lock_deployment['dao_token']
-    life_token = dao_token_lock_deployment['life_token']
-    dao_token_lock = dao_token_lock_deployment['dao_token_lock']
-    owner = dao_token_lock_deployment['owner']
+    dao_token = genomic_dao_token_2_life_deployment['dao_token']
+    genomic_dao_token_2_life = \
+        genomic_dao_token_2_life_deployment['genomic_dao_token_2_life']
 
     # Assert
-    assert dao_token.balanceOf(dao_token_lock.address) == 100
-    assert life_token.balanceOf(dao_token_lock.address) == 100
-    assert dao_token.balanceOf(owner) == 900
-    assert life_token.balanceOf(owner) == 900
+    assert dao_token.balanceOf(genomic_dao_token_2_life.address) == 100

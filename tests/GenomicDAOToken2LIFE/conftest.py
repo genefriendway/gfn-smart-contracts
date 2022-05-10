@@ -6,9 +6,12 @@ from brownie import accounts, GenomicDAOToken, GenomicDAOToken2LIFE
 
 
 @pytest.fixture(scope="module")
-def dao_token_lock_deployment(deployment, const):
+def genomic_dao_token_2_life_deployment(deployment, const):
     deployer = accounts[0]
     owner = accounts[1]
+    life_holder = accounts[2]
+    dao_token_holder = accounts[3]
+    reserve = accounts.add()  # Create new account
 
     # deploy dao token smart contracts and get instance of them
     dao_token = GenomicDAOToken.deploy(
@@ -18,7 +21,7 @@ def dao_token_lock_deployment(deployment, const):
         1000,
         {"from": deployer}
     )
-    dao_token.mint(owner, 1000, {"from": owner})
+    dao_token.mint(dao_token_holder, 1000, {"from": owner})
 
     # Fake life token for testing
     life_token = GenomicDAOToken.deploy(
@@ -28,25 +31,38 @@ def dao_token_lock_deployment(deployment, const):
         1000,
         {"from": deployer}
     )
-    life_token.mint(owner, 1000, {"from": owner})
+    life_token.mint(life_holder, 1000, {"from": owner})
 
     # Deploy dao token lock
-    dao_token_lock = GenomicDAOToken2LIFE.deploy(
+    genomic_dao_token_2_life = GenomicDAOToken2LIFE.deploy(
         owner,
         life_token.address,
         dao_token.address,
+        reserve,
         {"from": deployer}
     )
 
-    # Transfer token to lock
-    dao_token.transfer(dao_token_lock.address, 100, {"from": owner})
-    life_token.transfer(dao_token_lock.address, 100, {"from": owner})
+    # Transfer token contract
+    dao_token.transfer(
+        genomic_dao_token_2_life.address,
+        100,
+        {"from": dao_token_holder}
+    )
+
+    # Allow contract to use life token
+    life_token.approve(
+        genomic_dao_token_2_life.address,
+        100,
+        {"from": life_holder}
+    )
 
     results = {
         'dao_token': dao_token,
         'life_token': life_token,
-        'dao_token_lock': dao_token_lock,
-        'owner': owner
+        'genomic_dao_token_2_life': genomic_dao_token_2_life,
+        'owner': owner,
+        'reserve': reserve,
+        'life_holder': life_holder
     }
 
     return results
