@@ -4,6 +4,7 @@ pragma solidity 0.8.11;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "../interfaces/kyberswap/IDMMRouter02.sol";
 import "../interfaces/IGenomicDAOToken2LIFE.sol";
 
 /**
@@ -108,5 +109,60 @@ contract GenomicDAOToken2LIFE is IGenomicDAOToken2LIFE, Ownable {
 
         // Emit events
         emit GenomicDaoTokenWithdrawn(amount, to);
+    }
+
+    function swapExactTokensForTokensByKyberSwap(
+        uint256 amountGenomicDAOTokenIn,
+        uint256 amountLIFEOutMin,
+        address addressReceiveLIFE,
+        address[] memory bridgeTokens,
+        address[] memory poolsPath,
+        address kyberSwapRouter
+    )
+        external onlyOwner
+    {
+        //next we need to allow the kyberswap router to spend the token we just sent to this contract
+        //by calling IERC20 approve you allow the uniswap contract to spend the tokens in this contract
+        IERC20(genomicDaoTokenAddress).approve(
+            kyberSwapRouter,
+            amountGenomicDAOTokenIn
+        );
+
+        // build path of tokens for exchange
+        IERC20[] memory tokensPath = new IERC20[](2 + bridgeTokens.length);
+        // setup input token
+        tokensPath[0] = IERC20(genomicDaoTokenAddress);
+        // setup bridge tokens
+        for (uint256 i = 0; i < bridgeTokens.length; i++) {
+            tokensPath[i + 1] = IERC20(bridgeTokens[i]);
+        }
+        // setup output token
+        tokensPath[bridgeTokens.length + 1] = IERC20(lifeAddress);
+
+        require(
+            (tokensPath.length - 1) == poolsPath.length,
+            "GenomicDAOToken2LIFE: tokensPath and poolsPath invalid."
+        );
+
+        //then we will call swapExactTokensForTokens
+        //for the deadline we will pass in block.timestamp
+        //the deadline is the latest time the trade is valid for
+        IDMMRouter02(kyberSwapRouter).swapExactTokensForTokens(
+            amountGenomicDAOTokenIn,
+            amountLIFEOutMin,
+            poolsPath,
+            tokensPath,
+            addressReceiveLIFE,
+            block.timestamp
+        );
+
+        emit SwapExactTokensForTokensByKyberSwap(
+            amountGenomicDAOTokenIn,
+            amountLIFEOutMin,
+            addressReceiveLIFE,
+            bridgeTokens,
+            poolsPath,
+            kyberSwapRouter
+        );
     }
 }

@@ -13,6 +13,16 @@ interface IGenomicDAOToken2LIFE {
         address indexed from,
         address indexed to
     );
+
+    event SwapExactTokensForTokensByKyberSwap(
+        uint256 amountGenomicDAOTokenIn,
+        uint256 amountLIFEOutMin,
+        address addressReceiveLIFE,
+        address[] bridgeTokens,
+        address[] poolsPath,
+        address kyberSwapRouter
+    );
+
     event GenomicDaoTokenWithdrawn(uint256 amount, address indexed to);
 
     // Functions
@@ -21,6 +31,15 @@ interface IGenomicDAOToken2LIFE {
         uint256 amountLife,
         address from,
         address to
+    ) external;
+
+    function swapExactTokensForTokensByKyberSwap(
+        uint256 amountGenomicDAOTokenIn,
+        uint256 amountLIFEOutMin,
+        address addressReceiveLIFE,
+        address[] memory bridgeTokens,
+        address[] memory poolsPath,
+        address kyberSwapRouter
     ) external;
 
     function withdrawGenomicDaoToken(uint256 amount, address to) external;
