@@ -21,7 +21,7 @@ def test_success__withdraw_genomic_dao_token(
     owner_balance = dao_token.balanceOf(owner)
 
     # Action
-    genomic_dao_token_2_life.withdrawGenomicDaoToken(
+    genomic_dao_token_2_life.withdrawGenomicDaoTokenToBuyLife(
         amount,
         owner,
         {'from': owner}
@@ -31,7 +31,7 @@ def test_success__withdraw_genomic_dao_token(
     assert dao_token.balanceOf(owner) == owner_balance + amount
 
 
-def test_withdraw_genomic_dao_token_to_zero_address(
+def test_failure__withdraw_genomic_dao_token_to_zero_address(
         genomic_dao_token_2_life_deployment, zero_address
 ):
     # Arrange
@@ -44,14 +44,14 @@ def test_withdraw_genomic_dao_token_to_zero_address(
 
     # Assert
     with brownie.reverts("To address is zero address"):
-        genomic_dao_token_2_life.withdrawGenomicDaoToken(
+        genomic_dao_token_2_life.withdrawGenomicDaoTokenToBuyLife(
             amount,
             zero_address,
             {'from': owner}
         )
 
 
-def test_withdraw_genomic_dao_token_from_not_valid_owner(
+def test_failure__withdraw_genomic_dao_token_from_not_valid_owner(
         genomic_dao_token_2_life_deployment
 ):
     # Arrange
@@ -65,8 +65,28 @@ def test_withdraw_genomic_dao_token_from_not_valid_owner(
 
     # Assert
     with brownie.reverts("Ownable: caller is not the owner"):
-        genomic_dao_token_2_life.withdrawGenomicDaoToken(
+        genomic_dao_token_2_life.withdrawGenomicDaoTokenToBuyLife(
             amount,
             owner,
             {'from': new_account}
+        )
+
+
+def test_failure__withdraw_genomic_dao_token_exceed_balance(
+        genomic_dao_token_2_life_deployment
+):
+    # Arrange
+    genomic_dao_token_2_life = \
+        genomic_dao_token_2_life_deployment['genomic_dao_token_2_life']
+    owner = genomic_dao_token_2_life_deployment['owner']
+    amount = 10000
+
+    # Action
+
+    # Assert
+    with brownie.reverts("Dao Token amount exceeds balance"):
+        genomic_dao_token_2_life.withdrawGenomicDaoTokenToBuyLife(
+            amount,
+            owner,
+            {'from': owner}
         )

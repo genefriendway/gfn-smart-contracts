@@ -2,7 +2,7 @@
 pragma solidity 0.8.11;
 
 /**
- * @dev Interface of the DAOTokenLock
+ * @dev Interface of the IGenomicDAOToken2LIFE
  */
 
 interface IGenomicDAOToken2LIFE {
@@ -10,7 +10,7 @@ interface IGenomicDAOToken2LIFE {
     event GenomicDaoTokenExchangedToLife(
         uint256 amountGenomicDaoToken,
         uint256 amountLife,
-        address indexed from,
+        address indexed fromLifeSource,
         address indexed to
     );
 
@@ -23,13 +23,13 @@ interface IGenomicDAOToken2LIFE {
         address kyberSwapRouter
     );
 
-    event GenomicDaoTokenWithdrawn(uint256 amount, address indexed to);
+    event GenomicDaoTokenWithdrawnToBuyLife(uint256 amount, address indexed to);
 
     // Functions
     function exchangeGenomicDaoTokenToLife(
         uint256 amountGenomicDaoToken,
         uint256 amountLife,
-        address from,
+        address fromLifeSource,
         address to
     ) external;
 
@@ -42,5 +42,5 @@ interface IGenomicDAOToken2LIFE {
         address kyberSwapRouter
     ) external;
 
-    function withdrawGenomicDaoToken(uint256 amount, address to) external;
+    function withdrawGenomicDaoTokenToBuyLife(uint256 amount, address to) external;
 }

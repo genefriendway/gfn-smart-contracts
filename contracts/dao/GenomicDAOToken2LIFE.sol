@@ -16,26 +16,26 @@ contract GenomicDAOToken2LIFE is IGenomicDAOToken2LIFE, Ownable {
     using SafeERC20 for IERC20;
 
     // state variables
-    address lifeAddress;
-    address genomicDaoTokenAddress;
-    address lifeReserveAddress; // Reserve to store exchanged LIFE from genomic dao token
+    address private _lifeAddress;
+    address private _genomicDaoTokenAddress;
+    address private _lifeReserveAddress; // Reserve to store exchanged LIFE from genomic dao token
 
     constructor(
         address owner,
-        address lifeToken,
         address genomicDaoToken,
+        address lifeToken,
         address reserve
     ) {
-        lifeAddress = lifeToken;
-        genomicDaoTokenAddress = genomicDaoToken;
-        lifeReserveAddress = reserve;
+        _genomicDaoTokenAddress = genomicDaoToken;
+        _lifeAddress = lifeToken;
+        _lifeReserveAddress = reserve;
 
         transferOwnership(owner);
     }
 
     /**
      * Spend GenomicDaoToken that stores in the smart contract to exchange for LIFE
-     * and transfer exchanged LIFE to `lifeReserveAddress` address
+     * and transfer exchanged LIFE to `_lifeReserveAddress` address
      *
      * Requirements:
      *
@@ -46,16 +46,16 @@ contract GenomicDAOToken2LIFE is IGenomicDAOToken2LIFE, Ownable {
     function exchangeGenomicDaoTokenToLife(
         uint256 amountGenomicDaoToken,
         uint256 amountLife,
-        address from,
+        address fromLifeSource,
         address to
     ) external onlyOwner {
-        IERC20 lifeToken = IERC20(lifeAddress);
-        IERC20 genomicDaoToken = IERC20(genomicDaoTokenAddress);
+        IERC20 lifeToken = IERC20(_lifeAddress);
+        IERC20 genomicDaoToken = IERC20(_genomicDaoTokenAddress);
 
         uint256 genomicDaoTokenBalance = genomicDaoToken.balanceOf(
             address(this)
         );
-        uint256 allowance = lifeToken.allowance(from, address(this));
+        uint256 allowance = lifeToken.allowance(fromLifeSource, address(this));
 
         // Validations
         require(
@@ -70,11 +70,11 @@ contract GenomicDAOToken2LIFE is IGenomicDAOToken2LIFE, Ownable {
         // Transfer GenomicDAO token `to` address
         SafeERC20.safeTransfer(genomicDaoToken, to, amountGenomicDaoToken);
 
-        // Transfer LIFE token reserve address
+        // Transfer LIFE token to reserve address
         SafeERC20.safeTransferFrom(
             lifeToken,
-            from,
-            lifeReserveAddress,
+            fromLifeSource,
+            _lifeReserveAddress,
             amountLife
         );
 
@@ -82,33 +82,53 @@ contract GenomicDAOToken2LIFE is IGenomicDAOToken2LIFE, Ownable {
         emit GenomicDaoTokenExchangedToLife(
             amountGenomicDaoToken,
             amountLife,
-            from,
+            fromLifeSource,
             to
         );
     }
 
     /**
-     * Backup method to withdraw Genomic Dao Token to avoid Genomic Dao Token is locked in the contract
+     * Withdraw Genomic Dao Token to buy Life
      *
      * Requirements:
      *
      * - `to` address must not zero address
+     * - contract must have at least `amount` DAO tokens
      * - only owner of the contract can execute function
      */
-    function withdrawGenomicDaoToken(uint256 amount, address to)
+    function withdrawGenomicDaoTokenToBuyLife(uint256 amount, address to)
         external
         onlyOwner
     {
         // Validation
         require(to != address(0), "To address is zero address");
 
-        IERC20 genomicDaoToken = IERC20(genomicDaoTokenAddress);
+        IERC20 genomicDaoToken = IERC20(_genomicDaoTokenAddress);
+
+        require(
+            genomicDaoToken.balanceOf(address(this)) >= amount,
+            "Dao Token amount exceeds balance"
+        );
 
         // Transfer LIFE token `to` address
         SafeERC20.safeTransfer(genomicDaoToken, to, amount);
 
         // Emit events
-        emit GenomicDaoTokenWithdrawn(amount, to);
+        emit GenomicDaoTokenWithdrawnToBuyLife(amount, to);
+    }
+
+    /**
+     * Returns the address of LIFE token
+     */
+    function lifeToken() public view returns (address) {
+        return _lifeAddress;
+    }
+
+    /**
+     * Return the address of GenomicDAOToken
+     */
+    function genomicDaoToken() public view returns (address) {
+        return _genomicDaoTokenAddress;
     }
 
     function swapExactTokensForTokensByKyberSwap(
@@ -123,7 +143,7 @@ contract GenomicDAOToken2LIFE is IGenomicDAOToken2LIFE, Ownable {
     {
         //next we need to allow the kyberswap router to spend the token we just sent to this contract
         //by calling IERC20 approve you allow the uniswap contract to spend the tokens in this contract
-        IERC20(genomicDaoTokenAddress).approve(
+        IERC20(_genomicDaoTokenAddress).approve(
             kyberSwapRouter,
             amountGenomicDAOTokenIn
         );
@@ -131,13 +151,13 @@ contract GenomicDAOToken2LIFE is IGenomicDAOToken2LIFE, Ownable {
         // build path of tokens for exchange
         IERC20[] memory tokensPath = new IERC20[](2 + bridgeTokens.length);
         // setup input token
-        tokensPath[0] = IERC20(genomicDaoTokenAddress);
+        tokensPath[0] = IERC20(_genomicDaoTokenAddress);
         // setup bridge tokens
         for (uint256 i = 0; i < bridgeTokens.length; i++) {
             tokensPath[i + 1] = IERC20(bridgeTokens[i]);
         }
         // setup output token
-        tokensPath[bridgeTokens.length + 1] = IERC20(lifeAddress);
+        tokensPath[bridgeTokens.length + 1] = IERC20(_lifeAddress);
 
         require(
             (tokensPath.length - 1) == poolsPath.length,
