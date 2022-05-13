@@ -88,24 +88,33 @@ contract LIFE2GenomicDAOToken is ILIFE2GenomicDAOToken, Ownable {
     }
 
     /**
-     * Backup method to withdraw LIFE to avoid LIFE is locked in the contract
+     * Withdraw LIFE to buy Genomic Dao Token
      *
      * Requirements:
      *
      * - `to` address must not zero address
+     * - contract must have at least `amount` LIFE tokens
      * - only owner of the contract can execute function
      */
-    function withdrawLife(uint256 amount, address to) external onlyOwner {
+    function withdrawLifeToBuyPCSP(uint256 amount, address to)
+        external
+        onlyOwner
+    {
         // Validation
         require(to != address(0), "To address is zero address");
 
         IERC20 lifeToken = IERC20(_lifeAddress);
 
+        require(
+            lifeToken.balanceOf(address(this)) >= amount,
+            "LIFE amount exceeds balance"
+        );
+
         // Transfer LIFE token `to` address
         SafeERC20.safeTransfer(lifeToken, to, amount);
 
         // Emit events
-        emit LifeWithdrawn(amount, to);
+        emit LifeWithdrawnToBuyGenomicDaoToken(amount, to);
     }
 
     /**

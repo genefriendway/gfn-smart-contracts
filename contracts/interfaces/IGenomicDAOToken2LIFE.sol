@@ -13,7 +13,7 @@ interface IGenomicDAOToken2LIFE {
         address indexed fromLifeSource,
         address indexed to
     );
-    event GenomicDaoTokenWithdrawn(uint256 amount, address indexed to);
+    event GenomicDaoTokenWithdrawnToBuyLife(uint256 amount, address indexed to);
 
     // Functions
     function exchangeGenomicDaoTokenToLife(
@@ -23,5 +23,5 @@ interface IGenomicDAOToken2LIFE {
         address to
     ) external;
 
-    function withdrawGenomicDaoToken(uint256 amount, address to) external;
+    function withdrawGenomicDaoTokenToBuyLife(uint256 amount, address to) external;
 }

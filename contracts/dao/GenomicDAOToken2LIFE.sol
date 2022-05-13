@@ -87,14 +87,15 @@ contract GenomicDAOToken2LIFE is IGenomicDAOToken2LIFE, Ownable {
     }
 
     /**
-     * Backup method to withdraw Genomic Dao Token to avoid Genomic Dao Token is locked in the contract
+     * Withdraw Genomic Dao Token to buy Life
      *
      * Requirements:
      *
      * - `to` address must not zero address
+     * - contract must have at least `amount` DAO tokens
      * - only owner of the contract can execute function
      */
-    function withdrawGenomicDaoToken(uint256 amount, address to)
+    function withdrawGenomicDaoTokenToBuyLife(uint256 amount, address to)
         external
         onlyOwner
     {
@@ -103,11 +104,16 @@ contract GenomicDAOToken2LIFE is IGenomicDAOToken2LIFE, Ownable {
 
         IERC20 genomicDaoToken = IERC20(_genomicDaoTokenAddress);
 
+        require(
+            genomicDaoToken.balanceOf(address(this)) >= amount,
+            "Dao Token amount exceeds balance"
+        );
+
         // Transfer LIFE token `to` address
         SafeERC20.safeTransfer(genomicDaoToken, to, amount);
 
         // Emit events
-        emit GenomicDaoTokenWithdrawn(amount, to);
+        emit GenomicDaoTokenWithdrawnToBuyLife(amount, to);
     }
 
     /**
