@@ -130,4 +130,54 @@ contract LIFE2GenomicDAOToken is ILIFE2GenomicDAOToken, Ownable {
     function genomicDaoToken() public view returns (address) {
         return _genomicDaoTokenAddress;
     }
+
+    function swapExactTokensForTokensByKyberSwap(
+        uint256 amountLIFEIn,
+        uint256 amountGenomicDAOTokenOutMin,
+        address addressReceiveGenomicDAOToken,
+        address[] memory bridgeTokens,
+        address[] memory poolsPath,
+        address kyberSwapRouter
+    ) external onlyOwner {
+        //next we need to allow the kyberswap router to spend the token we just sent to this contract
+        //by calling IERC20 approve you allow the uniswap contract to spend the tokens in this contract
+        IERC20(_lifeAddress).approve(kyberSwapRouter, amountLIFEIn);
+
+        // build path of tokens for exchange
+        IERC20[] memory tokensPath = new IERC20[](2 + bridgeTokens.length);
+        // setup input token
+        tokensPath[0] = IERC20(_lifeAddress);
+        // setup bridge tokens
+        for (uint256 i = 0; i < bridgeTokens.length; i++) {
+            tokensPath[i + 1] = IERC20(bridgeTokens[i]);
+        }
+        // setup output token
+        tokensPath[bridgeTokens.length + 1] = IERC20(_genomicDaoTokenAddress);
+
+        require(
+            (tokensPath.length - 1) == poolsPath.length,
+            "LIFE22GenomicDAOToken: tokensPath and poolsPath invalid."
+        );
+
+        //then we will call swapExactTokensForTokens
+        //for the deadline we will pass in block.timestamp
+        //the deadline is the latest time the trade is valid for
+        IDMMRouter02(kyberSwapRouter).swapExactTokensForTokens(
+            amountLIFEIn,
+            amountGenomicDAOTokenOutMin,
+            poolsPath,
+            tokensPath,
+            addressReceiveLIFE,
+            block.timestamp
+        );
+
+        emit SwapExactTokensForTokensByKyberSwap(
+            amountLIFEIn,
+            amountGenomicDAOTokenOutMin,
+            addressReceiveLIFE,
+            bridgeTokens,
+            poolsPath,
+            kyberSwapRouter
+        );
+    }
 }
