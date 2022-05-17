@@ -4,6 +4,7 @@ pragma solidity 0.8.11;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "../interfaces/kyberswap/IDMMRouter02.sol";
 import "../interfaces/ILIFE2GenomicDAOToken.sol";
 
 /**
@@ -167,14 +168,14 @@ contract LIFE2GenomicDAOToken is ILIFE2GenomicDAOToken, Ownable {
             amountGenomicDAOTokenOutMin,
             poolsPath,
             tokensPath,
-            addressReceiveLIFE,
+            addressReceiveGenomicDAOToken,
             block.timestamp
         );
 
         emit SwapExactTokensForTokensByKyberSwap(
             amountLIFEIn,
             amountGenomicDAOTokenOutMin,
-            addressReceiveLIFE,
+            addressReceiveGenomicDAOToken,
             bridgeTokens,
             poolsPath,
             kyberSwapRouter
