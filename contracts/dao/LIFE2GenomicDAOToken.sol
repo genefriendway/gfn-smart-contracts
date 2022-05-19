@@ -163,14 +163,15 @@ contract LIFE2GenomicDAOToken is ILIFE2GenomicDAOToken, Ownable {
         //then we will call swapExactTokensForTokens
         //for the deadline we will pass in block.timestamp
         //the deadline is the latest time the trade is valid for
-        IDMMRouter02(kyberSwapRouter).swapExactTokensForTokens(
-            amountLIFEIn,
-            amountGenomicDAOTokenOutMin,
-            poolsPath,
-            tokensPath,
-            addressReceiveGenomicDAOToken,
-            block.timestamp
-        );
+        uint256[] memory amountOuts = IDMMRouter02(kyberSwapRouter)
+            .swapExactTokensForTokens(
+                amountLIFEIn,
+                amountGenomicDAOTokenOutMin,
+                poolsPath,
+                tokensPath,
+                addressReceiveGenomicDAOToken,
+                block.timestamp
+            );
 
         emit SwapExactTokensForTokensByKyberSwap(
             amountLIFEIn,
@@ -178,6 +179,7 @@ contract LIFE2GenomicDAOToken is ILIFE2GenomicDAOToken, Ownable {
             addressReceiveGenomicDAOToken,
             bridgeTokens,
             poolsPath,
+            amountOuts,
             kyberSwapRouter
         );
     }
