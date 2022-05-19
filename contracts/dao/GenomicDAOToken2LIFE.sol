@@ -16,9 +16,9 @@ contract GenomicDAOToken2LIFE is IGenomicDAOToken2LIFE, Ownable {
     using SafeERC20 for IERC20;
 
     // state variables
-    address private _lifeAddress;
-    address private _genomicDaoTokenAddress;
-    address private _lifeReserveAddress; // Reserve to store exchanged LIFE from genomic dao token
+    address private immutable _lifeAddress;
+    address private immutable _genomicDaoTokenAddress;
+    address private immutable _lifeReserveAddress; // Reserve to store exchanged LIFE from genomic dao token
 
     constructor(
         address owner,

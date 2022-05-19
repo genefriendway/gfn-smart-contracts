@@ -16,9 +16,9 @@ contract LIFE2GenomicDAOToken is ILIFE2GenomicDAOToken, Ownable {
     using SafeERC20 for IERC20;
 
     // state variables
-    address _lifeAddress;
-    address _genomicDaoTokenAddress;
-    address _genomicDaoTokenReserveAddress; // Reserve to store exchanged token from LIFE
+    address private immutable _lifeAddress;
+    address private immutable _genomicDaoTokenAddress;
+    address private immutable _genomicDaoTokenReserveAddress; // Reserve to store exchanged token from LIFE
 
     constructor(
         address owner,
@@ -97,7 +97,7 @@ contract LIFE2GenomicDAOToken is ILIFE2GenomicDAOToken, Ownable {
      * - contract must have at least `amount` LIFE tokens
      * - only owner of the contract can execute function
      */
-    function withdrawLifeToBuyPCSP(uint256 amount, address to)
+    function withdrawLifeToBuyGenomicDaoToken(uint256 amount, address to)
         external
         onlyOwner
     {
