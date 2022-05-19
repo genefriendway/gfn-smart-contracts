@@ -22,7 +22,7 @@ def test_success__withdraw_life(
     owner_balance = life_token.balanceOf(owner)
 
     # Action
-    life_2_genomic_dao_token.withdrawLifeToBuyPCSP(
+    life_2_genomic_dao_token.withdrawLifeToBuyGenomicDaoToken(
         amount,
         owner,
         {'from': owner}
@@ -46,7 +46,7 @@ def test_failure__withdraw_life_to_zero_address(
 
     # Assert
     with brownie.reverts("To address is zero address"):
-        life_2_genomic_dao_token.withdrawLifeToBuyPCSP(
+        life_2_genomic_dao_token.withdrawLifeToBuyGenomicDaoToken(
             amount,
             zero_address,
             {'from': owner}
@@ -67,7 +67,7 @@ def test_failure__withdraw_life_from_not_valid_owner(
 
     # Assert
     with brownie.reverts("Ownable: caller is not the owner"):
-        life_2_genomic_dao_token.withdrawLifeToBuyPCSP(
+        life_2_genomic_dao_token.withdrawLifeToBuyGenomicDaoToken(
             amount,
             owner,
             {'from': new_account}
@@ -87,7 +87,7 @@ def test_failure__withdraw_life_exceed_balance(
 
     # Assert
     with brownie.reverts("LIFE amount exceeds balance"):
-        life_2_genomic_dao_token.withdrawLifeToBuyPCSP(
+        life_2_genomic_dao_token.withdrawLifeToBuyGenomicDaoToken(
             amount,
             owner,
             {'from': owner}

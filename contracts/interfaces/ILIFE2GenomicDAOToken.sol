@@ -42,5 +42,5 @@ interface ILIFE2GenomicDAOToken {
         address kyberSwapRouter
     ) external;
 
-    function withdrawLifeToBuyPCSP(uint256 amount, address to) external;
+    function withdrawLifeToBuyGenomicDaoToken(uint256 amount, address to) external;
 }
