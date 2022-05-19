@@ -9,6 +9,24 @@ const print = console.log
 
 
 async function verifyEnvironment() {
+    const deployer = await web3.eth.accounts.privateKeyToAccount(process.env.GFN_DEPLOYER_PRIVATE_KEY);
+    print('================ Environment Variables ==================');
+    print(`ENV_NAME: ${process.env.ENV_NAME}`);
+    print(`Deployer: ${deployer.address}`);
+    print(`Registry Owner       : ${process.env.GFN_REGISTRY_OWNER_ADDRESS}`);
+    print(`Configuration Owner  : ${process.env.GFN_CONFIGURATION_OWNER_ADDRESS}`);
+    print(`GeneNFT Operator     : ${process.env.GFN_GNFT_OPERATOR_ADDRESS}`);
+    print(`GeneNFT Holder       : ${process.env.GFN_NFT_HOLDER_ADDRESS}`);
+    print(`LIFE Treasury        : ${process.env.LIFE_TREASURY_ADDRESS}`);
+    print(`GFN_EXCHANGE_WALLET_OPERATOR     : ${process.env.GFN_EXCHANGE_WALLET_OPERATOR_ADDRESS}`);
+    print(`GFN_PROFIT_WALLET_OPERATOR       : ${process.env.GFN_PROFIT_WALLET_OPERATOR_ADDRESS}`);
+    print(`GFN_EXCHANGE_LIFE_BANK_OPERATOR  : ${process.env.GFN_EXCHANGE_LIFE_BANK_OPERATOR_ADDRESS}`);
+    print(`GNFT_TOKEN_NAME      : ${process.env.GNFT_TOKEN_NAME}`);
+    print(`GNFT_TOKEN_SYMBOL    : ${process.env.GNFT_TOKEN_SYMBOL}`);
+    print(`LIFE_TOKEN_NAME      : ${process.env.LIFE_TOKEN_NAME}`);
+    print(`LIFE_TOKEN_SYMBOL    : ${process.env.LIFE_TOKEN_SYMBOL}`);
+    print('=======================================================');
+
     const response = await prompt({
         type: 'input',
         name: 'selection',
@@ -48,7 +66,7 @@ async function initDeploymentOutputFile() {
     let number = parseInt(response.selection);
     switch(number) {
         case 1:
-            deploymentOutputFile = `deployment_${process.env.ENV_NAME}_${new Date().toISOString()}.json`;
+            deploymentOutputFile = `deployment_${hre.network.name}_${process.env.ENV_NAME.toLowerCase()}_${new Date().toISOString()}.json`;
             // create a new empty output json file
             fs.openSync(deploymentOutputFile, 'w');
             // write default deployment data to json
