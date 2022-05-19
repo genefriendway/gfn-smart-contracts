@@ -16,9 +16,9 @@ contract GenomicDAOToken2LIFE is IGenomicDAOToken2LIFE, Ownable {
     using SafeERC20 for IERC20;
 
     // state variables
-    address private _lifeAddress;
-    address private _genomicDaoTokenAddress;
-    address private _lifeReserveAddress; // Reserve to store exchanged LIFE from genomic dao token
+    address private immutable _lifeAddress;
+    address private immutable _genomicDaoTokenAddress;
+    address private immutable _lifeReserveAddress; // Reserve to store exchanged LIFE from genomic dao token
 
     constructor(
         address owner,
@@ -138,9 +138,7 @@ contract GenomicDAOToken2LIFE is IGenomicDAOToken2LIFE, Ownable {
         address[] memory bridgeTokens,
         address[] memory poolsPath,
         address kyberSwapRouter
-    )
-        external onlyOwner
-    {
+    ) external onlyOwner {
         //next we need to allow the kyberswap router to spend the token we just sent to this contract
         //by calling IERC20 approve you allow the uniswap contract to spend the tokens in this contract
         IERC20(_genomicDaoTokenAddress).approve(
@@ -167,14 +165,15 @@ contract GenomicDAOToken2LIFE is IGenomicDAOToken2LIFE, Ownable {
         //then we will call swapExactTokensForTokens
         //for the deadline we will pass in block.timestamp
         //the deadline is the latest time the trade is valid for
-        IDMMRouter02(kyberSwapRouter).swapExactTokensForTokens(
-            amountGenomicDAOTokenIn,
-            amountLIFEOutMin,
-            poolsPath,
-            tokensPath,
-            addressReceiveLIFE,
-            block.timestamp
-        );
+        uint256[] memory amountOuts = IDMMRouter02(kyberSwapRouter)
+            .swapExactTokensForTokens(
+                amountGenomicDAOTokenIn,
+                amountLIFEOutMin,
+                poolsPath,
+                tokensPath,
+                addressReceiveLIFE,
+                block.timestamp
+            );
 
         emit SwapExactTokensForTokensByKyberSwap(
             amountGenomicDAOTokenIn,
@@ -182,6 +181,7 @@ contract GenomicDAOToken2LIFE is IGenomicDAOToken2LIFE, Ownable {
             addressReceiveLIFE,
             bridgeTokens,
             poolsPath,
+            amountOuts,
             kyberSwapRouter
         );
     }

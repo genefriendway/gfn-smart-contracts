@@ -20,6 +20,7 @@ interface IGenomicDAOToken2LIFE {
         address addressReceiveLIFE,
         address[] bridgeTokens,
         address[] poolsPath,
+        uint256[] amountOuts,
         address kyberSwapRouter
     );
 
@@ -42,5 +43,6 @@ interface IGenomicDAOToken2LIFE {
         address kyberSwapRouter
     ) external;
 
-    function withdrawGenomicDaoTokenToBuyLife(uint256 amount, address to) external;
+    function withdrawGenomicDaoTokenToBuyLife(uint256 amount, address to)
+        external;
 }
