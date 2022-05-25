@@ -172,7 +172,7 @@ async function main() {
     // init Deployment Output File
     await initDeploymentOutputFile();
 
-    // const envFile = await selectEnvironment();
+    // select Contracts you want to deploy
     await selectContractsToDeploy();
 
 
