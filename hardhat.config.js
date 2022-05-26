@@ -21,7 +21,6 @@ const config = {
         },
         avax_testnet: {
             url: 'https://api.avax-test.network/ext/bc/C/rpc',
-            gasPrice: 225000000000,
             chainId: 43113,
             accounts: [`${process.env.GFN_DEPLOYER_PRIVATE_KEY}`],
         },
@@ -32,8 +31,12 @@ const config = {
         },
         oasis_testnet: {
             url: 'https://testnet.emerald.oasis.dev',
-            gasPrice: 225000000000,
             chainId: 42261,
+            accounts: [`${process.env.GFN_DEPLOYER_PRIVATE_KEY}`],
+        },
+        oasis_mainnet: {
+            url: 'https://emerald.oasis.dev',
+            chainId: 42262,
             accounts: [`${process.env.GFN_DEPLOYER_PRIVATE_KEY}`],
         },
 

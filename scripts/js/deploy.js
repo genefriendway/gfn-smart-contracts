@@ -12,7 +12,7 @@ async function verifyEnvironment() {
     const deployer = await web3.eth.accounts.privateKeyToAccount(process.env.GFN_DEPLOYER_PRIVATE_KEY);
     print('================ Environment Variables ==================');
     print(`ENV_NAME: ${process.env.ENV_NAME}`);
-    print(`Deployer: ${deployer.address}`);
+    print(`Deployer             : ${deployer.address}`);
     print(`Registry Owner       : ${process.env.GFN_REGISTRY_OWNER_ADDRESS}`);
     print(`Configuration Owner  : ${process.env.GFN_CONFIGURATION_OWNER_ADDRESS}`);
     print(`GeneNFT Operator     : ${process.env.GFN_GNFT_OPERATOR_ADDRESS}`);

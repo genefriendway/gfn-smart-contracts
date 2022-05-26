@@ -37,6 +37,7 @@ async function deployContractRegistry() {
     const ARTIFACT_FILE = 'artifacts/contracts/ContractRegistry.sol/ContractRegistry.json'
 
     // log to screen
+    print('------------------------------------------');
     print(`Starting Deploy Contract ${CONTRACT_NAME}`);
 
     // start deploy contract to blockchain network
@@ -47,6 +48,7 @@ async function deployContractRegistry() {
     await instance.deployed();
     // log to screen
     print(`Contract ${CONTRACT_NAME} deployed at: ${instance.address}`);
+    print('------------------------------------------');
 
     // update updateDeploymentOutput
     await _updateDeploymentOutput(CONTRACT_NAME, instance.address, ARTIFACT_FILE)
@@ -59,6 +61,7 @@ async function deployConfiguration() {
     const registryAddress = await _getRegistryAddress();
 
     // log to screen
+    print('------------------------------------------');
     print(`Starting Deploy Contract ${CONTRACT_NAME}`);
 
     // start deploy contract to blockchain network
@@ -71,6 +74,7 @@ async function deployConfiguration() {
     await instance.deployed();
     // log to screen
     print(`Contract ${CONTRACT_NAME} deployed at: ${instance.address}`);
+    print('------------------------------------------');
 
     // update updateDeploymentOutput
     await _updateDeploymentOutput(CONTRACT_NAME, instance.address, ARTIFACT_FILE)
@@ -83,6 +87,7 @@ async function deployGeneNFTToken() {
     const registryAddress = await _getRegistryAddress();
 
     // log to screen
+    print('------------------------------------------');
     print(`Starting Deploy Contract ${CONTRACT_NAME}`);
 
     // start deploy contract to blockchain network
@@ -95,6 +100,7 @@ async function deployGeneNFTToken() {
     await instance.deployed();
     // log to screen
     print(`Contract ${CONTRACT_NAME} deployed at: ${instance.address}`);
+    print('------------------------------------------');
 
     // update updateDeploymentOutput
     await _updateDeploymentOutput(CONTRACT_NAME, instance.address, ARTIFACT_FILE)
@@ -108,6 +114,7 @@ async function deployLIFEToken() {
     const registryAddress = await _getRegistryAddress();
 
     // log to screen
+    print('------------------------------------------');
     print(`Starting Deploy Contract ${CONTRACT_NAME}`);
 
     // start deploy contract to blockchain network
@@ -120,6 +127,7 @@ async function deployLIFEToken() {
     await instance.deployed();
     // log to screen
     print(`Contract ${CONTRACT_NAME} deployed at: ${instance.address}`);
+    print('------------------------------------------');
 
     // update updateDeploymentOutput
     await _updateDeploymentOutput(CONTRACT_NAME, instance.address, ARTIFACT_FILE)
@@ -132,6 +140,7 @@ async function deployGFNExchangeLIFEBank() {
     const registryAddress = await _getRegistryAddress();
 
     // log to screen
+    print('------------------------------------------');
     print(`Starting Deploy Contract ${CONTRACT_NAME}`);
 
     // start deploy contract to blockchain network
@@ -141,6 +150,7 @@ async function deployGFNExchangeLIFEBank() {
     await instance.deployed();
     // log to screen
     print(`Contract ${CONTRACT_NAME} deployed at: ${instance.address}`);
+    print('------------------------------------------');
 
     // update updateDeploymentOutput
     await _updateDeploymentOutput(CONTRACT_NAME, instance.address, ARTIFACT_FILE)
@@ -153,6 +163,7 @@ async function deployGFNExchangeWallet() {
     const registryAddress = await _getRegistryAddress();
 
     // log to screen
+    print('------------------------------------------');
     print(`Starting Deploy Contract ${CONTRACT_NAME}`);
 
     // start deploy contract to blockchain network
@@ -162,6 +173,7 @@ async function deployGFNExchangeWallet() {
     await instance.deployed();
     // log to screen
     print(`Contract ${CONTRACT_NAME} deployed at: ${instance.address}`);
+    print('------------------------------------------');
 
     // update updateDeploymentOutput
     await _updateDeploymentOutput(CONTRACT_NAME, instance.address, ARTIFACT_FILE)
@@ -174,6 +186,7 @@ async function deployGFNProfitWallet() {
     const registryAddress = await _getRegistryAddress();
 
     // log to screen
+    print('------------------------------------------');
     print(`Starting Deploy Contract ${CONTRACT_NAME}`);
 
     // start deploy contract to blockchain network
@@ -183,6 +196,7 @@ async function deployGFNProfitWallet() {
     await instance.deployed();
     // log to screen
     print(`Contract ${CONTRACT_NAME} deployed at: ${instance.address}`);
+    print('------------------------------------------');
 
     // update updateDeploymentOutput
     await _updateDeploymentOutput(CONTRACT_NAME, instance.address, ARTIFACT_FILE)
