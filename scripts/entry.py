@@ -54,10 +54,12 @@ PUBLISH_MENU = DEPLOYMENT_MENU
 DEPLOY_ACTION = 1
 VERIFY_DEPLOYMENT_ACTION = 2
 PUBLISH_ACTION = 3
+EXIT = 9
 MAIN_MENU = {
     DEPLOY_ACTION: "Deploy Contract",
     VERIFY_DEPLOYMENT_ACTION: "Verify Deployment",
     PUBLISH_ACTION: "Publish Contract",
+    EXIT: "Exit !!!!",
 }
 
 
@@ -106,6 +108,10 @@ def display_main_menu():
     print(f"[==>] You selected Main Action: {MAIN_MENU[selection]}")
     print("===================================================================")
     print("\n")
+
+    if selection == EXIT:
+        exit(0)
+
     return selection
 
 
