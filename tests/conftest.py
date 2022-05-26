@@ -28,6 +28,11 @@ class Constant(ContractName):
 
 
 @pytest.fixture(scope="module")
+def zero_address():
+    return "0x0000000000000000000000000000000000000000"
+
+
+@pytest.fixture(scope="module")
 def const():
     return Constant
 
