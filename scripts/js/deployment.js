@@ -202,6 +202,89 @@ async function deployGFNProfitWallet() {
     await _updateDeploymentOutput(CONTRACT_NAME, instance.address, ARTIFACT_FILE)
 }
 
+async function deployGenomicDAOToken() {
+    const CONTRACT_NAME = 'GenomicDAOToken'
+    const CONTRACT_CLASS = 'GenomicDAOToken'
+    const ARTIFACT_FILE = 'artifacts/contracts/dao/GenomicDAOToken.sol/GenomicDAOToken.json'
+
+    // log to screen
+    print('------------------------------------------');
+    print(`Starting Deploy Contract ${CONTRACT_NAME}`);
+
+    // start deploy contract to blockchain network
+    const Contract = await hre.ethers.getContractFactory(CONTRACT_CLASS);
+    const instance = await Contract.deploy(
+        process.env.DAO_TOKEN_OWNER,
+        process.env.DAO_TOKEN_NAME,
+        process.env.DAO_TOKEN_SYMBOL,
+        process.env.DAO_TOKEN_CAP,
+    )
+
+    await instance.deployed();
+    // log to screen
+    print(`Contract ${CONTRACT_NAME} deployed at: ${instance.address}`);
+    print('------------------------------------------');
+
+    // update updateDeploymentOutput
+    await _updateDeploymentOutput(CONTRACT_NAME, instance.address, ARTIFACT_FILE)
+}
+
+
+async function deployGenomicDAOToken2LIFE() {
+    const CONTRACT_NAME = 'GenomicDAOToken2LIFE'
+    const CONTRACT_CLASS = 'GenomicDAOToken2LIFE'
+    const ARTIFACT_FILE = 'artifacts/contracts/dao/GenomicDAOToken2LIFE.sol/GenomicDAOToken2LIFE.json'
+
+    // log to screen
+    print('------------------------------------------');
+    print(`Starting Deploy Contract ${CONTRACT_NAME}`);
+
+    // start deploy contract to blockchain network
+    const Contract = await hre.ethers.getContractFactory(CONTRACT_CLASS);
+    const instance = await Contract.deploy(
+        process.env.GENOMIC_DAO_TOKEN_2_LIFE_OWNER,
+        process.env.GENOMIC_DAO_TOKEN_ADDRESS,
+        process.env.LIFE_TOKEN_ADDRESS,
+        process.env.RESERVATION_LIFE_ADDRESS,
+    )
+
+    await instance.deployed();
+    // log to screen
+    print(`Contract ${CONTRACT_NAME} deployed at: ${instance.address}`);
+    print('------------------------------------------');
+
+    // update updateDeploymentOutput
+    await _updateDeploymentOutput(CONTRACT_NAME, instance.address, ARTIFACT_FILE)
+}
+
+
+async function deployLIFE2GenomicDAOToken() {
+    const CONTRACT_NAME = 'LIFE2GenomicDAOToken'
+    const CONTRACT_CLASS = 'LIFE2GenomicDAOToken'
+    const ARTIFACT_FILE = 'artifacts/contracts/dao/LIFE2GenomicDAOToken.sol/LIFE2GenomicDAOToken.json'
+
+    // log to screen
+    print('------------------------------------------');
+    print(`Starting Deploy Contract ${CONTRACT_NAME}`);
+
+    // start deploy contract to blockchain network
+    const Contract = await hre.ethers.getContractFactory(CONTRACT_CLASS);
+    const instance = await Contract.deploy(
+        process.env.LIFE_2_GENOMIC_DAO_TOKEN_OWNER,
+        process.env.LIFE_TOKEN_ADDRESS,
+        process.env.GENOMIC_DAO_TOKEN_ADDRESS,
+        process.env.RESERVATION_DAO_TOKEN_ADDRESS,
+    )
+
+    await instance.deployed();
+    // log to screen
+    print(`Contract ${CONTRACT_NAME} deployed at: ${instance.address}`);
+    print('------------------------------------------');
+
+    // update updateDeploymentOutput
+    await _updateDeploymentOutput(CONTRACT_NAME, instance.address, ARTIFACT_FILE)
+}
+
 
 module.exports = {
     deployContractRegistry: deployContractRegistry,
@@ -211,4 +294,7 @@ module.exports = {
     deployGFNExchangeLIFEBank: deployGFNExchangeLIFEBank,
     deployGFNExchangeWallet: deployGFNExchangeWallet,
     deployGFNProfitWallet: deployGFNProfitWallet,
+    deployGenomicDAOToken: deployGenomicDAOToken,
+    deployGenomicDAOToken2LIFE: deployGenomicDAOToken2LIFE,
+    deployLIFE2GenomicDAOToken: deployLIFE2GenomicDAOToken,
 };

@@ -25,6 +25,14 @@ async function verifyEnvironment() {
     print(`GNFT_TOKEN_SYMBOL    : ${process.env.GNFT_TOKEN_SYMBOL}`);
     print(`LIFE_TOKEN_NAME      : ${process.env.LIFE_TOKEN_NAME}`);
     print(`LIFE_TOKEN_SYMBOL    : ${process.env.LIFE_TOKEN_SYMBOL}`);
+    print(`GENOMIC_DAO_TOKEN_2_LIFE_OWNER   : ${process.env.GENOMIC_DAO_TOKEN_2_LIFE_OWNER}`);
+    print(`GENOMIC_DAO_TOKEN_ADDRESS        : ${process.env.GENOMIC_DAO_TOKEN_ADDRESS}`);
+    print(`LIFE_TOKEN_ADDRESS               : ${process.env.LIFE_TOKEN_ADDRESS}`);
+    print(`RESERVATION_LIFE_ADDRESS         : ${process.env.RESERVATION_LIFE_ADDRESS}`);
+    print(`LIFE_2_GENOMIC_DAO_TOKEN_OWNER   : ${process.env.LIFE_2_GENOMIC_DAO_TOKEN_OWNER}`);
+    print(`LIFE_TOKEN_ADDRESS               : ${process.env.LIFE_TOKEN_ADDRESS}`);
+    print(`GENOMIC_DAO_TOKEN_ADDRESS        : ${process.env.GENOMIC_DAO_TOKEN_ADDRESS}`);
+    print(`RESERVATION_DAO_TOKEN_ADDRESS    : ${process.env.RESERVATION_DAO_TOKEN_ADDRESS}`);
     print('=======================================================');
 
     const response = await prompt({
@@ -125,6 +133,9 @@ async function selectContractsToDeploy() {
     print('5. GFNExchangeLIFEBank');
     print('6. GFNExchangeWallet');
     print('7. GFNProfitWallet');
+    print('8. GenomicDAOToken');
+    print('9. GenomicDAOToken2LIFE');
+    print('10. LIFE2GenomicDAOToken');
     print("==============================")
 
     const response = await prompt({
@@ -157,6 +168,15 @@ async function selectContractsToDeploy() {
             break;
           case 7:
             await deployment.deployGFNProfitWallet();
+            break;
+          case 8:
+            await deployment.deployGenomicDAOToken();
+            break;
+          case 9:
+            await deployment.deployGenomicDAOToken2LIFE();
+            break;
+          case 10:
+            await deployment.deployLIFE2GenomicDAOToken();
             break;
           default:
             throw new Error(`Selected number invalid: ${number}`);
