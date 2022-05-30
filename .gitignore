@@ -14,3 +14,13 @@ bin/
 contracts/artifacts/
 deployment*.json
 run.py
+run.*
+node_modules
+coverage
+coverage.json
+typechain
+
+#Hardhat files
+cache
+artifacts
+flatten/*
