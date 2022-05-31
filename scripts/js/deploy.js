@@ -80,6 +80,7 @@ async function initDeploymentOutputFile() {
             // write default deployment data to json
             const DEFAULT_DATA = await getDefaultDeploymentOutput();
             await lib.writeToJSON(DEFAULT_DATA, deploymentOutputFile)
+            print(`==> Deployment Output File is created: ${deploymentOutputFile}`)
             break;
         case 2:
             const response = await prompt({

@@ -5,7 +5,7 @@ const lib = require('./lib.js');
 const print = console.log
 
 
-async function _updateDeploymentOutput(contractName, address, artifactFile) {
+async function _updateDeploymentOutput(contractName, contractAddress, contractOwner, artifactFile) {
     // load current data of deployment file
     const deploymentOutput = await lib.readFromJSON(process.env.DEPLOYMENT_OUTPUT_FILE);
     // load artifacts of the contract
@@ -13,8 +13,11 @@ async function _updateDeploymentOutput(contractName, address, artifactFile) {
 
     // build deployment data of the contract
     const deploymentData = {
-        address: address,
-        artifacts: artifacts
+        name: contractName,
+        address: contractAddress,
+        owner: contractOwner,
+        abi: artifacts['abi'],
+
     }
     // add deployed contracts
     const contracts = deploymentOutput.contracts;
@@ -37,7 +40,6 @@ async function deployContractRegistry() {
     const ARTIFACT_FILE = 'artifacts/contracts/ContractRegistry.sol/ContractRegistry.json'
 
     // log to screen
-    print('------------------------------------------');
     print(`Starting Deploy Contract ${CONTRACT_NAME}`);
 
     // start deploy contract to blockchain network
@@ -51,7 +53,12 @@ async function deployContractRegistry() {
     print('------------------------------------------');
 
     // update updateDeploymentOutput
-    await _updateDeploymentOutput(CONTRACT_NAME, instance.address, ARTIFACT_FILE)
+    await _updateDeploymentOutput(
+        CONTRACT_NAME,
+        instance.address,
+        process.env.GFN_REGISTRY_OWNER_ADDRESS,
+        ARTIFACT_FILE
+    )
 }
 
 async function deployConfiguration() {
@@ -61,7 +68,6 @@ async function deployConfiguration() {
     const registryAddress = await _getRegistryAddress();
 
     // log to screen
-    print('------------------------------------------');
     print(`Starting Deploy Contract ${CONTRACT_NAME}`);
 
     // start deploy contract to blockchain network
@@ -77,7 +83,12 @@ async function deployConfiguration() {
     print('------------------------------------------');
 
     // update updateDeploymentOutput
-    await _updateDeploymentOutput(CONTRACT_NAME, instance.address, ARTIFACT_FILE)
+    await _updateDeploymentOutput(
+        CONTRACT_NAME,
+        instance.address,
+        process.env.GFN_CONFIGURATION_OWNER_ADDRESS,
+        ARTIFACT_FILE
+    )
 }
 
 async function deployGeneNFTToken() {
@@ -87,7 +98,6 @@ async function deployGeneNFTToken() {
     const registryAddress = await _getRegistryAddress();
 
     // log to screen
-    print('------------------------------------------');
     print(`Starting Deploy Contract ${CONTRACT_NAME}`);
 
     // start deploy contract to blockchain network
@@ -103,7 +113,12 @@ async function deployGeneNFTToken() {
     print('------------------------------------------');
 
     // update updateDeploymentOutput
-    await _updateDeploymentOutput(CONTRACT_NAME, instance.address, ARTIFACT_FILE)
+    await _updateDeploymentOutput(
+        CONTRACT_NAME,
+        instance.address,
+        '',
+        ARTIFACT_FILE
+    )
 }
 
 
@@ -114,7 +129,6 @@ async function deployLIFEToken() {
     const registryAddress = await _getRegistryAddress();
 
     // log to screen
-    print('------------------------------------------');
     print(`Starting Deploy Contract ${CONTRACT_NAME}`);
 
     // start deploy contract to blockchain network
@@ -130,7 +144,12 @@ async function deployLIFEToken() {
     print('------------------------------------------');
 
     // update updateDeploymentOutput
-    await _updateDeploymentOutput(CONTRACT_NAME, instance.address, ARTIFACT_FILE)
+    await _updateDeploymentOutput(
+        CONTRACT_NAME,
+        instance.address,
+        '',
+        ARTIFACT_FILE
+    )
 }
 
 async function deployGFNExchangeLIFEBank() {
@@ -140,7 +159,6 @@ async function deployGFNExchangeLIFEBank() {
     const registryAddress = await _getRegistryAddress();
 
     // log to screen
-    print('------------------------------------------');
     print(`Starting Deploy Contract ${CONTRACT_NAME}`);
 
     // start deploy contract to blockchain network
@@ -153,7 +171,7 @@ async function deployGFNExchangeLIFEBank() {
     print('------------------------------------------');
 
     // update updateDeploymentOutput
-    await _updateDeploymentOutput(CONTRACT_NAME, instance.address, ARTIFACT_FILE)
+    await _updateDeploymentOutput(CONTRACT_NAME, instance.address, '', ARTIFACT_FILE)
 }
 
 async function deployGFNExchangeWallet() {
@@ -163,7 +181,6 @@ async function deployGFNExchangeWallet() {
     const registryAddress = await _getRegistryAddress();
 
     // log to screen
-    print('------------------------------------------');
     print(`Starting Deploy Contract ${CONTRACT_NAME}`);
 
     // start deploy contract to blockchain network
@@ -176,7 +193,7 @@ async function deployGFNExchangeWallet() {
     print('------------------------------------------');
 
     // update updateDeploymentOutput
-    await _updateDeploymentOutput(CONTRACT_NAME, instance.address, ARTIFACT_FILE)
+    await _updateDeploymentOutput(CONTRACT_NAME, instance.address, '', ARTIFACT_FILE)
 }
 
 async function deployGFNProfitWallet() {
@@ -186,7 +203,6 @@ async function deployGFNProfitWallet() {
     const registryAddress = await _getRegistryAddress();
 
     // log to screen
-    print('------------------------------------------');
     print(`Starting Deploy Contract ${CONTRACT_NAME}`);
 
     // start deploy contract to blockchain network
@@ -199,7 +215,7 @@ async function deployGFNProfitWallet() {
     print('------------------------------------------');
 
     // update updateDeploymentOutput
-    await _updateDeploymentOutput(CONTRACT_NAME, instance.address, ARTIFACT_FILE)
+    await _updateDeploymentOutput(CONTRACT_NAME, instance.address, '', ARTIFACT_FILE)
 }
 
 async function deployGenomicDAOToken() {
@@ -208,7 +224,6 @@ async function deployGenomicDAOToken() {
     const ARTIFACT_FILE = 'artifacts/contracts/dao/GenomicDAOToken.sol/GenomicDAOToken.json'
 
     // log to screen
-    print('------------------------------------------');
     print(`Starting Deploy Contract ${CONTRACT_NAME}`);
 
     // start deploy contract to blockchain network
@@ -226,7 +241,12 @@ async function deployGenomicDAOToken() {
     print('------------------------------------------');
 
     // update updateDeploymentOutput
-    await _updateDeploymentOutput(CONTRACT_NAME, instance.address, ARTIFACT_FILE)
+    await _updateDeploymentOutput(
+        CONTRACT_NAME,
+        instance.address,
+        process.env.DAO_TOKEN_OWNER,
+        ARTIFACT_FILE
+    )
 }
 
 
@@ -236,7 +256,6 @@ async function deployGenomicDAOToken2LIFE() {
     const ARTIFACT_FILE = 'artifacts/contracts/dao/GenomicDAOToken2LIFE.sol/GenomicDAOToken2LIFE.json'
 
     // log to screen
-    print('------------------------------------------');
     print(`Starting Deploy Contract ${CONTRACT_NAME}`);
 
     // start deploy contract to blockchain network
@@ -254,7 +273,12 @@ async function deployGenomicDAOToken2LIFE() {
     print('------------------------------------------');
 
     // update updateDeploymentOutput
-    await _updateDeploymentOutput(CONTRACT_NAME, instance.address, ARTIFACT_FILE)
+    await _updateDeploymentOutput(
+        CONTRACT_NAME,
+        instance.address,
+        process.env.GENOMIC_DAO_TOKEN_2_LIFE_OWNER,
+        ARTIFACT_FILE
+    )
 }
 
 
@@ -264,7 +288,6 @@ async function deployLIFE2GenomicDAOToken() {
     const ARTIFACT_FILE = 'artifacts/contracts/dao/LIFE2GenomicDAOToken.sol/LIFE2GenomicDAOToken.json'
 
     // log to screen
-    print('------------------------------------------');
     print(`Starting Deploy Contract ${CONTRACT_NAME}`);
 
     // start deploy contract to blockchain network
@@ -282,7 +305,12 @@ async function deployLIFE2GenomicDAOToken() {
     print('------------------------------------------');
 
     // update updateDeploymentOutput
-    await _updateDeploymentOutput(CONTRACT_NAME, instance.address, ARTIFACT_FILE)
+    await _updateDeploymentOutput(
+        CONTRACT_NAME,
+        instance.address,
+        process.env.LIFE_2_GENOMIC_DAO_TOKEN_OWNER,
+        ARTIFACT_FILE
+    )
 }
 
 
