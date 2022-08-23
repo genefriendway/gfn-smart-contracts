@@ -7,31 +7,33 @@ const { prompt } = require('enquirer');
 const print = console.log
 
 
-
 async function verifyEnvironment() {
     const deployer = await web3.eth.accounts.privateKeyToAccount(process.env.GFN_DEPLOYER_PRIVATE_KEY);
     print('================ Environment Variables ==================');
-    print(`ENV_NAME: ${process.env.ENV_NAME}`);
-    print(`Deployer             : ${deployer.address}`);
-    print(`Registry Owner       : ${process.env.GFN_REGISTRY_OWNER_ADDRESS}`);
-    print(`Configuration Owner  : ${process.env.GFN_CONFIGURATION_OWNER_ADDRESS}`);
-    print(`GeneNFT Operator     : ${process.env.GFN_GNFT_OPERATOR_ADDRESS}`);
-    print(`GeneNFT Holder       : ${process.env.GFN_NFT_HOLDER_ADDRESS}`);
-    print(`LIFE Treasury        : ${process.env.LIFE_TREASURY_ADDRESS}`);
-    print(`GFN_EXCHANGE_WALLET_OPERATOR     : ${process.env.GFN_EXCHANGE_WALLET_OPERATOR_ADDRESS}`);
-    print(`GFN_PROFIT_WALLET_OPERATOR       : ${process.env.GFN_PROFIT_WALLET_OPERATOR_ADDRESS}`);
-    print(`GFN_EXCHANGE_LIFE_BANK_OPERATOR  : ${process.env.GFN_EXCHANGE_LIFE_BANK_OPERATOR_ADDRESS}`);
+    print(`ENV_NAME             : ${process.env.ENV_NAME}`);
+    print(`Deployer Address                 : ${deployer.address}`);
+    print(`GFN_REGISTRY_OWNER_ADDRESS       : ${process.env.GFN_REGISTRY_OWNER_ADDRESS}`);
+    print(`GFN_CONFIGURATION_OWNER_ADDRESS  : ${process.env.GFN_CONFIGURATION_OWNER_ADDRESS}`);
+    print(`GFN_GNFT_OPERATOR_ADDRESS        : ${process.env.GFN_GNFT_OPERATOR_ADDRESS}`);
+    print(`GFN_NFT_HOLDER_ADDRESS           : ${process.env.GFN_NFT_HOLDER_ADDRESS}`);
+    print(`LIFE_TREASURY_ADDRESS            : ${process.env.LIFE_TREASURY_ADDRESS}`);
+    print('-----------------------------------------------------------')
+    print(`GFN_EXCHANGE_WALLET_OPERATOR_ADDRESS     : ${process.env.GFN_EXCHANGE_WALLET_OPERATOR_ADDRESS}`);
+    print(`GFN_PROFIT_WALLET_OPERATOR_ADDRESS       : ${process.env.GFN_PROFIT_WALLET_OPERATOR_ADDRESS}`);
+    print(`GFN_EXCHANGE_LIFE_BANK_OPERATOR_ADDRESS  : ${process.env.GFN_EXCHANGE_LIFE_BANK_OPERATOR_ADDRESS}`);
+    print('-----------------------------------------------------------')
     print(`GNFT_TOKEN_NAME      : ${process.env.GNFT_TOKEN_NAME}`);
     print(`GNFT_TOKEN_SYMBOL    : ${process.env.GNFT_TOKEN_SYMBOL}`);
     print(`LIFE_TOKEN_NAME      : ${process.env.LIFE_TOKEN_NAME}`);
     print(`LIFE_TOKEN_SYMBOL    : ${process.env.LIFE_TOKEN_SYMBOL}`);
+    print('-----------------------------------------------------------')
+    print(`GENOMIC_DAO_TOKEN_ADDRESS        : ${process.env.GENOMIC_DAO_TOKEN_ADDRESS}`);
+    print(`LIFE_TOKEN_ADDRESS               : ${process.env.LIFE_TOKEN_ADDRESS}`);
+    print('-----------------------------------------------------------')
     print(`GENOMIC_DAO_TOKEN_2_LIFE_OWNER   : ${process.env.GENOMIC_DAO_TOKEN_2_LIFE_OWNER}`);
-    print(`GENOMIC_DAO_TOKEN_ADDRESS        : ${process.env.GENOMIC_DAO_TOKEN_ADDRESS}`);
-    print(`LIFE_TOKEN_ADDRESS               : ${process.env.LIFE_TOKEN_ADDRESS}`);
     print(`RESERVATION_LIFE_ADDRESS         : ${process.env.RESERVATION_LIFE_ADDRESS}`);
+    print('-----------------------------------------------------------')
     print(`LIFE_2_GENOMIC_DAO_TOKEN_OWNER   : ${process.env.LIFE_2_GENOMIC_DAO_TOKEN_OWNER}`);
-    print(`LIFE_TOKEN_ADDRESS               : ${process.env.LIFE_TOKEN_ADDRESS}`);
-    print(`GENOMIC_DAO_TOKEN_ADDRESS        : ${process.env.GENOMIC_DAO_TOKEN_ADDRESS}`);
     print(`RESERVATION_DAO_TOKEN_ADDRESS    : ${process.env.RESERVATION_DAO_TOKEN_ADDRESS}`);
     print('=======================================================');
 
@@ -49,10 +51,15 @@ async function verifyEnvironment() {
 }
 
 async function getDefaultDeploymentOutput() {
+    const deployer = await web3.eth.accounts.privateKeyToAccount(process.env.GFN_DEPLOYER_PRIVATE_KEY);
+    const env = process.env
+    env['GFN_DEPLOYER_PRIVATE_KEY'] = 'xxxxxxxxxx'
+    env['GFN_DEPLOYER'] = deployer.address
     return {
-        environment: process.env.ENV_NAME,
+        env_name: process.env.ENV_NAME,
         network: hre.network.name,
         chainId: hre.network.config.chainId,
+        environments: env,
         contracts: {}
     }
 }
@@ -195,14 +202,6 @@ async function main() {
 
     // select Contracts you want to deploy
     await selectContractsToDeploy();
-
-
-//    console.log(process.env)
-//    const deployer = await web3.eth.accounts.privateKeyToAccount(process.env.GFN_DEPLOYER_PRIVATE_KEY);
-//    const deployerAddress = deployer.address;
-//    console.log(deployer);
-//    console.log(deployerAddress);
-
 
 }
 

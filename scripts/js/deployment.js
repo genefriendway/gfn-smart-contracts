@@ -116,7 +116,7 @@ async function deployGeneNFTToken() {
     await _updateDeploymentOutput(
         CONTRACT_NAME,
         instance.address,
-        '',
+        process.env.GFN_GNFT_OPERATOR_ADDRESS,
         ARTIFACT_FILE
     )
 }
@@ -152,28 +152,6 @@ async function deployLIFEToken() {
     )
 }
 
-async function deployGFNExchangeLIFEBank() {
-    const CONTRACT_NAME = 'GFNExchangeLIFEBank'
-    const CONTRACT_CLASS = 'GeneFriendNetworkWallet'
-    const ARTIFACT_FILE = 'artifacts/contracts/GeneFriendNetworkWallet.sol/GeneFriendNetworkWallet.json'
-    const registryAddress = await _getRegistryAddress();
-
-    // log to screen
-    print(`Starting Deploy Contract ${CONTRACT_NAME}`);
-
-    // start deploy contract to blockchain network
-    const Contract = await hre.ethers.getContractFactory(CONTRACT_CLASS);
-    const instance = await Contract.deploy(registryAddress)
-
-    await instance.deployed();
-    // log to screen
-    print(`Contract ${CONTRACT_NAME} deployed at: ${instance.address}`);
-    print('------------------------------------------');
-
-    // update updateDeploymentOutput
-    await _updateDeploymentOutput(CONTRACT_NAME, instance.address, '', ARTIFACT_FILE)
-}
-
 async function deployGFNExchangeWallet() {
     const CONTRACT_NAME = 'GFNExchangeWallet'
     const CONTRACT_CLASS = 'GeneFriendNetworkWallet'
@@ -193,7 +171,12 @@ async function deployGFNExchangeWallet() {
     print('------------------------------------------');
 
     // update updateDeploymentOutput
-    await _updateDeploymentOutput(CONTRACT_NAME, instance.address, '', ARTIFACT_FILE)
+    await _updateDeploymentOutput(
+        CONTRACT_NAME,
+        instance.address,
+        process.env.GFN_EXCHANGE_WALLET_OPERATOR_ADDRESS,
+        ARTIFACT_FILE
+    )
 }
 
 async function deployGFNProfitWallet() {
@@ -215,7 +198,40 @@ async function deployGFNProfitWallet() {
     print('------------------------------------------');
 
     // update updateDeploymentOutput
-    await _updateDeploymentOutput(CONTRACT_NAME, instance.address, '', ARTIFACT_FILE)
+    // update updateDeploymentOutput
+    await _updateDeploymentOutput(
+        CONTRACT_NAME,
+        instance.address,
+        process.env.GFN_PROFIT_WALLET_OPERATOR_ADDRESS,
+        ARTIFACT_FILE
+    )
+}
+
+async function deployGFNExchangeLIFEBank() {
+    const CONTRACT_NAME = 'GFNExchangeLIFEBank'
+    const CONTRACT_CLASS = 'GeneFriendNetworkWallet'
+    const ARTIFACT_FILE = 'artifacts/contracts/GeneFriendNetworkWallet.sol/GeneFriendNetworkWallet.json'
+    const registryAddress = await _getRegistryAddress();
+
+    // log to screen
+    print(`Starting Deploy Contract ${CONTRACT_NAME}`);
+
+    // start deploy contract to blockchain network
+    const Contract = await hre.ethers.getContractFactory(CONTRACT_CLASS);
+    const instance = await Contract.deploy(registryAddress)
+
+    await instance.deployed();
+    // log to screen
+    print(`Contract ${CONTRACT_NAME} deployed at: ${instance.address}`);
+    print('------------------------------------------');
+
+    // update updateDeploymentOutput
+    await _updateDeploymentOutput(
+        CONTRACT_NAME,
+        instance.address,
+        process.env.GFN_EXCHANGE_LIFE_BANK_OPERATOR_ADDRESS,
+        ARTIFACT_FILE
+    )
 }
 
 async function deployGenomicDAOToken() {
@@ -319,9 +335,9 @@ module.exports = {
     deployConfiguration: deployConfiguration,
     deployGeneNFTToken: deployGeneNFTToken,
     deployLIFEToken: deployLIFEToken,
-    deployGFNExchangeLIFEBank: deployGFNExchangeLIFEBank,
     deployGFNExchangeWallet: deployGFNExchangeWallet,
     deployGFNProfitWallet: deployGFNProfitWallet,
+    deployGFNExchangeLIFEBank: deployGFNExchangeLIFEBank,
     deployGenomicDAOToken: deployGenomicDAOToken,
     deployGenomicDAOToken2LIFE: deployGenomicDAOToken2LIFE,
     deployLIFE2GenomicDAOToken: deployLIFE2GenomicDAOToken,
