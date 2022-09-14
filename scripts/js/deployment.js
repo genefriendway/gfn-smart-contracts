@@ -258,7 +258,7 @@ async function deployGenomicDAOToken() {
 
     // update updateDeploymentOutput
     await _updateDeploymentOutput(
-        CONTRACT_NAME,
+        `${CONTRACT_NAME}${process.env.DAO_TOKEN_SYMBOL}`,  // make this item unique
         instance.address,
         process.env.DAO_TOKEN_OWNER,
         ARTIFACT_FILE

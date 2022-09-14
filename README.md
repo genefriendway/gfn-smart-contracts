@@ -21,6 +21,9 @@
     1. Install **remixd** at https://www.npmjs.com/package/remixd
     2. Run: `remixd -s <absolute-path to project> --remix-ide https://remix.ethereum.org`
 
+### How to deploy smart contracts:
+  - Command: `npx hardhat run --network <network_name> scripts/js/deploy.js`
+
 ## Project structure
   - `contracts/`: Contract sources
   - `interfaces/`: Interface sources
