@@ -27,6 +27,12 @@ async function verifyEnvironment() {
     print(`LIFE_TOKEN_NAME      : ${process.env.LIFE_TOKEN_NAME}`);
     print(`LIFE_TOKEN_SYMBOL    : ${process.env.LIFE_TOKEN_SYMBOL}`);
     print('-----------------------------------------------------------')
+    print(`DAO_TOKEN_OWNER      : ${process.env.DAO_TOKEN_OWNER}`);
+    print(`DAO_TOKEN_NAME       : ${process.env.DAO_TOKEN_NAME}`);
+    print(`DAO_TOKEN_SYMBOL     : ${process.env.DAO_TOKEN_SYMBOL}`);
+    print(`DAO_TOKEN_CAP        : ${process.env.DAO_TOKEN_CAP}`);
+    print('-----------------------------------------------------------')
+    print('-----------------------------------------------------------')
     print(`GENOMIC_DAO_TOKEN_ADDRESS        : ${process.env.GENOMIC_DAO_TOKEN_ADDRESS}`);
     print(`LIFE_TOKEN_ADDRESS               : ${process.env.LIFE_TOKEN_ADDRESS}`);
     print('-----------------------------------------------------------')
