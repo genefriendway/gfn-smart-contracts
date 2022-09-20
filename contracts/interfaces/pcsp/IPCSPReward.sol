@@ -2,28 +2,28 @@
 pragma solidity 0.8.11;
 
 
-interface IGenomicDAOIncentive {
+interface IPCSPReward {
     // Events
-    event SetIncentiveConfiguration(
-        address indexed oldIncentiveConfiguration,
-        address indexed newIncentiveConfiguration
+    event SetPCSPConfiguration(
+        address indexed oldPCSPConfiguration,
+        address indexed newPCSPConfiguration
     );
 
     event RecordRiskOfGettingStroke(
         uint256 geneNFTTokenID,
-        address indexed geneNFTOwner,
         uint256 riskOfGettingStroke
     );
 
     // Functions
-    function setIncentiveConfiguration(
-        address incentiveConfiguration
+    function setPCSPConfiguration(
+        address addressOfPCSPConfiguration
     ) external;
+    function getPCSPConfiguration() external view returns (address);
 
     function calculateCustomerReward(
         uint256 geneNFTTokenID,
         uint256 riskOfGettingStroke,
-        uint256 originalTokenValue
+        uint256 revenueInPCSP
     ) external;
 
 }
