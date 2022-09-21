@@ -14,6 +14,14 @@ interface IPCSPReward {
         uint256 riskOfGettingStroke
     );
 
+    event RewardForRiskOfGettingStroke(
+        uint256 geneNFTTokenID,
+        address geneNFTOwner,
+        uint256 riskOfGettingStroke,
+        uint256 revenueInPCSP,
+        uint256 customerRewardInPCSP
+    );
+
     // Functions
     function setPCSPConfiguration(
         address addressOfPCSPConfiguration

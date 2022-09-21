@@ -5,6 +5,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "../../interfaces/pcsp/IPCSPReward.sol";
 import "../../interfaces/pcsp/IPCSPConfiguration.sol";
 import "../../GNFTToken.sol";
+import "../../common/TokenWallet.sol";
 
 
 contract PCSPReward is IPCSPReward, Ownable {
@@ -12,6 +13,8 @@ contract PCSPReward is IPCSPReward, Ownable {
     address private _addressOfPCSPConfiguration;
     // Mapping: GeneNFT Token => risk of Stroke
     mapping(uint256 => uint256) private _riskOfGettingStrokeRecords;
+    // Mapping: GeneNFT Token => rewarded or not
+    mapping(uint256 => bool) private _geneNFTRewardStatuses;
 
 
     // Modifiers
@@ -24,11 +27,6 @@ contract PCSPReward is IPCSPReward, Ownable {
             _address != _addressOfPCSPConfiguration,
             "PCSPReward: address of PCSP configuration existed"
         );
-        _;
-    }
-
-    modifier validGeneNFTTokenID(uint256 _tokenID) {
-
         _;
     }
 
@@ -68,40 +66,54 @@ contract PCSPReward is IPCSPReward, Ownable {
     )
         external
         onlyOwner
-        validGeneNFTTokenID(geneNFTTokenID)
     {
-        IPCSPConfiguration configuration = IPCSPConfiguration(
+        require(
+            !_geneNFTRewardStatuses[geneNFTTokenID],
+            "PCSPReward: the GeneNFT has rewarded for risk of getting stroke"
+        );
+
+        IPCSPConfiguration config = IPCSPConfiguration(
             _addressOfPCSPConfiguration
         );
-        GNFTToken geneNFTToken = GNFTToken(configuration.getGeneNFTAddress());
+        GNFTToken geneNFTToken = GNFTToken(config.getGeneNFTAddress());
 
         // retrieve owner of GeneNFT
         address geneNFTOwner = geneNFTToken.ownerOf(geneNFTTokenID);
-
         require(
             geneNFTOwner != address(0),
-            "PCSPReward: not found owner of geneNFTTokenID"
+            "PCSPReward: not found owner of GeneNFT"
+        );
+        require(
+            config.checkActiveRiskOfGettingStroke(riskOfGettingStroke),
+            "PCSPReward: risk of getting stroke value is invalid"
         );
 
-
-        uint256 rewardPercent = configuration.getCustomerRewardPercent(
-            riskOfGettingStroke
-        );
-
-         require(
-            rewardPercent > 0,
-            "PCSPReward: reward percent must be greater than zero"
-        );
-
-        // calculate reward of customer based on their risk of getting stroke
-        uint256 customerReward = revenueInPCSP * rewardPercent / 100;
-
+        // mark GeneNFT rewarded
+        _geneNFTRewardStatuses[geneNFTTokenID] = true;
         // record risk of getting stroke of customer
         _riskOfGettingStrokeRecords[geneNFTTokenID] = riskOfGettingStroke;
+
         emit RecordRiskOfGettingStroke(geneNFTTokenID, riskOfGettingStroke);
 
-        // store Reward of Customer on Genetica Wallet
-        // TODO:
+        // calculate reward of customer based on risk of getting stroke value
+        uint256 customerRewardInPCSP = config.calculateCustomerReward(
+            riskOfGettingStroke, revenueInPCSP
+        );
 
+        // store Reward of Customer on Token PCSP Wallet
+        TokenWallet tokenWallet = TokenWallet(config.getTokenPCSPWalletAddress());
+        tokenWallet.increaseBalance(
+            geneNFTOwner,
+            customerRewardInPCSP,
+            "Reward for risk of getting stroke"
+        );
+
+        emit RewardForRiskOfGettingStroke(
+            geneNFTTokenID,
+            geneNFTOwner,
+            riskOfGettingStroke,
+            revenueInPCSP,
+            customerRewardInPCSP
+        );
     }
 }
