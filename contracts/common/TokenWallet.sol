@@ -10,12 +10,23 @@ import "../interfaces/common/ITokenWallet.sol";
 contract TokenWallet is ITokenWallet, Ownable {
     // State Variables
     address private _tokenAddress;
-    // Mapping: address => amount of token
+    // Mapping: address of token owner => amount of token
     mapping(address => uint256) private _balances;
     uint256 private _totalBalance;
 
+    // Mapping: address of operator => status
+    mapping(address => bool) private _operators;
+
 
     // Modifiers
+    modifier onlyOperator() {
+        require(
+            _operators[_msgSender()],
+            "TokenWallet: caller must be the operator"
+        );
+        _;
+    }
+
     modifier validTokenAddress(address _address) {
         require(
             _address != address(0),
@@ -31,6 +42,7 @@ contract TokenWallet is ITokenWallet, Ownable {
         validTokenAddress(tokenAddress)
     {
         _tokenAddress = tokenAddress;
+        _operators[owner] = true; // set owner as an operator
         transferOwnership(owner);
     }
 
@@ -46,13 +58,45 @@ contract TokenWallet is ITokenWallet, Ownable {
         return _totalBalance;
     }
 
+    function addOperator(address operatorAddress) external onlyOwner {
+        require(
+            operatorAddress != address(0),
+            "TokenWallet: address of operator must be not null"
+        );
+        require(
+            !_operators[operatorAddress],
+            "TokenWallet: the operator was added"
+        );
+        _operators[operatorAddress] = true;
+        emit AddOperator(operatorAddress);
+    }
+
+    function removeOperator(address operatorAddress) external onlyOwner {
+        require(
+            operatorAddress != address(0),
+            "TokenWallet: address of operator must be not null"
+        );
+        require(
+            _operators[operatorAddress],
+            "TokenWallet: can not remove a operator that does not exist"
+        );
+        _operators[operatorAddress] = false;
+        emit RemoveOperator(operatorAddress);
+    }
+
+    function checkActiveOperator(
+        address operatorAddress
+    ) external override view returns (bool) {
+        return _operators[operatorAddress];
+    }
+
     function increaseBalance(
         address toAddress,
         uint256 amount,
         string memory description
     )
         external
-        onlyOwner
+        onlyOperator
     {
         _increase(toAddress, amount, description);
     }
@@ -63,7 +107,7 @@ contract TokenWallet is ITokenWallet, Ownable {
         string memory description
     )
         external
-        onlyOwner
+        onlyOperator
     {
         _decrease(fromAddress, amount, description);
     }
@@ -75,7 +119,7 @@ contract TokenWallet is ITokenWallet, Ownable {
         string memory description
     )
         external
-        onlyOwner
+        onlyOperator
     {
         _decrease(fromAddress, amount, description);
         _transfer(toAddress, amount, description);
