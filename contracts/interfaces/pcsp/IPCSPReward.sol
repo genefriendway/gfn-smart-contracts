@@ -16,7 +16,7 @@ interface IPCSPReward {
 
     event RewardForRiskOfGettingStroke(
         uint256 geneNFTTokenID,
-        address geneNFTOwner,
+        address indexed geneNFTOwner,
         uint256 riskOfGettingStroke,
         uint256 revenueInPCSP,
         uint256 customerRewardInPCSP
