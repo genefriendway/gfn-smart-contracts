@@ -53,7 +53,7 @@ def test_failure__increase_balance__not_owner_make_txn(token_wallet_deployment):
     assert token_wallet.getTotalBalance() == 0
 
     # Actions
-    with brownie.reverts("Ownable: caller is not the owner"):
+    with brownie.reverts("TokenWallet: caller must be the operator"):
         token_wallet.increaseBalance(
             account_a,
             increasing_amount,
