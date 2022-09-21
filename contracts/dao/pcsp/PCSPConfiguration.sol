@@ -111,6 +111,17 @@ contract PCSPConfiguration is IPCSPConfiguration, Ownable {
         return _customerRewardPercents[riskOfGettingStroke];
     }
 
+    function calculateCustomerReward(
+        uint256 riskOfGettingStroke,
+        uint256 revenue
+    )
+        external
+        activeRiskOfGettingStroke(riskOfGettingStroke)
+        override view returns (uint256)
+    {
+        return revenue * _customerRewardPercents[riskOfGettingStroke] / 100;
+    }
+
     function checkActiveRiskOfGettingStroke(
         uint256 riskOfGettingStroke
     )

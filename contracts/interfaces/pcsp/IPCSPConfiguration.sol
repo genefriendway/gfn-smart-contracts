@@ -26,8 +26,14 @@ interface IPCSPConfiguration {
         uint256 rewardPercent
     ) external;
     function removeCustomerRewardPercent(uint256 riskOfGettingStroke) external;
+
     function getCustomerRewardPercent(
         uint256 riskOfGettingStroke
+    ) external view returns (uint256);
+
+    function calculateCustomerReward(
+        uint256 riskOfGettingStroke,
+        uint256 revenue
     ) external view returns (uint256);
 
     function checkActiveRiskOfGettingStroke(
