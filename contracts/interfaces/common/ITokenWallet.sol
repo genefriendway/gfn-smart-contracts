@@ -4,18 +4,18 @@ pragma solidity 0.8.11;
 
 interface ITokenWallet {
     // Events
-    event AddOperator(address operatorAddress);
-    event RemoveOperator(address operatorAddress);
-    event IncreaseBalance(address toAddress, uint256 amount, string description);
-    event DecreaseBalance(address fromAddress, uint256 amount, string description);
+    event AddOperator(address indexed operatorAddress);
+    event RemoveOperator(address indexed operatorAddress);
+    event IncreaseBalance(address indexed toAddress, uint256 amount, string description);
+    event DecreaseBalance(address indexed fromAddress, uint256 amount, string description);
     event TransferTokenFrom(
-        address fromAddress,
-        address toAddress,
+        address indexed fromAddress,
+        address indexed toAddress,
         uint256 amount,
         string description
     );
     event TransferToken(
-        address toAddress,
+        address indexed toAddress,
         uint256 amount,
         string description
     );
