@@ -307,3 +307,136 @@ def test_failure__calculate_reward_for_multiple_customers__duplicated_reward(
 
     # Assert after action2
     assert token_wallet_contract.getBalance(genetic_profile_owner1) == 500e+18
+
+
+def test_failure__calculate_reward_for_multiple_customers__invalid_length_list_of_ids(
+        pcsp_deployment, data_test
+):
+    # Arranges
+    token_wallet_contract = pcsp_deployment['token_wallet_contract']
+    pcsp_reward_owner = pcsp_deployment['pcsp_reward_owner']
+    pcsp_reward_contract = pcsp_deployment['pcsp_reward_contract']
+    genenft_token_id1 = data_test['genenft_token_id1']
+    genetic_profile_owner1 = data_test['genetic_profile_owner1']
+    genetic_profile_owner2 = data_test['genetic_profile_owner2']
+    risk_of_getting_stroke1 = 1
+    risk_of_getting_stroke2 = 3
+    revenue_in_pcsp_1 = 50e+18
+    revenue_in_pcsp_2 = 240e+18
+
+    # Assert before actions
+    assert token_wallet_contract.getBalance(genetic_profile_owner1) == 0
+    assert token_wallet_contract.getBalance(genetic_profile_owner2) == 0
+
+    # Actions
+    with brownie.reverts("PCSPReward: list of GeneNFTTokenIds "
+                         "and risksOfGettingStroke must have same length"):
+        pcsp_reward_contract.calculateRewardForMultipleCustomers(
+            [genenft_token_id1],
+            [risk_of_getting_stroke1, risk_of_getting_stroke2],
+            [revenue_in_pcsp_1, revenue_in_pcsp_2],
+            {"from": pcsp_reward_owner}
+        )
+
+    assert token_wallet_contract.getBalance(genetic_profile_owner1) == 0
+    assert token_wallet_contract.getBalance(genetic_profile_owner2) == 0
+
+
+def test_failure__calculate_reward_for_multiple_customers__invalid_length_list_of_risks(
+        pcsp_deployment, data_test
+):
+    # Arranges
+    token_wallet_contract = pcsp_deployment['token_wallet_contract']
+    pcsp_reward_owner = pcsp_deployment['pcsp_reward_owner']
+    pcsp_reward_contract = pcsp_deployment['pcsp_reward_contract']
+    genenft_token_id1 = data_test['genenft_token_id1']
+    genenft_token_id2 = data_test['genenft_token_id2']
+    genetic_profile_owner1 = data_test['genetic_profile_owner1']
+    genetic_profile_owner2 = data_test['genetic_profile_owner2']
+    risk_of_getting_stroke1 = 1
+    revenue_in_pcsp_1 = 50e+18
+    revenue_in_pcsp_2 = 240e+18
+
+    # Assert before actions
+    assert token_wallet_contract.getBalance(genetic_profile_owner1) == 0
+    assert token_wallet_contract.getBalance(genetic_profile_owner2) == 0
+
+    # Actions
+    with brownie.reverts("PCSPReward: list of GeneNFTTokenIds "
+                         "and risksOfGettingStroke must have same length"):
+        pcsp_reward_contract.calculateRewardForMultipleCustomers(
+            [genenft_token_id1, genenft_token_id2],
+            [risk_of_getting_stroke1],
+            [revenue_in_pcsp_1, revenue_in_pcsp_2],
+            {"from": pcsp_reward_owner}
+        )
+
+    assert token_wallet_contract.getBalance(genetic_profile_owner1) == 0
+    assert token_wallet_contract.getBalance(genetic_profile_owner2) == 0
+
+
+def test_failure__calculate_reward_for_multiple_customers__invalid_length_list_of_revenues(
+        pcsp_deployment, data_test
+):
+    # Arranges
+    token_wallet_contract = pcsp_deployment['token_wallet_contract']
+    pcsp_reward_owner = pcsp_deployment['pcsp_reward_owner']
+    pcsp_reward_contract = pcsp_deployment['pcsp_reward_contract']
+    genenft_token_id1 = data_test['genenft_token_id1']
+    genenft_token_id2 = data_test['genenft_token_id2']
+    genetic_profile_owner1 = data_test['genetic_profile_owner1']
+    genetic_profile_owner2 = data_test['genetic_profile_owner2']
+    risk_of_getting_stroke1 = 1
+    risk_of_getting_stroke2 = 3
+    revenue_in_pcsp_1 = 50e+18
+
+    # Assert before actions
+    assert token_wallet_contract.getBalance(genetic_profile_owner1) == 0
+    assert token_wallet_contract.getBalance(genetic_profile_owner2) == 0
+
+    # Actions
+    with brownie.reverts("PCSPReward: list of risksOfGettingStroke "
+                         "and revenuesInPCSP must have same length"):
+        pcsp_reward_contract.calculateRewardForMultipleCustomers(
+            [genenft_token_id1, genenft_token_id2],
+            [risk_of_getting_stroke1, risk_of_getting_stroke2],
+            [revenue_in_pcsp_1],
+            {"from": pcsp_reward_owner}
+        )
+
+    assert token_wallet_contract.getBalance(genetic_profile_owner1) == 0
+    assert token_wallet_contract.getBalance(genetic_profile_owner2) == 0
+
+
+def test_failure__calculate_reward_for_multiple_customers__length_list_of_revenues_over(
+        pcsp_deployment, data_test
+):
+    # Arranges
+    token_wallet_contract = pcsp_deployment['token_wallet_contract']
+    pcsp_reward_owner = pcsp_deployment['pcsp_reward_owner']
+    pcsp_reward_contract = pcsp_deployment['pcsp_reward_contract']
+    genenft_token_id1 = data_test['genenft_token_id1']
+    genenft_token_id2 = data_test['genenft_token_id2']
+    genetic_profile_owner1 = data_test['genetic_profile_owner1']
+    genetic_profile_owner2 = data_test['genetic_profile_owner2']
+    risk_of_getting_stroke1 = 1
+    risk_of_getting_stroke2 = 3
+    revenue_in_pcsp_1 = 50e+18
+    revenue_in_pcsp_2 = 240e+18
+
+    # Assert before actions
+    assert token_wallet_contract.getBalance(genetic_profile_owner1) == 0
+    assert token_wallet_contract.getBalance(genetic_profile_owner2) == 0
+
+    # Actions
+    with brownie.reverts("PCSPReward: list of risksOfGettingStroke "
+                         "and revenuesInPCSP must have same length"):
+        pcsp_reward_contract.calculateRewardForMultipleCustomers(
+            [genenft_token_id1, genenft_token_id2],
+            [risk_of_getting_stroke1, risk_of_getting_stroke2],
+            [revenue_in_pcsp_1, revenue_in_pcsp_2, revenue_in_pcsp_2],
+            {"from": pcsp_reward_owner}
+        )
+
+    assert token_wallet_contract.getBalance(genetic_profile_owner1) == 0
+    assert token_wallet_contract.getBalance(genetic_profile_owner2) == 0
