@@ -77,7 +77,7 @@ contract PCSPReward is IPCSPReward, Ownable {
 
     function calculateRewardForMultipleCustomers(
         uint256[] memory geneNFTTokenIDs,
-        uint256[] memory riskOfGettingStrokes,
+        uint256[] memory risksOfGettingStroke,
         uint256[] memory revenuesInPCSP
     )
         external
@@ -85,17 +85,17 @@ contract PCSPReward is IPCSPReward, Ownable {
         onlyOwner
     {
         require(
-            geneNFTTokenIDs.length == riskOfGettingStrokes.length,
-            "PCSPReward: list of GeneNFTTokenIds and riskOfGettingStrokes must be same length"
+            geneNFTTokenIDs.length == risksOfGettingStroke.length,
+            "PCSPReward: list of GeneNFTTokenIds and risksOfGettingStroke must be same length"
         );
         require(
-            riskOfGettingStrokes.length == revenuesInPCSP.length,
-            "PCSPReward: list of riskOfGettingStrokes and revenuesInPCSP must be same length"
+            risksOfGettingStroke.length == revenuesInPCSP.length,
+            "PCSPReward: list of risksOfGettingStroke and revenuesInPCSP must be same length"
         );
 
         for(uint256 i = 0; i < geneNFTTokenIDs.length; i++) {
             _calculateCustomerReward(
-                geneNFTTokenIDs[i], riskOfGettingStrokes[i], revenuesInPCSP[i]
+                geneNFTTokenIDs[i], risksOfGettingStroke[i], revenuesInPCSP[i]
             );
         }
 

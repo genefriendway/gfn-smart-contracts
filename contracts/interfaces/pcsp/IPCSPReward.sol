@@ -40,7 +40,7 @@ interface IPCSPReward {
 
     function calculateRewardForMultipleCustomers(
         uint256[] memory geneNFTTokenIDs,
-        uint256[] memory riskOfGettingStrokes,
+        uint256[] memory risksOfGettingStroke,
         uint256[] memory revenuesInPCSP
     ) external;
 
