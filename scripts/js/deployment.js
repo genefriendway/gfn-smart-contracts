@@ -330,6 +330,93 @@ async function deployLIFE2GenomicDAOToken() {
 }
 
 
+async function deployTokenWallet() {
+    const CONTRACT_NAME = 'TokenWallet'
+    const CONTRACT_CLASS = 'TokenWallet'
+    const ARTIFACT_FILE = 'artifacts/contracts/common/TokenWallet.sol/TokenWallet.json'
+
+    // log to screen
+    print(`Starting Deploy Contract ${CONTRACT_NAME}`);
+
+    // start deploy contract to blockchain network
+    const Contract = await hre.ethers.getContractFactory(CONTRACT_CLASS);
+    const instance = await Contract.deploy(
+        process.env.TOKEN_WALLET_OWNER,
+        process.env.TOKEN_WALLET_OF_ERC20_ADDRESS,
+    )
+
+    await instance.deployed();
+    // log to screen
+    print(`Contract ${CONTRACT_NAME} deployed at: ${instance.address}`);
+    print('------------------------------------------');
+
+    // update updateDeploymentOutput
+    await _updateDeploymentOutput(
+        `${process.env.TOKEN_WALLET_OF_ERC20_CODE}${CONTRACT_NAME}`,  // make this item unique
+        instance.address,
+        process.env.TOKEN_WALLET_OWNER,
+        ARTIFACT_FILE
+    )
+}
+
+async function deployPCSPConfiguration() {
+    const CONTRACT_NAME = 'PCSPConfiguration'
+    const CONTRACT_CLASS = 'PCSPConfiguration'
+    const ARTIFACT_FILE = 'artifacts/contracts/dao/pcsp/PCSPConfiguration.sol/PCSPConfiguration.json'
+
+    // log to screen
+    print(`Starting Deploy Contract ${CONTRACT_NAME}`);
+
+    // start deploy contract to blockchain network
+    const Contract = await hre.ethers.getContractFactory(CONTRACT_CLASS);
+    const instance = await Contract.deploy(
+        process.env.PCSP_CONFIGURATION_OWNER,
+    )
+
+    await instance.deployed();
+    // log to screen
+    print(`Contract ${CONTRACT_NAME} deployed at: ${instance.address}`);
+    print('------------------------------------------');
+
+    // update updateDeploymentOutput
+    await _updateDeploymentOutput(
+        `${CONTRACT_NAME}`,  // make this item unique
+        instance.address,
+        process.env.PCSP_CONFIGURATION_OWNER,
+        ARTIFACT_FILE
+    )
+}
+
+async function deployPCSPReward() {
+    const CONTRACT_NAME = 'PCSPReward'
+    const CONTRACT_CLASS = 'PCSPReward'
+    const ARTIFACT_FILE = 'artifacts/contracts/dao/pcsp/PCSPReward.sol/PCSPReward.json'
+
+    // log to screen
+    print(`Starting Deploy Contract ${CONTRACT_NAME}`);
+
+    // start deploy contract to blockchain network
+    const Contract = await hre.ethers.getContractFactory(CONTRACT_CLASS);
+    const instance = await Contract.deploy(
+        process.env.PCSP_REWARD_OWNER,
+        process.env.PCSP_REWARD_CONFIGURATION_ADDRESS,
+    )
+
+    await instance.deployed();
+    // log to screen
+    print(`Contract ${CONTRACT_NAME} deployed at: ${instance.address}`);
+    print('------------------------------------------');
+
+    // update updateDeploymentOutput
+    await _updateDeploymentOutput(
+        `${CONTRACT_NAME}`,  // make this item unique
+        instance.address,
+        process.env.PCSP_REWARD_OWNER,
+        ARTIFACT_FILE
+    )
+}
+
+
 module.exports = {
     deployContractRegistry: deployContractRegistry,
     deployConfiguration: deployConfiguration,
@@ -341,4 +428,7 @@ module.exports = {
     deployGenomicDAOToken: deployGenomicDAOToken,
     deployGenomicDAOToken2LIFE: deployGenomicDAOToken2LIFE,
     deployLIFE2GenomicDAOToken: deployLIFE2GenomicDAOToken,
+    deployTokenWallet: deployTokenWallet,
+    deployPCSPConfiguration: deployPCSPConfiguration,
+    deployPCSPReward: deployPCSPReward,
 };

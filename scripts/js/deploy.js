@@ -32,7 +32,6 @@ async function verifyEnvironment() {
     print(`DAO_TOKEN_SYMBOL     : ${process.env.DAO_TOKEN_SYMBOL}`);
     print(`DAO_TOKEN_CAP        : ${process.env.DAO_TOKEN_CAP}`);
     print('-----------------------------------------------------------')
-    print('-----------------------------------------------------------')
     print(`GENOMIC_DAO_TOKEN_ADDRESS        : ${process.env.GENOMIC_DAO_TOKEN_ADDRESS}`);
     print(`LIFE_TOKEN_ADDRESS               : ${process.env.LIFE_TOKEN_ADDRESS}`);
     print('-----------------------------------------------------------')
@@ -41,6 +40,15 @@ async function verifyEnvironment() {
     print('-----------------------------------------------------------')
     print(`LIFE_2_GENOMIC_DAO_TOKEN_OWNER   : ${process.env.LIFE_2_GENOMIC_DAO_TOKEN_OWNER}`);
     print(`RESERVATION_DAO_TOKEN_ADDRESS    : ${process.env.RESERVATION_DAO_TOKEN_ADDRESS}`);
+    print('-----------------------------------------------------------')
+    print(`TOKEN_WALLET_OF_ERC20_CODE       :${process.env.TOKEN_WALLET_OF_ERC20_CODE}`)
+    print(`TOKEN_WALLET_OF_ERC20_ADDRESS    :${process.env.TOKEN_WALLET_OF_ERC20_ADDRESS}`)
+    print(`TOKEN_WALLET_OWNER               :${process.env.TOKEN_WALLET_OWNER}`)
+    print('-----------------------------------------------------------')
+    print(`PCSP_CONFIGURATION_OWNER         :${process.env.PCSP_CONFIGURATION_OWNER}`)
+    print('-----------------------------------------------------------')
+    print(`PCSP_REWARD_OWNER                    :${process.env.PCSP_REWARD_OWNER}`)
+    print(`PCSP_REWARD_CONFIGURATION_ADDRESS    :${process.env.PCSP_REWARD_CONFIGURATION_ADDRESS}`)
     print('=======================================================');
 
     const response = await prompt({
@@ -150,6 +158,9 @@ async function selectContractsToDeploy() {
     print('8. GenomicDAOToken');
     print('9. GenomicDAOToken2LIFE');
     print('10. LIFE2GenomicDAOToken');
+    print('11. TokenWallet');
+    print('12. PCSPConfiguration');
+    print('13. PCSPReward');
     print("==============================")
 
     const response = await prompt({
@@ -192,6 +203,16 @@ async function selectContractsToDeploy() {
           case 10:
             await deployment.deployLIFE2GenomicDAOToken();
             break;
+          case 11:
+            await deployment.deployTokenWallet();
+            break;
+          case 12:
+            await deployment.deployPCSPConfiguration();
+            break;
+          case 13:
+            await deployment.deployPCSPReward();
+            break;
+
           default:
             throw new Error(`Selected number invalid: ${number}`);
         }
