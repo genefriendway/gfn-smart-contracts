@@ -59,13 +59,54 @@ contract PCSPReward is IPCSPReward, Ownable {
         return _addressOfPCSPConfiguration;
     }
 
-    function calculateCustomerReward(
+    function getRiskOfGettingStroke(
+        uint256 geneNFTTokenID
+    )
+        external override view returns (uint256)
+    {
+        return _riskOfGettingStrokeRecords[geneNFTTokenID];
+    }
+
+    function checkGeneNFTRewardStatus(
+        uint256 geneNFTTokenID
+    )
+        external override view returns (bool)
+    {
+        return _geneNFTRewardStatuses[geneNFTTokenID];
+    }
+
+    function calculateRewardForMultipleCustomers(
+        uint256[] memory geneNFTTokenIDs,
+        uint256[] memory riskOfGettingStrokes,
+        uint256[] memory revenuesInPCSP
+    )
+        external
+        override
+        onlyOwner
+    {
+        require(
+            geneNFTTokenIDs.length == riskOfGettingStrokes.length,
+            "PCSPReward: list of GeneNFTTokenIds and riskOfGettingStrokes must be same length"
+        );
+        require(
+            riskOfGettingStrokes.length == revenuesInPCSP.length,
+            "PCSPReward: list of riskOfGettingStrokes and revenuesInPCSP must be same length"
+        );
+
+        for(uint256 i = 0; i < geneNFTTokenIDs.length; i++) {
+            _calculateCustomerReward(
+                geneNFTTokenIDs[i], riskOfGettingStrokes[i], revenuesInPCSP[i]
+            );
+        }
+
+    }
+
+    function _calculateCustomerReward(
         uint256 geneNFTTokenID,
         uint256 riskOfGettingStroke,
         uint256 revenueInPCSP
     )
-        external
-        onlyOwner
+        private
     {
         require(
             !_geneNFTRewardStatuses[geneNFTTokenID],
@@ -75,18 +116,15 @@ contract PCSPReward is IPCSPReward, Ownable {
         IPCSPConfiguration config = IPCSPConfiguration(
             _addressOfPCSPConfiguration
         );
-        GNFTToken geneNFTToken = GNFTToken(config.getGeneNFTAddress());
-
-        // retrieve owner of GeneNFT
-        address geneNFTOwner = geneNFTToken.ownerOf(geneNFTTokenID);
-        require(
-            geneNFTOwner != address(0),
-            "PCSPReward: not found owner of GeneNFT"
-        );
         require(
             config.checkActiveRiskOfGettingStroke(riskOfGettingStroke),
             "PCSPReward: risk of getting stroke value is invalid"
         );
+
+        GNFTToken geneNFTToken = GNFTToken(config.getGeneNFTAddress());
+        // retrieve owner of GeneNFT
+        address geneNFTOwner = geneNFTToken.ownerOf(geneNFTTokenID);
+
 
         // mark GeneNFT rewarded
         _geneNFTRewardStatuses[geneNFTTokenID] = true;

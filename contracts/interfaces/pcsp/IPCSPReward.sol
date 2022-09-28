@@ -28,10 +28,20 @@ interface IPCSPReward {
     ) external;
     function getPCSPConfiguration() external view returns (address);
 
-    function calculateCustomerReward(
-        uint256 geneNFTTokenID,
-        uint256 riskOfGettingStroke,
-        uint256 revenueInPCSP
+    function getRiskOfGettingStroke(
+        uint256 geneNFTTokenID
+    )
+    external view returns (uint256);
+
+    function checkGeneNFTRewardStatus(
+        uint256 geneNFTTokenID
+    )
+    external view returns (bool);
+
+    function calculateRewardForMultipleCustomers(
+        uint256[] memory geneNFTTokenIDs,
+        uint256[] memory riskOfGettingStrokes,
+        uint256[] memory revenuesInPCSP
     ) external;
 
 }
