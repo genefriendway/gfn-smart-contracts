@@ -86,11 +86,11 @@ contract PCSPReward is IPCSPReward, Ownable {
     {
         require(
             geneNFTTokenIDs.length == risksOfGettingStroke.length,
-            "PCSPReward: list of GeneNFTTokenIds and risksOfGettingStroke must be same length"
+            "PCSPReward: list of GeneNFTTokenIds and risksOfGettingStroke must have same length"
         );
         require(
             risksOfGettingStroke.length == revenuesInPCSP.length,
-            "PCSPReward: list of risksOfGettingStroke and revenuesInPCSP must be same length"
+            "PCSPReward: list of risksOfGettingStroke and revenuesInPCSP must have same length"
         );
 
         for(uint256 i = 0; i < geneNFTTokenIDs.length; i++) {
