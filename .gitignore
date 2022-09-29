@@ -12,6 +12,7 @@ dev/*
 node_modules/
 bin/
 contracts/artifacts/
+deployments/*
 deployment*.json
 run.py
 run.*
