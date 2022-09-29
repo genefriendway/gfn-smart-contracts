@@ -95,7 +95,7 @@ async function initDeploymentOutputFile() {
     let number = parseInt(response.selection);
     switch(number) {
         case 1:
-            deploymentOutputFile = `deployment_${hre.network.name}_${process.env.ENV_NAME.toLowerCase()}_${new Date().toISOString()}.json`;
+            deploymentOutputFile = `deployments/${hre.network.name}_${process.env.ENV_NAME.toLowerCase()}_${new Date().toISOString()}.json`;
             // create a new empty output json file
             fs.openSync(deploymentOutputFile, 'w');
             // write default deployment data to json
