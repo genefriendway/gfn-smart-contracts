@@ -32,3 +32,24 @@ echo "Removing duplicated SPDX-License-Identifier: MIT"
 sed -i 's/\/\/ SPDX-License-Identifier: MIT//g' flatten/flatten.GeneFriendNetworkWallet.sol
 sed -i '5 i \/\/ SPDX-License-Identifier: MIT' flatten/flatten.GeneFriendNetworkWallet.sol
 echo "------------------------------------------------"
+
+echo "Flattening TokenWallet"
+npx hardhat flatten contracts/common/TokenWallet.sol > flatten/flatten.TokenWallet.sol
+echo "Removing duplicated SPDX-License-Identifier: MIT"
+sed -i 's/\/\/ SPDX-License-Identifier: MIT//g' flatten/flatten.TokenWallet.sol
+sed -i '5 i \/\/ SPDX-License-Identifier: MIT' flatten/flatten.TokenWallet.sol
+echo "------------------------------------------------"
+
+echo "Flattening PCSPConfiguration"
+npx hardhat flatten contracts/dao/pcsp/PCSPConfiguration.sol > flatten/flatten.PCSPConfiguration.sol
+echo "Removing duplicated SPDX-License-Identifier: MIT"
+sed -i 's/\/\/ SPDX-License-Identifier: MIT//g' flatten/flatten.PCSPConfiguration.sol
+sed -i '5 i \/\/ SPDX-License-Identifier: MIT' flatten/flatten.PCSPConfiguration.sol
+echo "------------------------------------------------"
+
+echo "Flattening PCSPReward"
+npx hardhat flatten contracts/dao/pcsp/PCSPReward.sol > flatten/flatten.PCSPReward.sol
+echo "Removing duplicated SPDX-License-Identifier: MIT"
+sed -i 's/\/\/ SPDX-License-Identifier: MIT//g' flatten/flatten.PCSPReward.sol
+sed -i '5 i \/\/ SPDX-License-Identifier: MIT' flatten/flatten.PCSPReward.sol
+echo "------------------------------------------------"
