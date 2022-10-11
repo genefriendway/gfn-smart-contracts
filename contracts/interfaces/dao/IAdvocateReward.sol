@@ -1,9 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.11;
-import "../../interfaces/pcsp/IAdvocateEnum.sol";
 
 
-interface IAdvocateReward is IAdvocateEnum {
+interface IAdvocateReward {
 
     // Structs
     struct AdvocateStats {
@@ -27,17 +26,10 @@ interface IAdvocateReward is IAdvocateEnum {
         address indexed newConfiguration
     );
 
-    event RecordReferral(
-        address indexed advocateAddress,
-        string paymentId,
-        string serviceName,
-        uint256 revenue
-    );
-
     event RewardAdvocateMonthly(
         address indexed advocateAddress,
         uint256 totalRevenueMonthly,
-        Level level,
+        uint256 numberOfReferrals,
         uint256 revenueReward
     );
 
@@ -45,13 +37,10 @@ interface IAdvocateReward is IAdvocateEnum {
     function setAdvocateRewardConfiguration(address _address) external;
     function getAdvocateRewardConfiguration() external view returns (address);
 
-    function recordReferral(
-        address advocateAddress,
-        string memory paymentId,
-        string memory serviceName,
-        uint256 revenue
+    function rewardAdvocatesMonthly(
+        address[] memory advocateAddresses,
+        uint256[] memory revenuesMonthly,
+        uint256[] memory referrals
     ) external;
-
-    function rewardAdvocatesMonthly(address[] memory advocateAddresses) external;
 
 }

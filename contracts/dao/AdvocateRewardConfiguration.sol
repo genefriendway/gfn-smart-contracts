@@ -2,37 +2,38 @@
 pragma solidity 0.8.11;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "../../interfaces/pcsp/IAdvocateRewardConfiguration.sol";
+import "../interfaces/dao/IAdvocateRewardConfiguration.sol";
 
 
 contract AdvocateRewardConfiguration is IAdvocateRewardConfiguration, Ownable {
 
-    // Map: AdvocateLevel => Reward Percent
-    mapping(Level => uint) _advocateRewardPercents;
+    uint256[] private _levelNumbers;
+    // Map: Level Number => Detail Level
+    mapping(uint256 => AdvocateLevel) private _advocateLevels;
     mapping(ReserveObject => uint256) _reservePercents;
     mapping(ReserveObject => address) _reserveAddresses;
 
     // State Variables
-    address private _addressTokenPCSPWallet;
+    address private _addressTokenWallet;
 
     constructor(address owner)
     {
         transferOwnership(owner);
-        _setDefaultAdvocateRewardPercents();
+        _setDefaultAdvocateLevels();
         _setDefaultReservePercents();
     }
 
-    function setAddressTokenPCSPWallet(
+    function setAddressTokenWallet(
         address _address
     )
         external onlyOwner
     {
-        _addressTokenPCSPWallet = _address;
-        emit SetAddressTokenPCSPWallet(_address);
+        _addressTokenWallet = _address;
+        emit SetAddressTokenWallet(_address);
     }
 
-    function getAddressTokenPCSPWallet() external override view returns (address) {
-        return _addressTokenPCSPWallet;
+    function getAddressTokenWallet() external override view returns (address) {
+        return _addressTokenWallet;
     }
 
     // functions for Customer Reward
@@ -170,44 +171,57 @@ contract AdvocateRewardConfiguration is IAdvocateRewardConfiguration, Ownable {
         return _reservePercents[ReserveObject.QUARTER_REFERRAL_REWARD];
     }
 
-    function calculateAdvocateLevel(
-        uint256 numberOfReferral
-    )
-        external override view returns (Level)
-    {
-        if (numberOfReferral < 100) {
-            return Level.SILVER;
-        } else if (numberOfReferral < 200 ) {
-            return Level.GOLD;
-        } else if (numberOfReferral < 300 ) {
-            return Level.PLATINUM;
-        } else {
-            return Level.GOLD;
-        }
-    }
-
-    function setAdvocateRewardPercent(
-        Level level, uint256 percent
+    function setAdvocateLevel(
+        uint256 levelNumber,
+        uint256 minReferral,
+        uint256 maxReferral,
+        uint256 rewardPercent,
+        bool isActive
     )
         external onlyOwner
     {
-        _advocateRewardPercents[level] = percent;
-        emit SetAdvocateRewardPercent(level, percent);
+        _setAdvocateLevel(
+            levelNumber, minReferral, maxReferral, rewardPercent, isActive
+        );
     }
 
-     function getAdvocateRewardPercent(
-        Level level
+    function getAdvocateLevelNumber(
+        uint256 numberOfReferrals
     )
         external override view returns (uint256)
     {
-        return _advocateRewardPercents[level];
+        for (uint256 i = 0; i < _levelNumbers.length; i++) {
+            AdvocateLevel storage level = _advocateLevels[_levelNumbers[i]];
+            if (level.isActive
+                    && numberOfReferrals >= level.minReferral
+                    && numberOfReferrals <= level.maxReferral) {
+                return _levelNumbers[i];
+            }
+        }
+        return 0; // default return zero
     }
 
-    function _setDefaultAdvocateRewardPercents() private {
-        _advocateRewardPercents[Level.SILVER] = 20;
-        _advocateRewardPercents[Level.GOLD] = 30;
-        _advocateRewardPercents[Level.PLATINUM] = 40;
-        _advocateRewardPercents[Level.DIAMOND] = 50;
+    function getAdvocateRewardPercent(
+        uint256 numberOfReferrals
+    )
+        external override view returns (uint256)
+    {
+        for (uint256 i = 0; i < _levelNumbers.length; i++) {
+            AdvocateLevel storage level = _advocateLevels[_levelNumbers[i]];
+            if (level.isActive
+                    && numberOfReferrals >= level.minReferral
+                    && numberOfReferrals <= level.maxReferral) {
+                return level.rewardPercent;
+            }
+        }
+        return 0; // default return zero reward percent
+    }
+
+    function _setDefaultAdvocateLevels() private {
+        _setAdvocateLevel(1, 1, 99, 20, true);
+        _setAdvocateLevel(2, 100, 199, 30, true);
+        _setAdvocateLevel(3, 200, 299, 40, true);
+        _setAdvocateLevel(4, 300, 99999999, 50, true);
     }
 
     function _setDefaultReservePercents() private {
@@ -216,5 +230,29 @@ contract AdvocateRewardConfiguration is IAdvocateRewardConfiguration, Ownable {
         _reservePercents[ReserveObject.COMMUNITY_CAMPAIGN] = 10;
         _reservePercents[ReserveObject.QUARTER_REFERRAL_REWARD] = 5;
         _reservePercents[ReserveObject.CUSTOMER_REWARD] = 50;
+    }
+
+    function _setAdvocateLevel(
+        uint256 levelNumber,
+        uint256 minReferral,
+        uint256 maxReferral,
+        uint256 rewardPercent,
+        bool isActive
+    )
+        private
+    {
+        // push list of level number
+        _levelNumbers.push(levelNumber);
+
+        // set detail Level Info
+        AdvocateLevel storage level = _advocateLevels[levelNumber];
+        level.minReferral = minReferral;
+        level.maxReferral = maxReferral;
+        level.rewardPercent = rewardPercent;
+        level.isActive = isActive;
+
+        emit SetAdvocateLevel(
+            levelNumber, minReferral, maxReferral, rewardPercent, isActive
+        );
     }
 }

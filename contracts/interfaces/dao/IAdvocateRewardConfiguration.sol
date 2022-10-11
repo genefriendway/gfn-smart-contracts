@@ -1,12 +1,34 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.11;
 
-import "./IAdvocateEnum.sol";
 
-interface IAdvocateRewardConfiguration is IAdvocateEnum{
+interface IAdvocateRewardConfiguration{
+
+    enum ReserveObject {
+        CUSTOMER_REWARD,
+        PLATFORM_FEE,
+        COMMUNITY_CAMPAIGN,
+        QUARTER_REFERRAL_REWARD,
+        ADVOCATE_REWARD
+    }
+
+    struct AdvocateLevel {
+        uint256 minReferral;
+        uint256 maxReferral;
+        uint256 rewardPercent;
+        bool isActive;
+    }
 
     // Events
-    event SetAddressTokenPCSPWallet(address indexed _address);
+    event SetAddressTokenWallet(address indexed _address);
+
+    event SetAdvocateLevel(
+        uint256 levelNumber,
+        uint256 minReferral,
+        uint256 maxReferral,
+        uint256 rewardPercent,
+        bool isActive
+    );
 
     event SetReserveAddressForCustomerReward(address indexed _address);
     event SetReservePercentForCustomerReward(uint256 percent);
@@ -23,11 +45,11 @@ interface IAdvocateRewardConfiguration is IAdvocateEnum{
     event SetReserveAddressForAdvocateReward(address indexed _address);
     event SetReservePercentForAdvocateReward(uint256 percent);
 
-    event SetAdvocateRewardPercent(Level level, uint256 percent);
+//    event SetAdvocateRewardPercent(uint256 level, uint256 percent);
 
     // Functions
-    function setAddressTokenPCSPWallet(address _address) external;
-    function getAddressTokenPCSPWallet() external view returns (address);
+    function setAddressTokenWallet(address _address) external;
+    function getAddressTokenWallet() external view returns (address);
 
     function setReserveAddressForCustomerReward(address _address) external;
     function getReserveAddressForCustomerReward() external view returns (address);
@@ -54,8 +76,14 @@ interface IAdvocateRewardConfiguration is IAdvocateEnum{
     function setReservePercentForAdvocateReward(uint256 percent) external;
     function getReservePercentForAdvocateReward() external view returns (uint256);
 
-    function calculateAdvocateLevel(uint256 numberOfReferral) external view returns (Level);
+    function setAdvocateLevel(
+        uint256 levelNumber,
+        uint256 minReferral,
+        uint256 maxReferral,
+        uint256 rewardPercent,
+        bool isActive
+    ) external;
 
-    function setAdvocateRewardPercent(Level level, uint256 percent) external;
-    function getAdvocateRewardPercent(Level level) external view returns (uint256);
+    function getAdvocateLevelNumber(uint256 numberOfReferrals) external view returns (uint256);
+    function getAdvocateRewardPercent(uint256 numberOfReferrals) external view returns (uint256);
 }
