@@ -2,13 +2,13 @@
 pragma solidity 0.8.11;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "../../interfaces/pcsp/IPCSPReward.sol";
-import "../../interfaces/pcsp/IPCSPConfiguration.sol";
+import "../../interfaces/dao/pcsp/IPCSPCustomerReward.sol";
+import "../../interfaces/dao/pcsp/IPCSPCustomerRewardConfiguration.sol";
 import "../../GNFTToken.sol";
 import "../../common/TokenWallet.sol";
 
 
-contract PCSPReward is IPCSPReward, Ownable {
+contract PCSPCustomerReward is IPCSPCustomerReward, Ownable {
     // State Variables
     address private _addressOfPCSPConfiguration;
     // Mapping: GeneNFT Token => risk of Stroke
@@ -113,7 +113,7 @@ contract PCSPReward is IPCSPReward, Ownable {
             "PCSPReward: the GeneNFT has rewarded for risk of getting stroke"
         );
 
-        IPCSPConfiguration config = IPCSPConfiguration(
+        IPCSPCustomerRewardConfiguration config = IPCSPCustomerRewardConfiguration(
             _addressOfPCSPConfiguration
         );
         require(

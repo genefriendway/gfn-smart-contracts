@@ -2,7 +2,7 @@
 pragma solidity 0.8.11;
 
 
-interface IPCSPConfiguration {
+interface IPCSPCustomerRewardConfiguration {
     // Events
     event SetGeneNFTAddress(address indexed geneNFTAddress);
     event SetTokenPCSPWalletAddress(address indexed tokenPCSPWalletAddress);

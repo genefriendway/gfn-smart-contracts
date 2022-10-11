@@ -2,7 +2,7 @@
 pragma solidity 0.8.11;
 
 
-interface IPCSPReward {
+interface IPCSPCustomerReward {
     // Events
     event SetPCSPConfiguration(
         address indexed oldPCSPConfiguration,
