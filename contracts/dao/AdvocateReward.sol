@@ -18,11 +18,11 @@ contract AdvocateReward is IAdvocateReward, Ownable {
     modifier validAdvocateRewardConfiguration(address _address) {
         require(
             _address != address(0),
-            "PCSPReward: address of advocate reward configuration must not be null"
+            "AdvocateReward: address of advocate reward configuration must not be null"
         );
         require(
             _address != _addressOfConfiguration,
-            "PCSPReward: address of advocate reward configuration existed"
+            "AdvocateReward: address of advocate reward configuration existed"
         );
         _;
     }
