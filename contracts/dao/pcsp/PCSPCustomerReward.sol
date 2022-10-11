@@ -21,11 +21,11 @@ contract PCSPCustomerReward is IPCSPCustomerReward, Ownable {
     modifier validPCSPConfiguration(address _address) {
         require(
             _address != address(0),
-            "PCSPReward: address of PCSP configuration must not be null"
+            "PCSPCustomerReward: address of PCSP configuration must not be null"
         );
         require(
             _address != _addressOfPCSPConfiguration,
-            "PCSPReward: address of PCSP configuration existed"
+            "PCSPCustomerReward: address of PCSP configuration existed"
         );
         _;
     }
@@ -86,11 +86,11 @@ contract PCSPCustomerReward is IPCSPCustomerReward, Ownable {
     {
         require(
             geneNFTTokenIDs.length == risksOfGettingStroke.length,
-            "PCSPReward: list of GeneNFTTokenIds and risksOfGettingStroke must have same length"
+            "PCSPCustomerReward: list of GeneNFTTokenIds and risksOfGettingStroke must have same length"
         );
         require(
             risksOfGettingStroke.length == revenuesInPCSP.length,
-            "PCSPReward: list of risksOfGettingStroke and revenuesInPCSP must have same length"
+            "PCSPCustomerReward: list of risksOfGettingStroke and revenuesInPCSP must have same length"
         );
 
         for(uint256 i = 0; i < geneNFTTokenIDs.length; i++) {
@@ -110,7 +110,7 @@ contract PCSPCustomerReward is IPCSPCustomerReward, Ownable {
     {
         require(
             !_geneNFTRewardStatuses[geneNFTTokenID],
-            "PCSPReward: the GeneNFT has rewarded for risk of getting stroke"
+            "PCSPCustomerReward: the GeneNFT has rewarded for risk of getting stroke"
         );
 
         IPCSPCustomerRewardConfiguration config = IPCSPCustomerRewardConfiguration(
@@ -118,7 +118,7 @@ contract PCSPCustomerReward is IPCSPCustomerReward, Ownable {
         );
         require(
             config.checkActiveRiskOfGettingStroke(riskOfGettingStroke),
-            "PCSPReward: risk of getting stroke value is invalid"
+            "PCSPCustomerReward: risk of getting stroke value is invalid"
         );
 
         GNFTToken geneNFTToken = GNFTToken(config.getGeneNFTAddress());

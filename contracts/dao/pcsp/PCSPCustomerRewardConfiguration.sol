@@ -20,11 +20,11 @@ contract PCSPCustomerRewardConfiguration is IPCSPCustomerRewardConfiguration, Ow
     modifier validGeneNFTAddress(address _address) {
          require(
             _geneNFTAddress == address(0),
-            "PCSPConfiguration: address of GeneNFT is configured and can not change anymore"
+            "PCSPCustomerRewardConfiguration: address of GeneNFT is configured and can not change anymore"
         );
         require(
             _address != address(0),
-            "PCSPConfiguration: address of GeneNFT must not be null"
+            "PCSPCustomerRewardConfiguration: address of GeneNFT must not be null"
         );
         _;
     }
@@ -32,11 +32,11 @@ contract PCSPCustomerRewardConfiguration is IPCSPCustomerRewardConfiguration, Ow
     modifier validRiskOfGettingStroke(uint256 _risk) {
          require(
             _risk > 0 ,
-            "PCSPConfiguration: risk of getting stroke must be greater than zero"
+            "PCSPCustomerRewardConfiguration: risk of getting stroke must be greater than zero"
         );
         require(
             _risk <= 100,
-            "PCSPConfiguration: risk of getting stroke must be equal to or less than 100"
+            "PCSPCustomerRewardConfiguration: risk of getting stroke must be equal to or less than 100"
         );
         _;
     }
@@ -44,7 +44,7 @@ contract PCSPCustomerRewardConfiguration is IPCSPCustomerRewardConfiguration, Ow
     modifier validRewardPercent(uint256 _rewardPercent) {
          require(
             _rewardPercent > 0 ,
-            "PCSPConfiguration: reward percent must be greater than zero"
+            "PCSPCustomerRewardConfiguration: reward percent must be greater than zero"
         );
         _;
     }
@@ -52,7 +52,7 @@ contract PCSPCustomerRewardConfiguration is IPCSPCustomerRewardConfiguration, Ow
     modifier activeRiskOfGettingStroke(uint256 _riskOfGettingStroke) {
          require(
             _riskOfGettingStrokeStatuses[_riskOfGettingStroke],
-            "PCSPConfiguration: risk of getting stroke is inactive"
+            "PCSPCustomerRewardConfiguration: risk of getting stroke is inactive"
         );
         _;
     }
