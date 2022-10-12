@@ -295,6 +295,38 @@ contract AdvocateRewardConfiguration is IAdvocateRewardConfiguration, Ownable {
         emit SetStatusForAdvocateLevel(levelNumber, isActive);
     }
 
+    function getAdvocateMinReferral(
+        uint256 levelNumber
+    )
+        external override view returns (uint256)
+    {
+        return _advocateLevels[levelNumber].minReferral;
+    }
+
+    function getAdvocateMaxReferral(
+        uint256 levelNumber
+    )
+        external override view returns (uint256)
+    {
+        return _advocateLevels[levelNumber].maxReferral;
+    }
+
+    function getAdvocateRewardPercent(
+        uint256 levelNumber
+    )
+        external override view returns (uint256)
+    {
+        return _advocateLevels[levelNumber].rewardPercent;
+    }
+
+    function getAdvocateLevelStatus(
+        uint256 levelNumber
+    )
+        external override view returns (bool)
+    {
+        return _advocateLevels[levelNumber].isActive;
+    }
+
     function calculateAdvocateLevelNumber(
         uint256 numberOfReferrals
     )
