@@ -4,9 +4,9 @@ pragma solidity 0.8.11;
 
 interface IPCSPCustomerReward {
     // Events
-    event SetPCSPConfiguration(
-        address indexed oldPCSPConfiguration,
-        address indexed newPCSPConfiguration
+    event SetAddressOfConfiguration(
+        address indexed oldAddress,
+        address indexed newAddress
     );
 
     event RecordRiskOfGettingStroke(
@@ -18,15 +18,15 @@ interface IPCSPCustomerReward {
         uint256 geneNFTTokenID,
         address indexed geneNFTOwner,
         uint256 riskOfGettingStroke,
-        uint256 revenueInPCSP,
-        uint256 customerRewardInPCSP
+        uint256 revenue,
+        uint256 rewardAmount
     );
 
     // Functions
-    function setPCSPConfiguration(
-        address addressOfPCSPConfiguration
+    function setAddressOfConfiguration(
+        address addressOfConfiguration
     ) external;
-    function getPCSPConfiguration() external view returns (address);
+    function getAddressOfConfiguration() external view returns (address);
 
     function getRiskOfGettingStroke(
         uint256 geneNFTTokenID
@@ -41,7 +41,7 @@ interface IPCSPCustomerReward {
     function calculateRewardForMultipleCustomers(
         uint256[] memory geneNFTTokenIDs,
         uint256[] memory risksOfGettingStroke,
-        uint256[] memory revenuesInPCSP
+        uint256[] memory revenues
     ) external;
 
 }

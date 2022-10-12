@@ -5,7 +5,7 @@ pragma solidity 0.8.11;
 interface IPCSPCustomerRewardConfiguration {
     // Events
     event SetGeneNFTAddress(address indexed geneNFTAddress);
-    event SetTokenPCSPWalletAddress(address indexed tokenPCSPWalletAddress);
+    event SetTokenWalletAddress(address indexed tokenWalletAddress);
     event AddCustomerRewardPercent(
         uint256 riskOfGettingStroke,
         uint256 rewardPercent
@@ -18,8 +18,8 @@ interface IPCSPCustomerRewardConfiguration {
     // Functions
     function setGeneNFTAddress(address geneNFTAddress) external;
     function getGeneNFTAddress() external view returns (address);
-    function setTokenPCSPWalletAddress(address tokenPCSPWalletAddress) external;
-    function getTokenPCSPWalletAddress() external view returns (address);
+    function setTokenWalletAddress(address tokenWalletAddress) external;
+    function getTokenWalletAddress() external view returns (address);
 
     function addCustomerRewardPercent(
         uint256 riskOfGettingStroke,

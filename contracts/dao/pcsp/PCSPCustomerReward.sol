@@ -10,7 +10,7 @@ import "../../common/TokenWallet.sol";
 
 contract PCSPCustomerReward is IPCSPCustomerReward, Ownable {
     // State Variables
-    address private _addressOfPCSPConfiguration;
+    address private _addressOfConfiguration;
     // Mapping: GeneNFT Token => risk of Stroke
     mapping(uint256 => uint256) private _riskOfGettingStrokeRecords;
     // Mapping: GeneNFT Token => rewarded or not
@@ -18,45 +18,43 @@ contract PCSPCustomerReward is IPCSPCustomerReward, Ownable {
 
 
     // Modifiers
-    modifier validPCSPConfiguration(address _address) {
+    modifier validConfigurationAddress(address _address) {
         require(
             _address != address(0),
-            "PCSPCustomerReward: address of PCSP configuration must not be null"
+            "PCSPCustomerReward: address of configuration must not be null"
         );
         require(
-            _address != _addressOfPCSPConfiguration,
-            "PCSPCustomerReward: address of PCSP configuration existed"
+            _address != _addressOfConfiguration,
+            "PCSPCustomerReward: address of configuration existed"
         );
         _;
     }
 
     constructor(
         address owner,
-        address addressOfPCSPConfiguration
+        address addressOfConfiguration
     )
-        validPCSPConfiguration(addressOfPCSPConfiguration)
+        validConfigurationAddress(addressOfConfiguration)
     {
-        _addressOfPCSPConfiguration = addressOfPCSPConfiguration;
+        _addressOfConfiguration = addressOfConfiguration;
         transferOwnership(owner);
     }
 
-    function setPCSPConfiguration(
-        address addressOfPCSPConfiguration
+    function setAddressOfConfiguration(
+        address newAddress
     )
         external
         onlyOwner
-        validPCSPConfiguration(addressOfPCSPConfiguration)
+        validConfigurationAddress(newAddress)
     {
-        address _oldPCSPConfiguration = _addressOfPCSPConfiguration;
-        _addressOfPCSPConfiguration = addressOfPCSPConfiguration;
+        address _oldAddress = _addressOfConfiguration;
+        _addressOfConfiguration = newAddress;
 
-        emit SetPCSPConfiguration(
-            _oldPCSPConfiguration, addressOfPCSPConfiguration
-        );
+        emit SetAddressOfConfiguration(_oldAddress, _addressOfConfiguration);
     }
 
-    function getPCSPConfiguration() external override view returns (address) {
-        return _addressOfPCSPConfiguration;
+    function getAddressOfConfiguration() external override view returns (address) {
+        return _addressOfConfiguration;
     }
 
     function getRiskOfGettingStroke(
@@ -78,7 +76,7 @@ contract PCSPCustomerReward is IPCSPCustomerReward, Ownable {
     function calculateRewardForMultipleCustomers(
         uint256[] memory geneNFTTokenIDs,
         uint256[] memory risksOfGettingStroke,
-        uint256[] memory revenuesInPCSP
+        uint256[] memory revenues
     )
         external
         override
@@ -89,13 +87,13 @@ contract PCSPCustomerReward is IPCSPCustomerReward, Ownable {
             "PCSPCustomerReward: list of GeneNFTTokenIds and risksOfGettingStroke must have same length"
         );
         require(
-            risksOfGettingStroke.length == revenuesInPCSP.length,
-            "PCSPCustomerReward: list of risksOfGettingStroke and revenuesInPCSP must have same length"
+            risksOfGettingStroke.length == revenues.length,
+            "PCSPCustomerReward: list of risksOfGettingStroke and revenues must have same length"
         );
 
         for(uint256 i = 0; i < geneNFTTokenIDs.length; i++) {
             _calculateCustomerReward(
-                geneNFTTokenIDs[i], risksOfGettingStroke[i], revenuesInPCSP[i]
+                geneNFTTokenIDs[i], risksOfGettingStroke[i], revenues[i]
             );
         }
 
@@ -104,7 +102,7 @@ contract PCSPCustomerReward is IPCSPCustomerReward, Ownable {
     function _calculateCustomerReward(
         uint256 geneNFTTokenID,
         uint256 riskOfGettingStroke,
-        uint256 revenueInPCSP
+        uint256 revenue
     )
         private
     {
@@ -114,7 +112,7 @@ contract PCSPCustomerReward is IPCSPCustomerReward, Ownable {
         );
 
         IPCSPCustomerRewardConfiguration config = IPCSPCustomerRewardConfiguration(
-            _addressOfPCSPConfiguration
+            _addressOfConfiguration
         );
         require(
             config.checkActiveRiskOfGettingStroke(riskOfGettingStroke),
@@ -134,15 +132,15 @@ contract PCSPCustomerReward is IPCSPCustomerReward, Ownable {
         emit RecordRiskOfGettingStroke(geneNFTTokenID, riskOfGettingStroke);
 
         // calculate reward of customer based on risk of getting stroke value
-        uint256 customerRewardInPCSP = config.calculateCustomerReward(
-            riskOfGettingStroke, revenueInPCSP
+        uint256 rewardAmount = config.calculateCustomerReward(
+            riskOfGettingStroke, revenue
         );
 
         // store Reward of Customer on Token PCSP Wallet
-        TokenWallet tokenWallet = TokenWallet(config.getTokenPCSPWalletAddress());
+        TokenWallet tokenWallet = TokenWallet(config.getTokenWalletAddress());
         tokenWallet.increaseBalance(
             geneNFTOwner,
-            customerRewardInPCSP,
+            rewardAmount,
             "Reward for risk of getting stroke"
         );
 
@@ -150,8 +148,8 @@ contract PCSPCustomerReward is IPCSPCustomerReward, Ownable {
             geneNFTTokenID,
             geneNFTOwner,
             riskOfGettingStroke,
-            revenueInPCSP,
-            customerRewardInPCSP
+            revenue,
+            rewardAmount
         );
     }
 }

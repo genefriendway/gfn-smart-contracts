@@ -9,7 +9,7 @@ contract PCSPCustomerRewardConfiguration is IPCSPCustomerRewardConfiguration, Ow
 
     // State Variables
     address private _geneNFTAddress;
-    address private _tokenPCSPWalletAddress;
+    address private _tokenWalletAddress;
     
     // Mapping: risk of getting stroke => active or inactive
     mapping(uint256 => bool) private _riskOfGettingStrokeStatuses;
@@ -146,18 +146,18 @@ contract PCSPCustomerRewardConfiguration is IPCSPCustomerRewardConfiguration, Ow
         return _geneNFTAddress;
     }
 
-    function setTokenPCSPWalletAddress(
-        address tokenPCSPWalletAddress
+    function setTokenWalletAddress(
+        address tokenWalletAddress
     )
         external
         onlyOwner
     {
-        _tokenPCSPWalletAddress = tokenPCSPWalletAddress;
-        emit SetTokenPCSPWalletAddress(_tokenPCSPWalletAddress);
+        _tokenWalletAddress = tokenWalletAddress;
+        emit SetTokenWalletAddress(_tokenWalletAddress);
     }
 
-    function getTokenPCSPWalletAddress() external override view returns (address) {
-        return _tokenPCSPWalletAddress;
+    function getTokenWalletAddress() external override view returns (address) {
+        return _tokenWalletAddress;
     }
 
 }
