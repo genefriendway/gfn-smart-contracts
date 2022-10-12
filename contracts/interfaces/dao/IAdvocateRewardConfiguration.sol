@@ -20,7 +20,7 @@ interface IAdvocateRewardConfiguration{
     }
 
     // Events
-    event SetAddressTokenWallet(address indexed _address);
+    event SetTokenWalletAddress(address indexed tokenWalletAddress);
 
     event SetAdvocateLevel(
         uint256 levelNumber,
@@ -30,48 +30,46 @@ interface IAdvocateRewardConfiguration{
         bool isActive
     );
 
-    event SetReserveAddressForCustomerReward(address indexed _address);
+    event SetReserveAddressForCustomerReward(address indexed reserveAddress);
     event SetReservePercentForCustomerReward(uint256 percent);
 
-    event SetReserveAddressForPlatformFee(address indexed _address);
+    event SetReserveAddressForPlatformFee(address indexed reserveAddress);
     event SetReservePercentForPlatformFee(uint256 percent);
 
-    event SetReserveAddressForCommunityCampaign(address indexed _address);
+    event SetReserveAddressForCommunityCampaign(address indexed reserveAddress);
     event SetReservePercentForCommunityCampaign(uint256 percent);
 
-    event SetReserveAddressForQuarterReferralReward(address indexed _address);
+    event SetReserveAddressForQuarterReferralReward(address indexed reserveAddress);
     event SetReservePercentForQuarterReferralReward(uint256 percent);
 
-    event SetReserveAddressForAdvocateReward(address indexed _address);
+    event SetReserveAddressForAdvocateReward(address indexed reserveAddress);
     event SetReservePercentForAdvocateReward(uint256 percent);
 
-//    event SetAdvocateRewardPercent(uint256 level, uint256 percent);
-
     // Functions
-    function setAddressTokenWallet(address _address) external;
-    function getAddressTokenWallet() external view returns (address);
+    function setTokenWalletAddress(address tokenWalletAddress) external;
+    function getTokenWalletAddress() external view returns (address);
 
-    function setReserveAddressForCustomerReward(address _address) external;
+    function setReserveAddressForCustomerReward(address reserveAddress) external;
     function getReserveAddressForCustomerReward() external view returns (address);
     function setReservePercentForCustomerReward(uint256 percent) external;
     function getReservePercentForCustomerReward() external view returns (uint256);
 
-    function setReserveAddressForPlatformFee(address _address) external;
+    function setReserveAddressForPlatformFee(address reserveAddress) external;
     function getReserveAddressForPlatformFee() external view returns (address);
     function setReservePercentForPlatformFee(uint256 percent) external;
     function getReservePercentForPlatformFee() external view returns (uint256);
 
-    function setReserveAddressForCommunityCampaign(address _address) external;
+    function setReserveAddressForCommunityCampaign(address reserveAddress) external;
     function getReserveAddressForCommunityCampaign() external view returns (address);
     function setReservePercentForCommunityCampaign(uint256 percent) external;
     function getReservePercentForCommunityCampaign() external view returns (uint256);
 
-    function setReserveAddressForQuarterReferralReward(address _address) external;
+    function setReserveAddressForQuarterReferralReward(address reserveAddress) external;
     function getReserveAddressForQuarterReferralReward() external view returns (address);
     function setReservePercentForQuarterReferralReward(uint256 percent) external;
     function getReservePercentForQuarterReferralReward() external view returns (uint256);
 
-    function setReserveAddressForAdvocateReward(address _address) external;
+    function setReserveAddressForAdvocateReward(address reserveAddress) external;
     function getReserveAddressForAdvocateReward() external view returns (address);
     function setReservePercentForAdvocateReward(uint256 percent) external;
     function getReservePercentForAdvocateReward() external view returns (uint256);

@@ -14,7 +14,7 @@ contract AdvocateRewardConfiguration is IAdvocateRewardConfiguration, Ownable {
     mapping(ReserveObject => address) _reserveAddresses;
 
     // State Variables
-    address private _addressTokenWallet;
+    address private _addressOfTokenWallet;
 
     constructor(address owner)
     {
@@ -23,27 +23,27 @@ contract AdvocateRewardConfiguration is IAdvocateRewardConfiguration, Ownable {
         _setDefaultReservePercents();
     }
 
-    function setAddressTokenWallet(
-        address _address
+    function setTokenWalletAddress(
+        address tokenWalletAddress
     )
         external onlyOwner
     {
-        _addressTokenWallet = _address;
-        emit SetAddressTokenWallet(_address);
+        _addressOfTokenWallet = tokenWalletAddress;
+        emit SetTokenWalletAddress(_addressOfTokenWallet);
     }
 
-    function getAddressTokenWallet() external override view returns (address) {
-        return _addressTokenWallet;
+    function getTokenWalletAddress() external override view returns (address) {
+        return _addressOfTokenWallet;
     }
 
     // functions for Customer Reward
     function setReserveAddressForCustomerReward(
-        address _address
+        address reserveAddress
     )
         external onlyOwner
     {
-        _reserveAddresses[ReserveObject.CUSTOMER_REWARD] = _address;
-        emit SetReserveAddressForCustomerReward(_address);
+        _reserveAddresses[ReserveObject.CUSTOMER_REWARD] = reserveAddress;
+        emit SetReserveAddressForCustomerReward(reserveAddress);
     }
 
     function getReserveAddressForCustomerReward() external override view returns (address) {
@@ -65,12 +65,12 @@ contract AdvocateRewardConfiguration is IAdvocateRewardConfiguration, Ownable {
 
     // functions for Platform Fee
     function setReserveAddressForPlatformFee(
-        address _address
+        address reserveAddress
     )
         external onlyOwner
     {
-        _reserveAddresses[ReserveObject.PLATFORM_FEE] = _address;
-        emit SetReserveAddressForPlatformFee(_address);
+        _reserveAddresses[ReserveObject.PLATFORM_FEE] = reserveAddress;
+        emit SetReserveAddressForPlatformFee(reserveAddress);
     }
 
     function getReserveAddressForPlatformFee() external override view returns (address) {
@@ -92,12 +92,12 @@ contract AdvocateRewardConfiguration is IAdvocateRewardConfiguration, Ownable {
 
     // functions for Community Campaign
     function setReserveAddressForCommunityCampaign(
-        address _address
+        address reserveAddress
     )
         external onlyOwner
     {
-        _reserveAddresses[ReserveObject.COMMUNITY_CAMPAIGN] = _address;
-        emit SetReserveAddressForCommunityCampaign(_address);
+        _reserveAddresses[ReserveObject.COMMUNITY_CAMPAIGN] = reserveAddress;
+        emit SetReserveAddressForCommunityCampaign(reserveAddress);
     }
 
     function getReserveAddressForCommunityCampaign() external override view returns (address) {
@@ -119,12 +119,12 @@ contract AdvocateRewardConfiguration is IAdvocateRewardConfiguration, Ownable {
 
     // functions for Quarter Referral Reward
     function setReserveAddressForQuarterReferralReward(
-        address _address
+        address reserveAddress
     )
         external onlyOwner
     {
-        _reserveAddresses[ReserveObject.QUARTER_REFERRAL_REWARD] = _address;
-        emit SetReserveAddressForQuarterReferralReward(_address);
+        _reserveAddresses[ReserveObject.QUARTER_REFERRAL_REWARD] = reserveAddress;
+        emit SetReserveAddressForQuarterReferralReward(reserveAddress);
     }
 
     function getReserveAddressForQuarterReferralReward() external override view returns (address) {
@@ -146,12 +146,12 @@ contract AdvocateRewardConfiguration is IAdvocateRewardConfiguration, Ownable {
 
     // functions for Advocate Reward
     function setReserveAddressForAdvocateReward(
-        address _address
+        address reserveAddress
     )
         external onlyOwner
     {
-        _reserveAddresses[ReserveObject.ADVOCATE_REWARD] = _address;
-        emit SetReserveAddressForAdvocateReward(_address);
+        _reserveAddresses[ReserveObject.ADVOCATE_REWARD] = reserveAddress;
+        emit SetReserveAddressForAdvocateReward(reserveAddress);
     }
 
     function getReserveAddressForAdvocateReward() external override view returns (address) {

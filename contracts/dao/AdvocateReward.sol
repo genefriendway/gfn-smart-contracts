@@ -109,7 +109,7 @@ contract AdvocateReward is IAdvocateReward, Ownable {
             revenueRewardBelongToAdvocate
         );
 
-        ITokenWallet tokenWallet = ITokenWallet(config.getAddressTokenWallet());
+        ITokenWallet tokenWallet = ITokenWallet(config.getTokenWalletAddress());
 
         tokenWallet.increaseBalance(
             config.getReserveAddressForCustomerReward(),
