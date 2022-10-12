@@ -88,7 +88,7 @@ contract AdvocateReward is IAdvocateReward, Ownable {
             revenueMonthly * config.getReservePercentForQuarterReferralReward() / 100;
 
         uint256 rewardAmountForAdvocate =
-            revenueMonthly * config.getAdvocateRewardPercent(numberOfReferrals) / 100;
+            revenueMonthly * config.calculateAdvocateRewardPercent(numberOfReferrals) / 100;
 
         uint256 remainingReservedRevenueForAdvocateReward = revenueMonthly
             - reservedRevenueForCustomerReward

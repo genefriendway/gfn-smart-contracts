@@ -111,6 +111,6 @@ interface IAdvocateRewardConfiguration{
         bool isActive
     ) external;
 
-    function getAdvocateLevelNumber(uint256 numberOfReferrals) external view returns (uint256);
-    function getAdvocateRewardPercent(uint256 numberOfReferrals) external view returns (uint256);
+    function calculateAdvocateLevelNumber(uint256 numberOfReferrals) external view returns (uint256);
+    function calculateAdvocateRewardPercent(uint256 numberOfReferrals) external view returns (uint256);
 }

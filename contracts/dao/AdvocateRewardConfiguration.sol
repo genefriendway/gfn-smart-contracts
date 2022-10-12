@@ -295,7 +295,7 @@ contract AdvocateRewardConfiguration is IAdvocateRewardConfiguration, Ownable {
         emit SetStatusForAdvocateLevel(levelNumber, isActive);
     }
 
-    function getAdvocateLevelNumber(
+    function calculateAdvocateLevelNumber(
         uint256 numberOfReferrals
     )
         external override view returns (uint256)
@@ -311,7 +311,7 @@ contract AdvocateRewardConfiguration is IAdvocateRewardConfiguration, Ownable {
         return 0; // default return zero
     }
 
-    function getAdvocateRewardPercent(
+    function calculateAdvocateRewardPercent(
         uint256 numberOfReferrals
     )
         external override view returns (uint256)
