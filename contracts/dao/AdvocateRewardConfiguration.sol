@@ -7,14 +7,22 @@ import "../interfaces/dao/IAdvocateRewardConfiguration.sol";
 
 contract AdvocateRewardConfiguration is IAdvocateRewardConfiguration, Ownable {
 
-    uint256[] private _levelNumbers;
+    // State Variables
+    address private _addressOfTokenWallet;
+    uint256 private _levelCount;
     // Map: Level Number => Detail Level
     mapping(uint256 => AdvocateLevel) private _advocateLevels;
     mapping(ReserveObject => uint256) _reservePercents;
     mapping(ReserveObject => address) _reserveAddresses;
 
-    // State Variables
-    address private _addressOfTokenWallet;
+    // Modifiers
+    modifier existedLevelNumber(uint256 levelNumber) {
+        require(
+            _advocateLevels[levelNumber].isExisted,
+            "AdvocateRewardConfiguration: level number must be existed"
+        );
+        _;
+    }
 
     constructor(address owner)
     {
@@ -216,8 +224,7 @@ contract AdvocateRewardConfiguration is IAdvocateRewardConfiguration, Ownable {
         return _reservePercents[ReserveObject.ADVOCATE_REWARD];
     }
 
-    function setAdvocateLevel(
-        uint256 levelNumber,
+    function addAdvocateLevel(
         uint256 minReferral,
         uint256 maxReferral,
         uint256 rewardPercent,
@@ -225,7 +232,36 @@ contract AdvocateRewardConfiguration is IAdvocateRewardConfiguration, Ownable {
     )
         external onlyOwner
     {
-        _setAdvocateLevel(
+        _addAdvocateLevel(minReferral, maxReferral, rewardPercent, isActive);
+    }
+
+    function setAdvocateLevel(
+        uint256 levelNumber,
+        uint256 minReferral,
+        uint256 maxReferral,
+        uint256 rewardPercent,
+        bool isActive
+    )
+        external onlyOwner existedLevelNumber(levelNumber)
+    {
+        require(
+            levelNumber > 0,
+            "AdvocateRewardConfiguration: level number must be greater than zero"
+        );
+
+        require(
+            rewardPercent > 0,
+            "AdvocateRewardConfiguration: reward percent must be greater than zero"
+        );
+
+        // set detail Level Info
+        AdvocateLevel storage level = _advocateLevels[levelNumber];
+        level.minReferral = minReferral;
+        level.maxReferral = maxReferral;
+        level.rewardPercent = rewardPercent;
+        level.isActive = isActive;
+
+        emit SetAdvocateLevel(
             levelNumber, minReferral, maxReferral, rewardPercent, isActive
         );
     }
@@ -235,7 +271,7 @@ contract AdvocateRewardConfiguration is IAdvocateRewardConfiguration, Ownable {
         uint256 minReferral,
         uint256 maxReferral
     )
-        external onlyOwner
+        external onlyOwner existedLevelNumber(levelNumber)
     {
         require(
             minReferral < maxReferral,
@@ -260,7 +296,7 @@ contract AdvocateRewardConfiguration is IAdvocateRewardConfiguration, Ownable {
         uint256 levelNumber,
         uint256 rewardPercent
     )
-        external onlyOwner
+        external onlyOwner existedLevelNumber(levelNumber)
     {
         require(
             rewardPercent > 0,
@@ -278,11 +314,11 @@ contract AdvocateRewardConfiguration is IAdvocateRewardConfiguration, Ownable {
         emit SetRewardPercentForAdvocateLevel(levelNumber, rewardPercent);
     }
 
-    function setStatusForAdvocateLevel(
+    function setAdvocateLevelStatus(
         uint256 levelNumber,
         bool isActive
     )
-        external onlyOwner
+        external onlyOwner existedLevelNumber(levelNumber)
     {
         AdvocateLevel storage level = _advocateLevels[levelNumber];
         require(
@@ -292,7 +328,7 @@ contract AdvocateRewardConfiguration is IAdvocateRewardConfiguration, Ownable {
 
         level.isActive = isActive;
 
-        emit SetStatusForAdvocateLevel(levelNumber, isActive);
+        emit SetAdvocateLevelStatus(levelNumber, isActive);
     }
 
     function getAdvocateMinReferral(
@@ -332,12 +368,12 @@ contract AdvocateRewardConfiguration is IAdvocateRewardConfiguration, Ownable {
     )
         external override view returns (uint256)
     {
-        for (uint256 i = 0; i < _levelNumbers.length; i++) {
-            AdvocateLevel storage level = _advocateLevels[_levelNumbers[i]];
+        for (uint256 i = 1; i <= _levelCount; i++) {
+            AdvocateLevel storage level = _advocateLevels[i];
             if (level.isActive
                     && numberOfReferrals >= level.minReferral
                     && numberOfReferrals <= level.maxReferral) {
-                return _levelNumbers[i];
+                return i;
             }
         }
         return 0; // default return zero
@@ -348,8 +384,8 @@ contract AdvocateRewardConfiguration is IAdvocateRewardConfiguration, Ownable {
     )
         external override view returns (uint256)
     {
-        for (uint256 i = 0; i < _levelNumbers.length; i++) {
-            AdvocateLevel storage level = _advocateLevels[_levelNumbers[i]];
+        for (uint256 i = 1; i <= _levelCount; i++) {
+            AdvocateLevel storage level = _advocateLevels[i];
             if (level.isActive
                     && numberOfReferrals >= level.minReferral
                     && numberOfReferrals <= level.maxReferral) {
@@ -360,11 +396,14 @@ contract AdvocateRewardConfiguration is IAdvocateRewardConfiguration, Ownable {
     }
 
     function _setDefaultAdvocateLevels() private {
-        // Advocate Level start at 1
-        _setAdvocateLevel(1, 1, 99, 20, true);
-        _setAdvocateLevel(2, 100, 199, 30, true);
-        _setAdvocateLevel(3, 200, 299, 40, true);
-        _setAdvocateLevel(4, 300, 99999999, 50, true);
+        // level 1
+        _addAdvocateLevel(1, 99, 20, true);
+        // level 2
+        _addAdvocateLevel(100, 199, 30, true);
+        // level 3
+        _addAdvocateLevel(200, 299, 40, true);
+        // level 4
+        _addAdvocateLevel(300, 99999999, 50, true);
     }
 
     function _setDefaultReservePercents() private {
@@ -375,8 +414,7 @@ contract AdvocateRewardConfiguration is IAdvocateRewardConfiguration, Ownable {
         _reservePercents[ReserveObject.ADVOCATE_REWARD] = 50;
     }
 
-    function _setAdvocateLevel(
-        uint256 levelNumber,
+    function _addAdvocateLevel(
         uint256 minReferral,
         uint256 maxReferral,
         uint256 rewardPercent,
@@ -385,27 +423,22 @@ contract AdvocateRewardConfiguration is IAdvocateRewardConfiguration, Ownable {
         private
     {
         require(
-            levelNumber > 0,
-            "AdvocateRewardConfiguration: level number must be greater than zero"
-        );
-
-        require(
             rewardPercent > 0,
             "AdvocateRewardConfiguration: reward percent must be greater than zero"
         );
 
-        // push list of level number
-        _levelNumbers.push(levelNumber);
+        // Generate new next level by increase one
+        _levelCount += 1;
 
         // set detail Level Info
-        AdvocateLevel storage level = _advocateLevels[levelNumber];
+        AdvocateLevel storage level = _advocateLevels[_levelCount];
         level.minReferral = minReferral;
         level.maxReferral = maxReferral;
         level.rewardPercent = rewardPercent;
         level.isActive = isActive;
 
-        emit SetAdvocateLevel(
-            levelNumber, minReferral, maxReferral, rewardPercent, isActive
+        emit AddAdvocateLevel(
+            _levelCount, minReferral, maxReferral, rewardPercent, isActive
         );
     }
 }

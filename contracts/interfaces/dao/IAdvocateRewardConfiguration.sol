@@ -16,11 +16,20 @@ interface IAdvocateRewardConfiguration{
         uint256 minReferral;
         uint256 maxReferral;
         uint256 rewardPercent;
+        bool isExisted;
         bool isActive;
     }
 
     // Events
     event SetTokenWalletAddress(address indexed tokenWalletAddress);
+
+    event AddAdvocateLevel(
+        uint256 levelNumber,
+        uint256 minReferral,
+        uint256 maxReferral,
+        uint256 rewardPercent,
+        bool isActive
+    );
 
     event SetAdvocateLevel(
         uint256 levelNumber,
@@ -38,7 +47,7 @@ interface IAdvocateRewardConfiguration{
         uint256 levelNumber,
         uint256 rewardPercent
     );
-    event SetStatusForAdvocateLevel(
+    event SetAdvocateLevelStatus(
         uint256 levelNumber,
         bool isActive
     );
@@ -87,6 +96,13 @@ interface IAdvocateRewardConfiguration{
     function setReservePercentForAdvocateReward(uint256 percent) external;
     function getReservePercentForAdvocateReward() external view returns (uint256);
 
+    function addAdvocateLevel(
+        uint256 minReferral,
+        uint256 maxReferral,
+        uint256 rewardPercent,
+        bool isActive
+    ) external;
+
     function setAdvocateLevel(
         uint256 levelNumber,
         uint256 minReferral,
@@ -106,7 +122,7 @@ interface IAdvocateRewardConfiguration{
         uint256 rewardPercent
     ) external;
 
-    function setStatusForAdvocateLevel(
+    function setAdvocateLevelStatus(
         uint256 levelNumber,
         bool isActive
     ) external;
