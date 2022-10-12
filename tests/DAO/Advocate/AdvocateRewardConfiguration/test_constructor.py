@@ -14,6 +14,7 @@ def test_success__deploy_smart_contract():
         {"from": deployer}
     )
 
+    # Assert: Advocate Level
     level = 1
     assert configuration.getAdvocateMinReferral(level) == 1
     assert configuration.getAdvocateMaxReferral(level) == 99
@@ -37,7 +38,8 @@ def test_success__deploy_smart_contract():
     assert configuration.getAdvocateMaxReferral(level) == 99999999
     assert configuration.getAdvocateRewardPercent(level) == 50
     assert configuration.getAdvocateLevelStatus(level) is True
-    
+
+    # Assert: Reserve Percent for Each Object
     assert configuration.getReservePercentForCustomerReward() == 20
     assert configuration.getReservePercentForPlatformFee() == 15
     assert configuration.getReservePercentForCommunityCampaign() == 10
