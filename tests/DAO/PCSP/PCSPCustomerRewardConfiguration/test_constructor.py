@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 import pytest
 import brownie
-from brownie import accounts, PCSPConfiguration
+from brownie import accounts, PCSPCustomerRewardConfiguration
 
 
 def test_success__deploy_smart_contract():
@@ -9,7 +9,7 @@ def test_success__deploy_smart_contract():
     pcsp_configuration_owner = accounts[1]
 
     # Actions
-    pcsp_configuration_contract = PCSPConfiguration.deploy(
+    pcsp_configuration_contract = PCSPCustomerRewardConfiguration.deploy(
         pcsp_configuration_owner,
         {"from": deployer}
     )
@@ -38,7 +38,7 @@ def test_failure__deploy_smart_contract__null_owner():
 
     # Actions
     with brownie.reverts("Ownable: new owner is the zero address"):
-        PCSPConfiguration.deploy(
+        PCSPCustomerRewardConfiguration.deploy(
             pcsp_configuration_owner,
             {"from": deployer}
         )
@@ -50,7 +50,7 @@ def test_failure__deploy_smart_contract__owner_is_not_adddress_type():
 
     # Actions
     with pytest.raises(ValueError):
-        PCSPConfiguration.deploy(
+        PCSPCustomerRewardConfiguration.deploy(
             pcsp_configuration_owner,
             {"from": deployer}
         )

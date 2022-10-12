@@ -17,10 +17,13 @@ def test_success__add_customer_reward_percent__owner_make_txn(pcsp_deployment):
     new_reward_percent = 300
 
     # Assert before actions
-    with brownie.reverts("PCSPConfiguration: risk of getting stroke is inactive"):
+    with brownie.reverts("PCSPCustomerRewardConfiguration: risk of getting "
+                         "stroke is inactive"):
         pcsp_configuration_contract.getCustomerRewardPercent(new_risk_value)
 
-    is_active_risk = pcsp_configuration_contract.checkActiveRiskOfGettingStroke(new_risk_value)
+    is_active_risk = pcsp_configuration_contract.checkActiveRiskOfGettingStroke(
+        new_risk_value
+    )
     assert is_active_risk is False
 
     # Action
@@ -81,7 +84,7 @@ def test_failure__add_customer_reward_percent__risk_is_zero(pcsp_deployment):
     new_reward_percent = 300
 
     # Action
-    with brownie.reverts("PCSPConfiguration: risk of getting stroke must be greater than zero"):
+    with brownie.reverts("PCSPCustomerRewardConfiguration: risk of getting stroke must be greater than zero"):
         pcsp_configuration_contract.addCustomerRewardPercent(
             new_risk_value,
             new_reward_percent,
@@ -97,7 +100,7 @@ def test_failure__add_customer_reward_percent__risk_over_100(pcsp_deployment):
     new_reward_percent = 300
 
     # Action
-    with brownie.reverts("PCSPConfiguration: risk of getting stroke must be equal to or less than 100"):
+    with brownie.reverts("PCSPCustomerRewardConfiguration: risk of getting stroke must be equal to or less than 100"):
         pcsp_configuration_contract.addCustomerRewardPercent(
             new_risk_value,
             new_reward_percent,
@@ -129,7 +132,7 @@ def test_failure__add_customer_reward_percent__reward_percent_is_zero(pcsp_deplo
     new_reward_percent = 0
 
     # Action
-    with brownie.reverts("PCSPConfiguration: reward percent must be greater than zero"):
+    with brownie.reverts("PCSPCustomerRewardConfiguration: reward percent must be greater than zero"):
         pcsp_configuration_contract.addCustomerRewardPercent(
             new_risk_value,
             new_reward_percent,

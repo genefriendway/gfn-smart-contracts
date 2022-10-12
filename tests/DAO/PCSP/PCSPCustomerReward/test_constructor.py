@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 import pytest
 import brownie
-from brownie import accounts, PCSPReward
+from brownie import accounts, PCSPCustomerReward
 
 
 @pytest.fixture(autouse=True)
@@ -16,14 +16,14 @@ def test_success__deploy_smart_contract():
     pcsp_configuration_address = accounts.add()
 
     # Actions
-    pcsp_reward = PCSPReward.deploy(
+    pcsp_reward = PCSPCustomerReward.deploy(
         pcsp_reward_owner,
         pcsp_configuration_address,
         {"from": deployer}
     )
 
     # Assert Customer Reward Percents
-    assert pcsp_reward.getPCSPConfiguration() == pcsp_configuration_address
+    assert pcsp_reward.getAddressOfConfiguration() == pcsp_configuration_address
     assert pcsp_reward.owner() == pcsp_reward_owner
 
 
@@ -33,9 +33,10 @@ def test_failure__deploy_smart_contract__null_owner():
     pcsp_configuration_address = "0x0000000000000000000000000000000000000000"
 
     # Actions
-    with brownie.reverts("PCSPReward: address of PCSP configuration must not be null"):
+    with brownie.reverts("PCSPCustomerReward: address of configuration "
+                         "must not be null"):
         # Actions
-        PCSPReward.deploy(
+        PCSPCustomerReward.deploy(
             pcsp_reward_owner,
             pcsp_configuration_address,
             {"from": deployer}

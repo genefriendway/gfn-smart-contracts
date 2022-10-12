@@ -4,8 +4,8 @@ import pytest
 
 from brownie import (
     accounts,
-    PCSPConfiguration,
-    PCSPReward,
+    PCSPCustomerRewardConfiguration,
+    PCSPCustomerReward,
     GenomicDAOToken,
     TokenWallet
 )
@@ -20,14 +20,14 @@ def pcsp_deployment():
     dao_token_cap = 1000000000 * 10 ** 18  # one billion
     token_wallet_owner = accounts.add()
 
-    # Deploy PCSPConfiguration contract
-    pcsp_configuration_contract = PCSPConfiguration.deploy(
+    # Deploy PCSPCustomerRewardConfiguration contract
+    pcsp_configuration_contract = PCSPCustomerRewardConfiguration.deploy(
         pcsp_configuration_owner,
         {"from": deployer}
     )
 
-    # Deploy PCSPReward contract
-    pcsp_reward_contract = PCSPReward.deploy(
+    # Deploy PCSPCustomerReward contract
+    pcsp_reward_contract = PCSPCustomerReward.deploy(
         pcsp_reward_owner,
         pcsp_configuration_contract.address,
         {"from": deployer}
