@@ -10,19 +10,16 @@ import "../interfaces/common/ITokenWallet.sol";
 contract AdvocateReward is IAdvocateReward, Ownable {
     // State Variables
     address private _addressOfConfiguration;
-    // Mapping: advocate address => Referral Stats
-    mapping(address => AdvocateStats) private _advocateStats;
-
 
     // Modifiers
-    modifier validAdvocateRewardConfiguration(address _address) {
+    modifier validAddressOfConfiguration(address _address) {
         require(
             _address != address(0),
-            "AdvocateReward: address of advocate reward configuration must not be null"
+            "AdvocateReward: address of configuration must not be null"
         );
         require(
             _address != _addressOfConfiguration,
-            "AdvocateReward: address of advocate reward configuration existed"
+            "AdvocateReward: address of configuration existed"
         );
         _;
     }
@@ -31,28 +28,26 @@ contract AdvocateReward is IAdvocateReward, Ownable {
         address owner,
         address addressOfConfiguration
     )
-        validAdvocateRewardConfiguration(addressOfConfiguration)
+        validAddressOfConfiguration(addressOfConfiguration)
     {
         _addressOfConfiguration = addressOfConfiguration;
         transferOwnership(owner);
     }
 
-    function setAdvocateRewardConfiguration(
-        address addressOfConfiguration
+    function setAddressOfConfiguration(
+        address newAddress
     )
         external
         onlyOwner
-        validAdvocateRewardConfiguration(addressOfConfiguration)
+        validAddressOfConfiguration(newAddress)
     {
-        address _oldConfiguration = _addressOfConfiguration;
-        _addressOfConfiguration = addressOfConfiguration;
+        address _oldAddress = _addressOfConfiguration;
+        _addressOfConfiguration = newAddress;
 
-        emit SetAdvocateRewardConfiguration(
-            _oldConfiguration, addressOfConfiguration
-        );
+        emit SetAddressOfConfiguration(_oldAddress, _addressOfConfiguration);
     }
 
-    function getAdvocateRewardConfiguration() external override view returns (address) {
+    function getAddressOfConfiguration() external override view returns (address) {
         return _addressOfConfiguration;
     }
 
@@ -92,7 +87,7 @@ contract AdvocateReward is IAdvocateReward, Ownable {
         uint256 reservedRevenueForQuarterReferralReward =
             revenueMonthly * config.getReservePercentForQuarterReferralReward() / 100;
 
-        uint256 revenueRewardBelongToAdvocate =
+        uint256 rewardAmountForAdvocate =
             revenueMonthly * config.getAdvocateRewardPercent(numberOfReferrals) / 100;
 
         uint256 remainingReservedRevenueForAdvocateReward = revenueMonthly
@@ -100,13 +95,13 @@ contract AdvocateReward is IAdvocateReward, Ownable {
             - reservedRevenueForPlatformFee
             - reservedRevenueForCommunityCampaign
             - reservedRevenueForQuarterReferralReward
-            - revenueRewardBelongToAdvocate;
+            - rewardAmountForAdvocate;
 
         emit RewardAdvocateMonthly(
             advocateAddress,
             revenueMonthly,
             numberOfReferrals,
-            revenueRewardBelongToAdvocate
+            rewardAmountForAdvocate
         );
 
         ITokenWallet tokenWallet = ITokenWallet(config.getTokenWalletAddress());
@@ -143,8 +138,8 @@ contract AdvocateReward is IAdvocateReward, Ownable {
 
         tokenWallet.increaseBalance(
             advocateAddress,
-            revenueRewardBelongToAdvocate,
-            "Reserve For Advocate Reward"
+            rewardAmountForAdvocate,
+            "Reward For Advocate Monthly"
         );
     }
 }
