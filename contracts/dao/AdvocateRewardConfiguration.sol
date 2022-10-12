@@ -173,7 +173,7 @@ contract AdvocateRewardConfiguration is IAdvocateRewardConfiguration, Ownable {
         external onlyOwner
     {
         _reservePercents[ReserveObject.QUARTER_REFERRAL_REWARD] = percent;
-        emit SetReservePercentForCommunityCampaign(percent);
+        emit SetReservePercentForQuarterReferralReward(percent);
     }
 
     function getReservePercentForQuarterReferralReward() external override view returns (uint256) {
@@ -213,7 +213,7 @@ contract AdvocateRewardConfiguration is IAdvocateRewardConfiguration, Ownable {
     }
 
     function getReservePercentForAdvocateReward() external override view returns (uint256) {
-        return _reservePercents[ReserveObject.QUARTER_REFERRAL_REWARD];
+        return _reservePercents[ReserveObject.ADVOCATE_REWARD];
     }
 
     function setAdvocateLevel(
@@ -340,7 +340,7 @@ contract AdvocateRewardConfiguration is IAdvocateRewardConfiguration, Ownable {
         _reservePercents[ReserveObject.PLATFORM_FEE] = 15;
         _reservePercents[ReserveObject.COMMUNITY_CAMPAIGN] = 10;
         _reservePercents[ReserveObject.QUARTER_REFERRAL_REWARD] = 5;
-        _reservePercents[ReserveObject.CUSTOMER_REWARD] = 50;
+        _reservePercents[ReserveObject.ADVOCATE_REWARD] = 50;
     }
 
     function _setAdvocateLevel(
