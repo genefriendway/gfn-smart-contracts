@@ -29,6 +29,19 @@ interface IAdvocateRewardConfiguration{
         uint256 rewardPercent,
         bool isActive
     );
+    event SetMinMaxReferralForAdvocateLevel(
+        uint256 levelNumber,
+        uint256 minReferral,
+        uint256 maxReferral
+    );
+    event SetRewardPercentForAdvocateLevel(
+        uint256 levelNumber,
+        uint256 rewardPercent
+    );
+    event SetStatusForAdvocateLevel(
+        uint256 levelNumber,
+        bool isActive
+    );
 
     event SetReserveAddressForCustomerReward(address indexed reserveAddress);
     event SetReservePercentForCustomerReward(uint256 percent);
@@ -79,6 +92,22 @@ interface IAdvocateRewardConfiguration{
         uint256 minReferral,
         uint256 maxReferral,
         uint256 rewardPercent,
+        bool isActive
+    ) external;
+
+    function setMinMaxReferralForAdvocateLevel(
+        uint256 levelNumber,
+        uint256 minReferral,
+        uint256 maxReferral
+    ) external;
+
+    function setRewardPercentForAdvocateLevel(
+        uint256 levelNumber,
+        uint256 rewardPercent
+    ) external;
+
+    function setStatusForAdvocateLevel(
+        uint256 levelNumber,
         bool isActive
     ) external;
 

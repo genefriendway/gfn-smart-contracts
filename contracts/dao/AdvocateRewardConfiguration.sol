@@ -22,7 +22,7 @@ contract AdvocateRewardConfiguration is IAdvocateRewardConfiguration, Ownable {
         _setDefaultAdvocateLevels();
         _setDefaultReservePercents();
     }
-
+    // Token Wallet Address
     function setTokenWalletAddress(
         address tokenWalletAddress
     )
@@ -42,6 +42,15 @@ contract AdvocateRewardConfiguration is IAdvocateRewardConfiguration, Ownable {
     )
         external onlyOwner
     {
+        require(
+            reserveAddress != address(0),
+            "AdvocateRewardConfiguration: reserve address must not be null"
+        );
+        require(
+            reserveAddress != _reserveAddresses[ReserveObject.CUSTOMER_REWARD],
+            "AdvocateRewardConfiguration: reserve address existed"
+        );
+
         _reserveAddresses[ReserveObject.CUSTOMER_REWARD] = reserveAddress;
         emit SetReserveAddressForCustomerReward(reserveAddress);
     }
@@ -69,6 +78,15 @@ contract AdvocateRewardConfiguration is IAdvocateRewardConfiguration, Ownable {
     )
         external onlyOwner
     {
+        require(
+            reserveAddress != address(0),
+            "AdvocateRewardConfiguration: reserve address must not be null"
+        );
+        require(
+            reserveAddress != _reserveAddresses[ReserveObject.PLATFORM_FEE],
+            "AdvocateRewardConfiguration: reserve address existed"
+        );
+
         _reserveAddresses[ReserveObject.PLATFORM_FEE] = reserveAddress;
         emit SetReserveAddressForPlatformFee(reserveAddress);
     }
@@ -96,6 +114,15 @@ contract AdvocateRewardConfiguration is IAdvocateRewardConfiguration, Ownable {
     )
         external onlyOwner
     {
+        require(
+            reserveAddress != address(0),
+            "AdvocateRewardConfiguration: reserve address must not be null"
+        );
+        require(
+            reserveAddress != _reserveAddresses[ReserveObject.COMMUNITY_CAMPAIGN],
+            "AdvocateRewardConfiguration: reserve address existed"
+        );
+
         _reserveAddresses[ReserveObject.COMMUNITY_CAMPAIGN] = reserveAddress;
         emit SetReserveAddressForCommunityCampaign(reserveAddress);
     }
@@ -123,6 +150,15 @@ contract AdvocateRewardConfiguration is IAdvocateRewardConfiguration, Ownable {
     )
         external onlyOwner
     {
+        require(
+            reserveAddress != address(0),
+            "AdvocateRewardConfiguration: reserve address must not be null"
+        );
+        require(
+            reserveAddress != _reserveAddresses[ReserveObject.QUARTER_REFERRAL_REWARD],
+            "AdvocateRewardConfiguration: reserve address existed"
+        );
+
         _reserveAddresses[ReserveObject.QUARTER_REFERRAL_REWARD] = reserveAddress;
         emit SetReserveAddressForQuarterReferralReward(reserveAddress);
     }
@@ -150,6 +186,15 @@ contract AdvocateRewardConfiguration is IAdvocateRewardConfiguration, Ownable {
     )
         external onlyOwner
     {
+        require(
+            reserveAddress != address(0),
+            "AdvocateRewardConfiguration: reserve address must not be null"
+        );
+        require(
+            reserveAddress != _reserveAddresses[ReserveObject.ADVOCATE_REWARD],
+            "AdvocateRewardConfiguration: reserve address existed"
+        );
+
         _reserveAddresses[ReserveObject.ADVOCATE_REWARD] = reserveAddress;
         emit SetReserveAddressForAdvocateReward(reserveAddress);
     }
@@ -185,6 +230,71 @@ contract AdvocateRewardConfiguration is IAdvocateRewardConfiguration, Ownable {
         );
     }
 
+    function setMinMaxReferralForAdvocateLevel(
+        uint256 levelNumber,
+        uint256 minReferral,
+        uint256 maxReferral
+    )
+        external onlyOwner
+    {
+        require(
+            minReferral < maxReferral,
+            "AdvocateRewardConfiguration: min referral must be less than max referral"
+        );
+
+        AdvocateLevel storage level = _advocateLevels[levelNumber];
+        require(
+            minReferral != level.minReferral || maxReferral != level.maxReferral,
+            "AdvocateRewardConfiguration: min or max referral must differ from current value"
+        );
+
+        level.minReferral = minReferral;
+        level.maxReferral = maxReferral;
+
+        emit SetMinMaxReferralForAdvocateLevel(
+            levelNumber, minReferral, maxReferral
+        );
+    }
+
+    function setRewardPercentForAdvocateLevel(
+        uint256 levelNumber,
+        uint256 rewardPercent
+    )
+        external onlyOwner
+    {
+        require(
+            rewardPercent > 0,
+            "AdvocateRewardConfiguration: reward percent must be greater than zero"
+        );
+
+        AdvocateLevel storage level = _advocateLevels[levelNumber];
+        require(
+            rewardPercent != level.rewardPercent,
+            "AdvocateRewardConfiguration: reward percent must differ from current value"
+        );
+
+        level.rewardPercent = rewardPercent;
+
+        emit SetRewardPercentForAdvocateLevel(levelNumber, rewardPercent);
+    }
+
+    function setStatusForAdvocateLevel(
+        uint256 levelNumber,
+        bool isActive
+    )
+        external onlyOwner
+    {
+        AdvocateLevel storage level = _advocateLevels[levelNumber];
+        require(
+            isActive != level.isActive,
+            "AdvocateRewardConfiguration: status must differ from current value"
+        );
+
+        level.isActive = isActive;
+
+        emit SetStatusForAdvocateLevel(levelNumber, isActive);
+    }
+
     function getAdvocateLevelNumber(
         uint256 numberOfReferrals
     )
@@ -218,6 +328,7 @@ contract AdvocateRewardConfiguration is IAdvocateRewardConfiguration, Ownable {
     }
 
     function _setDefaultAdvocateLevels() private {
+        // Advocate Level start at 1
         _setAdvocateLevel(1, 1, 99, 20, true);
         _setAdvocateLevel(2, 100, 199, 30, true);
         _setAdvocateLevel(3, 200, 299, 40, true);
@@ -241,6 +352,16 @@ contract AdvocateRewardConfiguration is IAdvocateRewardConfiguration, Ownable {
     )
         private
     {
+        require(
+            levelNumber > 0,
+            "AdvocateRewardConfiguration: level number must be greater than zero"
+        );
+
+        require(
+            rewardPercent > 0,
+            "AdvocateRewardConfiguration: reward percent must be greater than zero"
+        );
+
         // push list of level number
         _levelNumbers.push(levelNumber);
 
