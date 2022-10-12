@@ -40,7 +40,7 @@ def test_failure__set_token_wallet_address__invalid_owner_make_txn(
 
     # Action
     with brownie.reverts("Ownable: caller is not the owner"):
-        pcsp_configuration_contract.setGeneNFTAddress(
+        pcsp_configuration_contract.setTokenWalletAddress(
             new_pcsp_wallet_address,
             {"from": another_owner}
         )
