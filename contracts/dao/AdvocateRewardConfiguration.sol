@@ -395,6 +395,10 @@ contract AdvocateRewardConfiguration is IAdvocateRewardConfiguration, Ownable {
         return 0; // default return zero reward percent
     }
 
+    function getLevelCount() external override view returns (uint256) {
+        return _levelCount;
+    }
+
     function _setDefaultAdvocateLevels() private {
         // level 1
         _addAdvocateLevel(1, 99, 20, true);
@@ -425,6 +429,17 @@ contract AdvocateRewardConfiguration is IAdvocateRewardConfiguration, Ownable {
         require(
             rewardPercent > 0,
             "AdvocateRewardConfiguration: reward percent must be greater than zero"
+        );
+        require(
+            minReferral < maxReferral,
+            "AdvocateRewardConfiguration: min referral must be less than max referral"
+        );
+
+        // validate min referral
+        AdvocateLevel storage latestLevel = _advocateLevels[_levelCount];
+        require(
+            minReferral == latestLevel.maxReferral + 1,
+            "AdvocateRewardConfiguration: min referral must be continuous number from max referral of latest level"
         );
 
         // Generate new next level by increase one

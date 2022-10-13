@@ -134,4 +134,6 @@ interface IAdvocateRewardConfiguration{
 
     function calculateAdvocateLevelNumber(uint256 numberOfReferrals) external view returns (uint256);
     function calculateAdvocateRewardPercent(uint256 numberOfReferrals) external view returns (uint256);
+
+    function getLevelCount() external view returns (uint256);
 }
