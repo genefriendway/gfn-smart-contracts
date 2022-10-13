@@ -24,6 +24,22 @@ contract AdvocateRewardConfiguration is IAdvocateRewardConfiguration, Ownable {
         _;
     }
 
+    modifier validMinMaxReferral(uint256 minReferral, uint256 maxReferral) {
+        require(
+            minReferral < maxReferral,
+            "AdvocateRewardConfiguration: min referral must be less than max referral"
+        );
+        _;
+    }
+
+    modifier validRewardPercent(uint256 percent) {
+        require(
+            percent > 0,
+            "AdvocateRewardConfiguration: reward percent must be greater than zero"
+        );
+        _;
+    }
+
     constructor(address owner)
     {
         transferOwnership(owner);
@@ -242,17 +258,12 @@ contract AdvocateRewardConfiguration is IAdvocateRewardConfiguration, Ownable {
         uint256 rewardPercent,
         bool isActive
     )
-        external onlyOwner existedLevelNumber(levelNumber)
+        external
+        onlyOwner
+        validRewardPercent(rewardPercent)
+        validMinMaxReferral(minReferral, maxReferral)
+        existedLevelNumber(levelNumber)
     {
-        require(
-            levelNumber > 0,
-            "AdvocateRewardConfiguration: level number must be greater than zero"
-        );
-
-        require(
-            rewardPercent > 0,
-            "AdvocateRewardConfiguration: reward percent must be greater than zero"
-        );
 
         // set detail Level Info
         AdvocateLevel storage level = _advocateLevels[levelNumber];
@@ -271,13 +282,11 @@ contract AdvocateRewardConfiguration is IAdvocateRewardConfiguration, Ownable {
         uint256 minReferral,
         uint256 maxReferral
     )
-        external onlyOwner existedLevelNumber(levelNumber)
+        external
+        onlyOwner
+        validMinMaxReferral(minReferral, maxReferral)
+        existedLevelNumber(levelNumber)
     {
-        require(
-            minReferral < maxReferral,
-            "AdvocateRewardConfiguration: min referral must be less than max referral"
-        );
-
         AdvocateLevel storage level = _advocateLevels[levelNumber];
         require(
             minReferral != level.minReferral || maxReferral != level.maxReferral,
@@ -296,12 +305,11 @@ contract AdvocateRewardConfiguration is IAdvocateRewardConfiguration, Ownable {
         uint256 levelNumber,
         uint256 rewardPercent
     )
-        external onlyOwner existedLevelNumber(levelNumber)
+        external
+        onlyOwner
+        validRewardPercent(rewardPercent)
+        existedLevelNumber(levelNumber)
     {
-        require(
-            rewardPercent > 0,
-            "AdvocateRewardConfiguration: reward percent must be greater than zero"
-        );
 
         AdvocateLevel storage level = _advocateLevels[levelNumber];
         require(
@@ -425,16 +433,9 @@ contract AdvocateRewardConfiguration is IAdvocateRewardConfiguration, Ownable {
         bool isActive
     )
         private
+        validRewardPercent(rewardPercent)
+        validMinMaxReferral(minReferral, maxReferral)
     {
-        require(
-            rewardPercent > 0,
-            "AdvocateRewardConfiguration: reward percent must be greater than zero"
-        );
-        require(
-            minReferral < maxReferral,
-            "AdvocateRewardConfiguration: min referral must be less than max referral"
-        );
-
         // validate min referral
         AdvocateLevel storage latestLevel = _advocateLevels[_levelCount];
         require(
@@ -450,6 +451,7 @@ contract AdvocateRewardConfiguration is IAdvocateRewardConfiguration, Ownable {
         level.minReferral = minReferral;
         level.maxReferral = maxReferral;
         level.rewardPercent = rewardPercent;
+        level.isExisted = true; // always must be true
         level.isActive = isActive;
 
         emit AddAdvocateLevel(
