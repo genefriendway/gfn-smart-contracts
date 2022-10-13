@@ -14,6 +14,9 @@ def test_success__deploy_smart_contract():
         {"from": deployer}
     )
 
+    # Assert
+    assert configuration.getLevelCount() == 4
+
     # Assert: Advocate Level
     level = 1
     assert configuration.getAdvocateMinReferral(level) == 1
