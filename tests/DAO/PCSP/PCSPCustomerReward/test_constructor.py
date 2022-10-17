@@ -27,7 +27,7 @@ def test_success__deploy_smart_contract():
     assert pcsp_reward.owner() == pcsp_reward_owner
 
 
-def test_failure__deploy_smart_contract__null_owner():
+def test_failure__deploy_smart_contract__null_configuration():
     deployer = accounts[0]
     pcsp_reward_owner = accounts[1]
     pcsp_configuration_address = "0x0000000000000000000000000000000000000000"
