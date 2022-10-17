@@ -28,7 +28,7 @@ def data_test(token_wallet_deployment):
     assert dao_token.balanceOf(token_wallet) == 200 * 10 ** 18
 
 
-def test_success__transfer__owner_make_txn(
+def test_success__withdraw__owner_make_txn(
         token_wallet_deployment, data_test
 ):
     # Arranges
@@ -36,33 +36,33 @@ def test_success__transfer__owner_make_txn(
     token_wallet = token_wallet_deployment['token_wallet']
     token_wallet_owner = token_wallet_deployment['token_wallet_owner']
     account_b = accounts.add()
-    transferring_amount = 5 * 10**18
-    transferring_description = "Transfer Amount of Account B"
+    withdraw_amount = 5 * 10**18
+    withdraw_description = "Withdraw Amount To Account B"
 
     # Assert before Actions
     assert dao_token.balanceOf(token_wallet) == 200 * 10**18
     assert dao_token.balanceOf(account_b) == 0
 
     # Actions
-    txn = token_wallet.transfer(
+    txn = token_wallet.withdraw(
         account_b,
-        transferring_amount,
-        transferring_description,
+        withdraw_amount,
+        withdraw_description,
         {"from": token_wallet_owner}
     )
 
-    # Assert: TransferToken Event
-    assert ('TransferToken' in txn.events) is True
-    assert txn.events['TransferToken']['toAddress'] == account_b
-    assert txn.events['TransferToken']['amount'] == transferring_amount
-    assert txn.events['TransferToken']['description'] == transferring_description
+    # Assert: Withdraw Event
+    assert ('Withdraw' in txn.events) is True
+    assert txn.events['Withdraw']['toAddress'] == account_b
+    assert txn.events['Withdraw']['amount'] == withdraw_amount
+    assert txn.events['Withdraw']['description'] == withdraw_description
 
     # Asserts
     assert dao_token.balanceOf(token_wallet) == 195 * 10 ** 18
     assert dao_token.balanceOf(account_b) == 5 * 10**18
 
 
-def test_success__transfer__not_owner_make_txn(
+def test_success__withdraw__not_owner_make_txn(
         token_wallet_deployment, data_test
 ):
     # Arranges
@@ -70,8 +70,8 @@ def test_success__transfer__not_owner_make_txn(
     token_wallet = token_wallet_deployment['token_wallet']
     token_wallet_invalid_owner = accounts.add()
     account_b = accounts.add()
-    transferring_amount = 5 * 10**18
-    transferring_description = "Transfer Amount of Account B"
+    withdraw_amount = 5 * 10**18
+    withdraw_description = "Withdraw Amount To Account B"
 
     # Assert before Actions
     assert dao_token.balanceOf(token_wallet) == 200 * 10**18
@@ -79,10 +79,10 @@ def test_success__transfer__not_owner_make_txn(
 
     # Actions
     with brownie.reverts("Ownable: caller is not the owner"):
-        token_wallet.transfer(
+        token_wallet.withdraw(
             account_b,
-            transferring_amount,
-            transferring_description,
+            withdraw_amount,
+            withdraw_description,
             {"from": token_wallet_invalid_owner}
         )
 
@@ -91,7 +91,7 @@ def test_success__transfer__not_owner_make_txn(
     assert dao_token.balanceOf(account_b) == 0
 
 
-def test_success__transfer__not_enough_balance(
+def test_success__withdraw__not_enough_balance(
         token_wallet_deployment, data_test
 ):
     # Arranges
@@ -99,8 +99,8 @@ def test_success__transfer__not_enough_balance(
     token_wallet = token_wallet_deployment['token_wallet']
     token_wallet_owner = token_wallet_deployment['token_wallet_owner']
     account_b = accounts.add()
-    transferring_amount = 201 * 10**18
-    transferring_description = "Transfer Amount of Account B"
+    withdraw_amount = 201 * 10**18
+    withdraw_description = "Withdraw Amount To Account B"
 
     # Assert before Actions
     assert dao_token.balanceOf(token_wallet) == 200 * 10**18
@@ -108,10 +108,10 @@ def test_success__transfer__not_enough_balance(
 
     # Actions
     with brownie.reverts("ERC20: transfer amount exceeds balance"):
-        token_wallet.transfer(
+        token_wallet.withdraw(
             account_b,
-            transferring_amount,
-            transferring_description,
+            withdraw_amount,
+            withdraw_description,
             {"from": token_wallet_owner}
         )
 

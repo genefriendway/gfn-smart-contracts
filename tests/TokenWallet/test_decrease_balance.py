@@ -79,7 +79,7 @@ def test_failure__decrease_balance__not_owner_make_txn(
     assert token_wallet.getTotalBalance() == 100 * 10**18
 
     # Actions
-    with brownie.reverts("TokenWallet: caller must be the operator"):
+    with brownie.reverts("Ownable: caller is not the owner"):
         token_wallet.decreaseBalance(
             account_a,
             decreasing_amount,
@@ -91,7 +91,44 @@ def test_failure__decrease_balance__not_owner_make_txn(
     assert token_wallet.getTotalBalance() == 100 * 10**18
 
 
-def test_failure__decrease_balance__receiver_address__null(
+def test_failure__decrease_balance__operator_make_txn(
+        token_wallet_deployment, data_test
+):
+    # Arranges
+    token_wallet = token_wallet_deployment['token_wallet']
+    token_wallet_owner = token_wallet_deployment['token_wallet_owner']
+    account_a = data_test['account_a']
+    token_wallet_operator = accounts.add()
+    decreasing_amount = 5 * 10 ** 18
+    decreasing_description = "Decrease Balance of Account A"
+
+    # Assert before Actions
+    assert token_wallet.getTotalBalance() == 100 * 10 ** 18
+
+    token_wallet.addOperator(
+        token_wallet_operator,
+        {"from": token_wallet_owner}
+    )
+    assert token_wallet.checkActiveOperator(token_wallet_operator) is True
+
+    # Assert before Actions
+    assert token_wallet.getBalance(account_a) == 100 * 10 ** 18
+    assert token_wallet.getTotalBalance() == 100 * 10 ** 18
+
+    # Actions
+    with brownie.reverts("Ownable: caller is not the owner"):
+        token_wallet.decreaseBalance(
+            account_a,
+            decreasing_amount,
+            decreasing_description,
+            {"from": token_wallet_operator}
+        )
+
+    assert token_wallet.getBalance(account_a) == 100 * 10 ** 18
+    assert token_wallet.getTotalBalance() == 100 * 10 ** 18
+
+
+def test_failure__decrease_balance__receiver_address_null(
         token_wallet_deployment, data_test
 ):
     # Arranges
@@ -105,7 +142,7 @@ def test_failure__decrease_balance__receiver_address__null(
     assert token_wallet.getTotalBalance() == 100 * 10**18
 
     # Actions
-    with brownie.reverts("TokenWallet: fromAddress must be not null"):
+    with brownie.reverts("TokenWallet: address must not be null"):
         token_wallet.decreaseBalance(
             account_a,
             decreasing_amount,
@@ -158,7 +195,7 @@ def test_failure__decrease_balance__amount_over_balance(
     assert token_wallet.getTotalBalance() == 100 * 10**18
 
     # Actions
-    with brownie.reverts("TokenWallet: not enough balance to decrease"):
+    with brownie.reverts("TokenWallet: not enough balance"):
         token_wallet.decreaseBalance(
             account_a,
             decreasing_amount,

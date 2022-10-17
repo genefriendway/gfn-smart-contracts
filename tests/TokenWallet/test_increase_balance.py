@@ -53,12 +53,44 @@ def test_failure__increase_balance__not_owner_make_txn(token_wallet_deployment):
     assert token_wallet.getTotalBalance() == 0
 
     # Actions
-    with brownie.reverts("TokenWallet: caller must be the operator"):
+    with brownie.reverts("Ownable: caller is not the owner"):
         token_wallet.increaseBalance(
             account_a,
             increasing_amount,
             increasing_description,
             {"from": token_wallet_invalid_owner}
+        )
+
+    assert token_wallet.getBalance(account_a) == 0
+    assert token_wallet.getTotalBalance() == 0
+
+
+def test_failure__increase_balance__operator_make_txn(token_wallet_deployment):
+    # Arranges
+    token_wallet = token_wallet_deployment['token_wallet']
+    token_wallet_owner = token_wallet_deployment['token_wallet_owner']
+    token_wallet_operator = accounts.add()
+    account_a = accounts.add()
+    increasing_amount = 100 * 10**18
+    increasing_description = "Increase Balance of Account A"
+
+    token_wallet.addOperator(
+        token_wallet_operator,
+        {"from": token_wallet_owner}
+    )
+    assert token_wallet.checkActiveOperator(token_wallet_operator) is True
+
+    # Assert before Actions
+    assert token_wallet.getBalance(account_a) == 0
+    assert token_wallet.getTotalBalance() == 0
+
+    # Actions
+    with brownie.reverts("Ownable: caller is not the owner"):
+        token_wallet.increaseBalance(
+            account_a,
+            increasing_amount,
+            increasing_description,
+            {"from": token_wallet_operator}
         )
 
     assert token_wallet.getBalance(account_a) == 0
@@ -78,7 +110,7 @@ def test_failure__increase_balance__receiver_address__null(token_wallet_deployme
     assert token_wallet.getTotalBalance() == 0
 
     # Actions
-    with brownie.reverts("TokenWallet: toAddress must be not null"):
+    with brownie.reverts("TokenWallet: address must not be null"):
         token_wallet.increaseBalance(
             account_a,
             increasing_amount,

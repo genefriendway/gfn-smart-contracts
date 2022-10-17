@@ -10,6 +10,7 @@ def token_wallet_deployment():
     deployer = accounts[0]
     dao_token_owner = accounts[1]
     token_wallet_owner = accounts[2]
+    token_wallet_operator = accounts.add()
     cap = 1000000000 * 10**18  # one billion
 
     # deploy smart contract GenomicDAOToken
@@ -31,11 +32,15 @@ def token_wallet_deployment():
         {"from": deployer}
     )
 
+    # set operator
+    token_wallet.addOperator(token_wallet_operator, {"from": token_wallet_owner})
+
     results = {
         'dao_token': dao_token,
         'dao_token_owner': dao_token_owner,
         'token_wallet': token_wallet,
         'token_wallet_owner': token_wallet_owner,
+        'token_wallet_operator': token_wallet_operator,
     }
 
     return results
