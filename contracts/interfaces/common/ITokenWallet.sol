@@ -6,15 +6,25 @@ interface ITokenWallet {
     // Events
     event AddOperator(address indexed operatorAddress);
     event RemoveOperator(address indexed operatorAddress);
+
+    event Deposit(address indexed toAddress, uint256 amount, string description);
     event IncreaseBalance(address indexed toAddress, uint256 amount, string description);
     event DecreaseBalance(address indexed fromAddress, uint256 amount, string description);
-    event TransferTokenFrom(
+
+    event TransferFrom(
         address indexed fromAddress,
         address indexed toAddress,
         uint256 amount,
         string description
     );
-    event TransferToken(
+
+    event WithdrawFrom(
+        address indexed fromAddress,
+        address indexed toAddress,
+        uint256 amount,
+        string description
+    );
+    event Withdraw(
         address indexed toAddress,
         uint256 amount,
         string description
@@ -29,8 +39,17 @@ interface ITokenWallet {
     function removeOperator(address operatorAddress) external;
     function checkActiveOperator(address operatorAddress) external view returns (bool);
 
+    function deposit(address toAddress, uint256 amount, string memory description) external;
     function increaseBalance(address toAddress, uint256 amount, string memory description) external;
     function decreaseBalance(address fromAddress, uint256 amount, string memory description) external;
+
+    function withdrawFrom(
+        address fromAddress,
+        address toAddress,
+        uint256 amount,
+        string memory description
+    ) external;
+    function withdraw(address toAddress, uint256 amount, string memory description) external;
 
     function transferFrom(
         address fromAddress,
@@ -38,6 +57,5 @@ interface ITokenWallet {
         uint256 amount,
         string memory description
     ) external;
-    function transfer(address toAddress, uint256 amount, string memory description) external;
 
 }

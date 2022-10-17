@@ -27,10 +27,18 @@ contract TokenWallet is ITokenWallet, Ownable {
         _;
     }
 
-    modifier validTokenAddress(address _address) {
+    modifier notNullAddress(address _address) {
         require(
             _address != address(0),
-            "TokenWallet: address of token wallet must not be null"
+            "TokenWallet: address must not be null"
+        );
+        _;
+    }
+
+    modifier positiveAmount(uint256 amount) {
+        require(
+            amount > 0,
+            "TokenWallet: amount must be greater than zero"
         );
         _;
     }
@@ -39,7 +47,8 @@ contract TokenWallet is ITokenWallet, Ownable {
         address owner,
         address tokenAddress
     )
-        validTokenAddress(tokenAddress)
+        notNullAddress(owner)
+        notNullAddress(tokenAddress)
     {
         _tokenAddress = tokenAddress;
         _operators[owner] = true; // set owner as an operator
@@ -90,7 +99,7 @@ contract TokenWallet is ITokenWallet, Ownable {
         return _operators[operatorAddress];
     }
 
-    function increaseBalance(
+    function deposit(
         address toAddress,
         uint256 amount,
         string memory description
@@ -98,7 +107,21 @@ contract TokenWallet is ITokenWallet, Ownable {
         external
         onlyOperator
     {
-        _increase(toAddress, amount, description);
+        _increase(toAddress, amount);
+        emit Deposit(toAddress, amount, description);
+    }
+
+    function increaseBalance(
+        address toAddress,
+        uint256 amount,
+        string memory description
+    )
+        external
+        onlyOwner
+    {
+        // increase balance of 'fromAddress' on this contract
+        _increase(toAddress, amount);
+        emit IncreaseBalance(toAddress, amount, description);
     }
 
     function decreaseBalance(
@@ -107,9 +130,11 @@ contract TokenWallet is ITokenWallet, Ownable {
         string memory description
     )
         external
-        onlyOperator
+        onlyOwner
     {
-        _decrease(fromAddress, amount, description);
+        // decrease balance of 'fromAddress' on this contract
+        _decrease(fromAddress, amount);
+        emit DecreaseBalance(fromAddress, amount, description);
     }
 
     function transferFrom(
@@ -121,12 +146,30 @@ contract TokenWallet is ITokenWallet, Ownable {
         external
         onlyOperator
     {
-        _decrease(fromAddress, amount, description);
-        _transfer(toAddress, amount, description);
-        emit TransferTokenFrom(fromAddress, toAddress, amount, description);
+        // decrease balance of 'fromAddress' and increase balance of 'toAddress'
+        _transferFrom(fromAddress, toAddress, amount);
+
+        emit TransferFrom(fromAddress, toAddress, amount, description);
     }
 
-    function transfer(
+    function withdrawFrom(
+        address fromAddress,
+        address toAddress,
+        uint256 amount,
+        string memory description
+    )
+        external
+        onlyOperator
+    {
+        // decrease balance of 'fromAddress'
+        _decrease(fromAddress, amount);
+        // transfer real token from this contract to 'toAddress'
+        _transferToken(toAddress, amount);
+
+        emit WithdrawFrom(fromAddress, toAddress, amount, description);
+    }
+
+    function withdraw(
         address toAddress,
         uint256 amount,
         string memory description
@@ -134,63 +177,62 @@ contract TokenWallet is ITokenWallet, Ownable {
         external
         onlyOwner
     {
-        _transfer(toAddress, amount, description);
+         // transfer real token from this contract to 'toAddress'
+        _transferToken(toAddress, amount);
+
+        emit Withdraw(toAddress, amount, description);
     }
 
     function _increase(
         address toAddress,
-        uint256 amount,
-        string memory description
+        uint256 amount
     )
         private
+        notNullAddress(toAddress)
+        positiveAmount(amount)
     {
-        require(
-            toAddress != address(0),
-            "TokenWallet: toAddress must be not null"
-        );
-        require(
-            amount > 0,
-            "TokenWallet: amount must be greater than zero"
-        );
-
         _balances[toAddress] += amount;
         _totalBalance += amount;
-        emit IncreaseBalance(toAddress, amount, description);
     }
 
     function _decrease(
         address fromAddress,
-        uint256 amount,
-        string memory description
+        uint256 amount
     )
         private
+        notNullAddress(fromAddress)
+        positiveAmount(amount)
     {
         require(
-            fromAddress != address(0),
-            "TokenWallet: fromAddress must be not null"
-        );
-        require(
-            amount > 0,
-            "TokenWallet: amount must be greater than zero"
-        );
-        require(
             _balances[fromAddress] >= amount,
-            "TokenWallet: not enough balance to decrease"
+            "TokenWallet: not enough balance"
         );
 
         _balances[fromAddress] -= amount;
         _totalBalance -= amount;
-        emit DecreaseBalance(fromAddress, amount, description);
     }
 
-    function _transfer(
+    function _transferToken(address toAddress,  uint256 amount) private {
+        SafeERC20.safeTransfer(IERC20(_tokenAddress), toAddress, amount);
+    }
+
+    function _transferFrom(
+        address fromAddress,
         address toAddress,
-        uint256 amount,
-        string memory description
+        uint256 amount
     )
         private
+        notNullAddress(fromAddress)
+        notNullAddress(toAddress)
+        positiveAmount(amount)
     {
-        SafeERC20.safeTransfer(IERC20(_tokenAddress), toAddress, amount);
-        emit TransferToken(toAddress, amount, description);
+        require(
+            _balances[fromAddress] >= amount,
+            "TokenWallet: not enough balance"
+        );
+
+        _balances[fromAddress] -= amount;
+        _balances[toAddress] += amount;
+        // total balance is not changed
     }
 }
