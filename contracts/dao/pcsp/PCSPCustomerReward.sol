@@ -138,7 +138,8 @@ contract PCSPCustomerReward is IPCSPCustomerReward, Ownable {
 
         // store Reward of Customer on Token PCSP Wallet
         TokenWallet tokenWallet = TokenWallet(config.getTokenWalletAddress());
-        tokenWallet.increaseBalance(
+        tokenWallet.transferFrom(
+            config.getBudgetAddressToReward(),
             geneNFTOwner,
             rewardAmount,
             "Reward for risk of getting stroke"

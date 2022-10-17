@@ -6,6 +6,7 @@ interface IPCSPCustomerRewardConfiguration {
     // Events
     event SetGeneNFTAddress(address indexed geneNFTAddress);
     event SetTokenWalletAddress(address indexed tokenWalletAddress);
+    event SetBudgetAddressToReward(address indexed budgetAddress);
     event AddCustomerRewardPercent(
         uint256 riskOfGettingStroke,
         uint256 rewardPercent
@@ -20,6 +21,8 @@ interface IPCSPCustomerRewardConfiguration {
     function getGeneNFTAddress() external view returns (address);
     function setTokenWalletAddress(address tokenWalletAddress) external;
     function getTokenWalletAddress() external view returns (address);
+    function setBudgetAddressToReward(address budgetAddress) external;
+    function getBudgetAddressToReward() external view returns (address);
 
     function addCustomerRewardPercent(
         uint256 riskOfGettingStroke,

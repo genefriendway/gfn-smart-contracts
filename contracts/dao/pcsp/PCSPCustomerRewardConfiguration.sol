@@ -10,7 +10,8 @@ contract PCSPCustomerRewardConfiguration is IPCSPCustomerRewardConfiguration, Ow
     // State Variables
     address private _geneNFTAddress;
     address private _tokenWalletAddress;
-    
+    address private _budgetAddressToReward;
+
     // Mapping: risk of getting stroke => active or inactive
     mapping(uint256 => bool) private _riskOfGettingStrokeStatuses;
     // Mapping: risk of getting stroke => customer reward percent
@@ -25,6 +26,30 @@ contract PCSPCustomerRewardConfiguration is IPCSPCustomerRewardConfiguration, Ow
         require(
             _address != address(0),
             "PCSPCustomerRewardConfiguration: address of GeneNFT must not be null"
+        );
+        _;
+    }
+
+    modifier validTokenWalletAddress(address _address) {
+        require(
+            _address != address(0),
+            "PCSPCustomerRewardConfiguration: address must not be null"
+        );
+        require(
+            _address != _tokenWalletAddress,
+            "PCSPCustomerRewardConfiguration: address must differ from current value"
+        );
+        _;
+    }
+
+    modifier validBudgetAddressToReward(address _address) {
+        require(
+            _address != address(0),
+            "PCSPCustomerRewardConfiguration: address must not be null"
+        );
+        require(
+            _address != _budgetAddressToReward,
+            "PCSPCustomerRewardConfiguration: address must differ from current value"
         );
         _;
     }
@@ -151,6 +176,7 @@ contract PCSPCustomerRewardConfiguration is IPCSPCustomerRewardConfiguration, Ow
     )
         external
         onlyOwner
+        validTokenWalletAddress(tokenWalletAddress)
     {
         _tokenWalletAddress = tokenWalletAddress;
         emit SetTokenWalletAddress(_tokenWalletAddress);
@@ -158,6 +184,21 @@ contract PCSPCustomerRewardConfiguration is IPCSPCustomerRewardConfiguration, Ow
 
     function getTokenWalletAddress() external override view returns (address) {
         return _tokenWalletAddress;
+    }
+
+    function setBudgetAddressToReward(
+        address budgetAddress
+    )
+        external
+        onlyOwner
+        validBudgetAddressToReward(budgetAddress)
+    {
+        _budgetAddressToReward = budgetAddress;
+        emit SetBudgetAddressToReward(_budgetAddressToReward);
+    }
+
+    function getBudgetAddressToReward() external override view returns (address) {
+        return _budgetAddressToReward;
     }
 
 }
