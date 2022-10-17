@@ -17,6 +17,7 @@ def data_test(deployment, pcsp_deployment, const):
     pcsp_reward_contract = pcsp_deployment['pcsp_reward_contract']
     token_wallet_contract = pcsp_deployment['token_wallet_contract']
     token_wallet_owner = pcsp_deployment['token_wallet_owner']
+    budget_address_to_reward = accounts.add()
     gfn_operator = deployment[const.GFN_OPERATOR]
     gene_nft_token = deployment[const.GNFT_TOKEN]
     genetic_profile_id1 = 12345678
@@ -42,16 +43,30 @@ def data_test(deployment, pcsp_deployment, const):
     pcsp_configuration_contract.setTokenWalletAddress(
         token_wallet_contract, {"from": pcsp_configuration_owner}
     )
+    # Config Token PCSP Wallet
+    pcsp_configuration_contract.setBudgetAddressToReward(
+        budget_address_to_reward, {"from": pcsp_configuration_owner}
+    )
     # set DAO Token Operator
     token_wallet_contract.addOperator(
         pcsp_reward_contract, {"from": token_wallet_owner}
     )
 
+    token_wallet_contract.deposit(
+        budget_address_to_reward,
+        2000 * 10 ** 18,
+        "Deposit",
+        {"from": token_wallet_owner}
+    )
+
     assert pcsp_configuration_contract.getGeneNFTAddress() == gene_nft_token
     assert pcsp_configuration_contract.getTokenWalletAddress() == token_wallet_contract
     assert token_wallet_contract.checkActiveOperator(pcsp_reward_contract) is True
+    assert token_wallet_contract.getBalance(budget_address_to_reward) == 2000 * 10 ** 18
+    assert token_wallet_contract.getTotalBalance() == 2000 * 10 ** 18
 
     return {
+        'budget_address_to_reward': budget_address_to_reward,
         'genenft_token_id1': genetic_profile_id1,
         'genenft_token_id2': genetic_profile_id2,
         'genenft_token_id3': genetic_profile_id3,
@@ -70,8 +85,9 @@ def test_success__calculate_reward_for_multiple_customers__owner_make_txn(
     pcsp_reward_contract = pcsp_deployment['pcsp_reward_contract']
     genenft_token_id1 = data_test['genenft_token_id1']
     genetic_profile_owner1 = data_test['genetic_profile_owner1']
+    budget_address_to_reward = data_test['budget_address_to_reward']
     risk_of_getting_stroke = 1
-    revenue_in_pcsp = 50e+18
+    revenue_in_pcsp = 50 * 10 ** 18
 
     # Assert before actions
     assert token_wallet_contract.getBalance(genetic_profile_owner1) == 0
@@ -95,11 +111,13 @@ def test_success__calculate_reward_for_multiple_customers__owner_make_txn(
     assert txn.events['RewardForRiskOfGettingStroke']['geneNFTOwner'] == genetic_profile_owner1
     assert txn.events['RewardForRiskOfGettingStroke']['riskOfGettingStroke'] == risk_of_getting_stroke
     assert txn.events['RewardForRiskOfGettingStroke']['revenue'] == revenue_in_pcsp
-    assert txn.events['RewardForRiskOfGettingStroke']['rewardAmount'] == 500e+18
+    assert txn.events['RewardForRiskOfGettingStroke']['rewardAmount'] == 500 * 10 ** 18
 
-    assert token_wallet_contract.getBalance(genetic_profile_owner1) == 500e+18
-    assert pcsp_reward_contract.getRiskOfGettingStroke(genenft_token_id1) == 1
     assert pcsp_reward_contract.checkGeneNFTRewardStatus(genenft_token_id1) is True
+    assert pcsp_reward_contract.getRiskOfGettingStroke(genenft_token_id1) == 1
+    assert token_wallet_contract.getBalance(genetic_profile_owner1) == 500 * 10 ** 18
+    assert token_wallet_contract.getBalance(budget_address_to_reward) == 1500 * 10 ** 18
+    assert token_wallet_contract.getTotalBalance() == 2000 * 10 ** 18
 
 
 def test_success__calculate_reward_for_multiple_customers__two_customers(
@@ -113,10 +131,11 @@ def test_success__calculate_reward_for_multiple_customers__two_customers(
     genenft_token_id2 = data_test['genenft_token_id2']
     genetic_profile_owner1 = data_test['genetic_profile_owner1']
     genetic_profile_owner2 = data_test['genetic_profile_owner2']
+    budget_address_to_reward = data_test['budget_address_to_reward']
     risk_of_getting_stroke1 = 1
     risk_of_getting_stroke2 = 3
-    revenue_in_pcsp_1 = 50e+18
-    revenue_in_pcsp_2 = 240e+18
+    revenue_in_pcsp_1 = 50 * 10 ** 18
+    revenue_in_pcsp_2 = 240 * 10 ** 18
 
     # Assert before actions
     assert token_wallet_contract.getBalance(genetic_profile_owner1) == 0
@@ -143,16 +162,19 @@ def test_success__calculate_reward_for_multiple_customers__two_customers(
     assert txn.events['RewardForRiskOfGettingStroke'][0]['geneNFTOwner'] == genetic_profile_owner1
     assert txn.events['RewardForRiskOfGettingStroke'][0]['riskOfGettingStroke'] == risk_of_getting_stroke1
     assert txn.events['RewardForRiskOfGettingStroke'][0]['revenue'] == revenue_in_pcsp_1
-    assert txn.events['RewardForRiskOfGettingStroke'][0]['rewardAmount'] == 500e+18
+    assert txn.events['RewardForRiskOfGettingStroke'][0]['rewardAmount'] == 500 * 10 ** 18
 
     assert txn.events['RewardForRiskOfGettingStroke'][1]['geneNFTTokenID'] == genenft_token_id2
     assert txn.events['RewardForRiskOfGettingStroke'][1]['geneNFTOwner'] == genetic_profile_owner2
     assert txn.events['RewardForRiskOfGettingStroke'][1]['riskOfGettingStroke'] == risk_of_getting_stroke2
     assert txn.events['RewardForRiskOfGettingStroke'][1]['revenue'] == revenue_in_pcsp_2
-    assert txn.events['RewardForRiskOfGettingStroke'][1]['rewardAmount'] == 480e+18
+    assert txn.events['RewardForRiskOfGettingStroke'][1]['rewardAmount'] == 480 * 10 ** 18
 
-    assert token_wallet_contract.getBalance(genetic_profile_owner1) == 500e+18
-    assert token_wallet_contract.getBalance(genetic_profile_owner2) == 480e+18
+    assert token_wallet_contract.getBalance(genetic_profile_owner1) == 500 * 10 ** 18
+    assert token_wallet_contract.getBalance(genetic_profile_owner2) == 480 * 10 ** 18
+
+    assert token_wallet_contract.getBalance(budget_address_to_reward) == 1020 * 10 ** 18
+    assert token_wallet_contract.getTotalBalance() == 2000 * 10 ** 18
 
     assert pcsp_reward_contract.getRiskOfGettingStroke(genenft_token_id1) == 1
     assert pcsp_reward_contract.checkGeneNFTRewardStatus(genenft_token_id1) is True
@@ -169,8 +191,9 @@ def test_failure__calculate_reward_for_multiple_customers__not_owner_make_txn(
     pcsp_reward_contract = pcsp_deployment['pcsp_reward_contract']
     genenft_token_id1 = data_test['genenft_token_id1']
     genetic_profile_owner1 = data_test['genetic_profile_owner1']
+    budget_address_to_reward = data_test['budget_address_to_reward']
     risk_of_getting_stroke = 1
-    revenue_in_pcsp = 50e+18
+    revenue_in_pcsp = 50 * 10 ** 18
 
     # Assert before actions
     assert token_wallet_contract.getBalance(genetic_profile_owner1) == 0
@@ -186,6 +209,8 @@ def test_failure__calculate_reward_for_multiple_customers__not_owner_make_txn(
 
     # Assert after actions
     assert token_wallet_contract.getBalance(genetic_profile_owner1) == 0
+    assert token_wallet_contract.getBalance(budget_address_to_reward) == 2000 * 10 ** 18
+    assert token_wallet_contract.getTotalBalance() == 2000 * 10 ** 18
 
     assert pcsp_reward_contract.getRiskOfGettingStroke(genenft_token_id1) == 0
     assert pcsp_reward_contract.checkGeneNFTRewardStatus(genenft_token_id1) is False
@@ -202,10 +227,11 @@ def test_failure__calculate_reward_for_multiple_customers__invalid_risk_value(
     genenft_token_id2 = data_test['genenft_token_id2']
     genetic_profile_owner1 = data_test['genetic_profile_owner1']
     genetic_profile_owner2 = data_test['genetic_profile_owner2']
+    budget_address_to_reward = data_test['budget_address_to_reward']
     risk_of_getting_stroke1_invalid = 1000
     risk_of_getting_stroke2 = 3
-    revenue_in_pcsp_1 = 50e+18
-    revenue_in_pcsp_2 = 240e+18
+    revenue_in_pcsp_1 = 50 * 10 ** 18
+    revenue_in_pcsp_2 = 240 * 10 ** 18
 
     # Assert before actions
     assert token_wallet_contract.getBalance(genetic_profile_owner1) == 0
@@ -223,6 +249,8 @@ def test_failure__calculate_reward_for_multiple_customers__invalid_risk_value(
     # Assert after actions
     assert token_wallet_contract.getBalance(genetic_profile_owner1) == 0
     assert token_wallet_contract.getBalance(genetic_profile_owner2) == 0
+    assert token_wallet_contract.getBalance(budget_address_to_reward) == 2000 * 10 ** 18
+    assert token_wallet_contract.getTotalBalance() == 2000 * 10 ** 18
 
 
 def test_failure__calculate_reward_for_multiple_customers__invalid_nft_id(
@@ -236,10 +264,11 @@ def test_failure__calculate_reward_for_multiple_customers__invalid_nft_id(
     genenft_token_id2 = data_test['genenft_token_id2']
     genetic_profile_owner1 = data_test['genetic_profile_owner1']
     genetic_profile_owner2 = data_test['genetic_profile_owner2']
+    budget_address_to_reward = data_test['budget_address_to_reward']
     risk_of_getting_stroke1 = 1
     risk_of_getting_stroke2 = 3
-    revenue_in_pcsp_1 = 50e+18
-    revenue_in_pcsp_2 = 240e+18
+    revenue_in_pcsp_1 = 50 * 10 ** 18
+    revenue_in_pcsp_2 = 240 * 10 ** 18
 
     # Assert before actions
     assert token_wallet_contract.getBalance(genetic_profile_owner1) == 0
@@ -257,6 +286,8 @@ def test_failure__calculate_reward_for_multiple_customers__invalid_nft_id(
     # Assert after actions
     assert token_wallet_contract.getBalance(genetic_profile_owner1) == 0
     assert token_wallet_contract.getBalance(genetic_profile_owner2) == 0
+    assert token_wallet_contract.getBalance(budget_address_to_reward) == 2000 * 10 ** 18
+    assert token_wallet_contract.getTotalBalance() == 2000 * 10 ** 18
 
     assert pcsp_reward_contract.getRiskOfGettingStroke(genenft_token_id1_invalid) == 0
     assert pcsp_reward_contract.checkGeneNFTRewardStatus(genenft_token_id1_invalid) is False
@@ -275,10 +306,11 @@ def test_failure__calculate_reward_for_multiple_customers__duplicated_reward(
     genenft_token_id2 = data_test['genenft_token_id2']
     genetic_profile_owner1 = data_test['genetic_profile_owner1']
     genetic_profile_owner2 = data_test['genetic_profile_owner2']
+    budget_address_to_reward = data_test['budget_address_to_reward']
     risk_of_getting_stroke1 = 1
     risk_of_getting_stroke2 = 3
-    revenue_in_pcsp_1 = 50e+18
-    revenue_in_pcsp_2 = 240e+18
+    revenue_in_pcsp_1 = 50 * 10 ** 18
+    revenue_in_pcsp_2 = 240 * 10 ** 18
 
     # Assert before action1
     assert token_wallet_contract.getBalance(genetic_profile_owner1) == 0
@@ -293,8 +325,10 @@ def test_failure__calculate_reward_for_multiple_customers__duplicated_reward(
     )
 
     # Assert after action1
-    assert token_wallet_contract.getBalance(genetic_profile_owner1) == 500e+18
-    assert token_wallet_contract.getBalance(genetic_profile_owner2) == 480e+18
+    assert token_wallet_contract.getBalance(genetic_profile_owner1) == 500 * 10 ** 18
+    assert token_wallet_contract.getBalance(genetic_profile_owner2) == 480 * 10 ** 18
+    assert token_wallet_contract.getBalance(budget_address_to_reward) == 1020 * 10 ** 18
+    assert token_wallet_contract.getTotalBalance() == 2000 * 10 ** 18
 
     # Action 2: Duplicated Calculate Reward
     with brownie.reverts("PCSPCustomerReward: the GeneNFT has rewarded for "
@@ -307,7 +341,9 @@ def test_failure__calculate_reward_for_multiple_customers__duplicated_reward(
         )
 
     # Assert after action2
-    assert token_wallet_contract.getBalance(genetic_profile_owner1) == 500e+18
+    assert token_wallet_contract.getBalance(genetic_profile_owner1) == 500 * 10 ** 18
+    assert token_wallet_contract.getBalance(budget_address_to_reward) == 1020 * 10 ** 18
+    assert token_wallet_contract.getTotalBalance() == 2000 * 10 ** 18
 
 
 def test_failure__calculate_reward_for_multiple_customers__invalid_length_list_of_ids(
@@ -320,10 +356,11 @@ def test_failure__calculate_reward_for_multiple_customers__invalid_length_list_o
     genenft_token_id1 = data_test['genenft_token_id1']
     genetic_profile_owner1 = data_test['genetic_profile_owner1']
     genetic_profile_owner2 = data_test['genetic_profile_owner2']
+    budget_address_to_reward = data_test['budget_address_to_reward']
     risk_of_getting_stroke1 = 1
     risk_of_getting_stroke2 = 3
-    revenue_in_pcsp_1 = 50e+18
-    revenue_in_pcsp_2 = 240e+18
+    revenue_in_pcsp_1 = 50 * 10 ** 18
+    revenue_in_pcsp_2 = 240 * 10 ** 18
 
     # Assert before actions
     assert token_wallet_contract.getBalance(genetic_profile_owner1) == 0
@@ -342,6 +379,9 @@ def test_failure__calculate_reward_for_multiple_customers__invalid_length_list_o
     assert token_wallet_contract.getBalance(genetic_profile_owner1) == 0
     assert token_wallet_contract.getBalance(genetic_profile_owner2) == 0
 
+    assert token_wallet_contract.getBalance(budget_address_to_reward) == 2000 * 10 ** 18
+    assert token_wallet_contract.getTotalBalance() == 2000 * 10 ** 18
+
 
 def test_failure__calculate_reward_for_multiple_customers__invalid_length_list_of_risks(
         pcsp_deployment, data_test
@@ -354,9 +394,10 @@ def test_failure__calculate_reward_for_multiple_customers__invalid_length_list_o
     genenft_token_id2 = data_test['genenft_token_id2']
     genetic_profile_owner1 = data_test['genetic_profile_owner1']
     genetic_profile_owner2 = data_test['genetic_profile_owner2']
+    budget_address_to_reward = data_test['budget_address_to_reward']
     risk_of_getting_stroke1 = 1
-    revenue_in_pcsp_1 = 50e+18
-    revenue_in_pcsp_2 = 240e+18
+    revenue_in_pcsp_1 = 50 * 10 ** 18
+    revenue_in_pcsp_2 = 240 * 10 ** 18
 
     # Assert before actions
     assert token_wallet_contract.getBalance(genetic_profile_owner1) == 0
@@ -374,6 +415,8 @@ def test_failure__calculate_reward_for_multiple_customers__invalid_length_list_o
 
     assert token_wallet_contract.getBalance(genetic_profile_owner1) == 0
     assert token_wallet_contract.getBalance(genetic_profile_owner2) == 0
+    assert token_wallet_contract.getBalance(budget_address_to_reward) == 2000 * 10 ** 18
+    assert token_wallet_contract.getTotalBalance() == 2000 * 10 ** 18
 
 
 def test_failure__calculate_reward_for_multiple_customers__invalid_length_list_of_revenues(
@@ -387,9 +430,10 @@ def test_failure__calculate_reward_for_multiple_customers__invalid_length_list_o
     genenft_token_id2 = data_test['genenft_token_id2']
     genetic_profile_owner1 = data_test['genetic_profile_owner1']
     genetic_profile_owner2 = data_test['genetic_profile_owner2']
+    budget_address_to_reward = data_test['budget_address_to_reward']
     risk_of_getting_stroke1 = 1
     risk_of_getting_stroke2 = 3
-    revenue_in_pcsp_1 = 50e+18
+    revenue_in_pcsp_1 = 50 * 10 ** 18
 
     # Assert before actions
     assert token_wallet_contract.getBalance(genetic_profile_owner1) == 0
@@ -407,6 +451,8 @@ def test_failure__calculate_reward_for_multiple_customers__invalid_length_list_o
 
     assert token_wallet_contract.getBalance(genetic_profile_owner1) == 0
     assert token_wallet_contract.getBalance(genetic_profile_owner2) == 0
+    assert token_wallet_contract.getBalance(budget_address_to_reward) == 2000 * 10 ** 18
+    assert token_wallet_contract.getTotalBalance() == 2000 * 10 ** 18
 
 
 def test_failure__calculate_reward_for_multiple_customers__length_list_of_revenues_over(
@@ -420,10 +466,11 @@ def test_failure__calculate_reward_for_multiple_customers__length_list_of_revenu
     genenft_token_id2 = data_test['genenft_token_id2']
     genetic_profile_owner1 = data_test['genetic_profile_owner1']
     genetic_profile_owner2 = data_test['genetic_profile_owner2']
+    budget_address_to_reward = data_test['budget_address_to_reward']
     risk_of_getting_stroke1 = 1
     risk_of_getting_stroke2 = 3
-    revenue_in_pcsp_1 = 50e+18
-    revenue_in_pcsp_2 = 240e+18
+    revenue_in_pcsp_1 = 50 * 10 ** 18
+    revenue_in_pcsp_2 = 240 * 10 ** 18
 
     # Assert before actions
     assert token_wallet_contract.getBalance(genetic_profile_owner1) == 0
@@ -441,3 +488,46 @@ def test_failure__calculate_reward_for_multiple_customers__length_list_of_revenu
 
     assert token_wallet_contract.getBalance(genetic_profile_owner1) == 0
     assert token_wallet_contract.getBalance(genetic_profile_owner2) == 0
+    assert token_wallet_contract.getBalance(budget_address_to_reward) == 2000 * 10 ** 18
+    assert token_wallet_contract.getTotalBalance() == 2000 * 10 ** 18
+
+
+def test_failure__calculate_reward_for_multiple_customers__not_enough_balance_to_reward(
+        pcsp_deployment, data_test
+):
+    # Arranges
+    token_wallet_contract = pcsp_deployment['token_wallet_contract']
+    pcsp_reward_owner = pcsp_deployment['pcsp_reward_owner']
+    pcsp_reward_contract = pcsp_deployment['pcsp_reward_contract']
+    genenft_token_id1 = data_test['genenft_token_id1']
+    genenft_token_id2 = data_test['genenft_token_id2']
+    genetic_profile_owner1 = data_test['genetic_profile_owner1']
+    genetic_profile_owner2 = data_test['genetic_profile_owner2']
+    budget_address_to_reward = data_test['budget_address_to_reward']
+    risk_of_getting_stroke1 = 1
+    risk_of_getting_stroke2 = 3
+    revenue_in_pcsp_1 = 90 * 10 ** 18
+    revenue_in_pcsp_2 = 800 * 10 ** 18
+
+    # Assert before actions
+    assert token_wallet_contract.getBalance(genetic_profile_owner1) == 0
+    assert token_wallet_contract.getBalance(genetic_profile_owner2) == 0
+
+    # Actions
+    with brownie.reverts("TokenWallet: not enough balance"):
+        pcsp_reward_contract.calculateRewardForMultipleCustomers(
+            [genenft_token_id1, genenft_token_id2],
+            [risk_of_getting_stroke1, risk_of_getting_stroke2],
+            [revenue_in_pcsp_1, revenue_in_pcsp_2],
+            {"from": pcsp_reward_owner}
+        )
+
+    assert pcsp_reward_contract.checkGeneNFTRewardStatus(genenft_token_id1) is False
+    assert pcsp_reward_contract.checkGeneNFTRewardStatus(genenft_token_id2) is False
+    assert pcsp_reward_contract.getRiskOfGettingStroke(genenft_token_id1) == 0
+    assert pcsp_reward_contract.getRiskOfGettingStroke(genenft_token_id2) == 0
+
+    assert token_wallet_contract.getBalance(genetic_profile_owner1) == 0
+    assert token_wallet_contract.getBalance(genetic_profile_owner2) == 0
+    assert token_wallet_contract.getBalance(budget_address_to_reward) == 2000 * 10 ** 18
+    assert token_wallet_contract.getTotalBalance() == 2000 * 10 ** 18
