@@ -16,6 +16,10 @@ interface IAdvocateReward {
         uint256 numberOfReferrals,
         uint256 rewardAmount
     );
+    event RewardAdvocateQuarterly(
+        address indexed advocateAddress,
+        uint256 rewardAmount
+    );
 
     // Functions
     function setAddressOfConfiguration(address newAddress) external;
@@ -25,6 +29,11 @@ interface IAdvocateReward {
         address[] memory advocateAddresses,
         uint256[] memory revenuesMonthly,
         uint256[] memory referrals
+    ) external;
+
+    function rewardAdvocatesQuarterly(
+        address[] memory advocateAddresses,
+        uint256[] memory rewardAmounts
     ) external;
 
 }

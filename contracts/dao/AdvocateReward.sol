@@ -66,6 +66,34 @@ contract AdvocateReward is IAdvocateReward, Ownable {
         }
     }
 
+    function rewardAdvocatesQuarterly(
+        address[] memory advocateAddresses,
+        uint256[] memory rewardAmounts
+    )
+        external
+        onlyOwner
+    {
+        require(
+            advocateAddresses.length == rewardAmounts.length,
+            "AdvocateReward: two arrays must have same length"
+        );
+        IAdvocateRewardConfiguration config = IAdvocateRewardConfiguration(_addressOfConfiguration);
+        ITokenWallet tokenWallet = ITokenWallet(config.getTokenWalletAddress());
+
+        for (uint256 i = 0; i < advocateAddresses.length; i++) {
+            tokenWallet.transferFrom(
+                config.getReserveAddressForQuarterReferralReward(),
+                advocateAddresses[i],
+                rewardAmounts[i],
+                "Reserve For Advocate Quarterly"
+            );
+            emit RewardAdvocateQuarterly(
+                advocateAddresses[i],
+                rewardAmounts[i]
+            );
+        }
+    }
+
     function _distributeRevenue(
         address advocateAddress,
         uint256 revenueMonthly,
@@ -106,37 +134,37 @@ contract AdvocateReward is IAdvocateReward, Ownable {
 
         ITokenWallet tokenWallet = ITokenWallet(config.getTokenWalletAddress());
 
-        tokenWallet.increaseBalance(
+        tokenWallet.deposit(
             config.getReserveAddressForCustomerReward(),
             reservedRevenueForCustomerReward,
             "Reserve For Customer Reward"
         );
 
-        tokenWallet.increaseBalance(
+        tokenWallet.deposit(
             config.getReserveAddressForPlatformFee(),
             reservedRevenueForPlatformFee,
             "Reserve For Platform Fee"
         );
 
-        tokenWallet.increaseBalance(
+        tokenWallet.deposit(
             config.getReserveAddressForCommunityCampaign(),
             reservedRevenueForCommunityCampaign,
             "Reserve For Community Campaign"
         );
 
-        tokenWallet.increaseBalance(
+        tokenWallet.deposit(
             config.getReserveAddressForQuarterReferralReward(),
             reservedRevenueForQuarterReferralReward,
             "Reserve For Quarter Referral Reward"
         );
 
-        tokenWallet.increaseBalance(
+        tokenWallet.deposit(
             config.getReserveAddressForAdvocateReward(),
             remainingReservedRevenueForAdvocateReward,
             "Reserve For Advocate Reward"
         );
 
-        tokenWallet.increaseBalance(
+        tokenWallet.deposit(
             advocateAddress,
             rewardAmountForAdvocate,
             "Reward For Advocate Monthly"
