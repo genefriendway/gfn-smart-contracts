@@ -10,9 +10,19 @@ interface IAdvocateReward {
         address indexed newAddress
     );
 
+    event DistributeRevenue(
+        uint256 totalRevenue,
+        uint256 reserveRevenueForCustomerReward,
+        uint256 reserveRevenueForPlatformFee,
+        uint256 reserveRevenueForCommunityCampaign,
+        uint256 reserveRevenueForQuarterReferralReward,
+        uint256 rewardAmountForAdvocate,
+        uint256 remainingReservedRevenueForAdvocateReward
+    );
+
     event RewardAdvocateMonthly(
         address indexed advocateAddress,
-        uint256 totalRevenue,
+        uint256 revenue,
         uint256 numberOfReferrals,
         uint256 rewardAmount
     );

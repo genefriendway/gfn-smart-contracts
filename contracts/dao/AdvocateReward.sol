@@ -104,19 +104,19 @@ contract AdvocateReward is IAdvocateReward, Ownable {
         IAdvocateRewardConfiguration config = IAdvocateRewardConfiguration(_addressOfConfiguration);
 
         uint256 reservedRevenueForCustomerReward =
-            revenueMonthly * config.getReservePercentForCustomerReward() / 100;
+            config.calculateReservedRevenueForCustomerReward(revenueMonthly);
 
         uint256 reservedRevenueForPlatformFee =
-            revenueMonthly * config.getReservePercentForPlatformFee() / 100;
+            config.calculateReserveRevenueForPlatformFee(revenueMonthly);
 
         uint256 reservedRevenueForCommunityCampaign =
-            revenueMonthly * config.getReservePercentForCommunityCampaign() / 100;
+            config.calculateReserveRevenueForCommunityCampaign(revenueMonthly);
 
         uint256 reservedRevenueForQuarterReferralReward =
-            revenueMonthly * config.getReservePercentForQuarterReferralReward() / 100;
+            config.calculateReserveRevenueForQuarterReferralReward(revenueMonthly);
 
         uint256 rewardAmountForAdvocate =
-            revenueMonthly * config.calculateAdvocateRewardPercent(numberOfReferrals) / 100;
+            config.calculateRewardAmountForAdvocate(revenueMonthly, numberOfReferrals);
 
         uint256 remainingReservedRevenueForAdvocateReward = revenueMonthly
             - reservedRevenueForCustomerReward
@@ -124,6 +124,16 @@ contract AdvocateReward is IAdvocateReward, Ownable {
             - reservedRevenueForCommunityCampaign
             - reservedRevenueForQuarterReferralReward
             - rewardAmountForAdvocate;
+
+        emit DistributeRevenue(
+            revenueMonthly,
+            reservedRevenueForCustomerReward,
+            reservedRevenueForPlatformFee,
+            reservedRevenueForCommunityCampaign,
+            reservedRevenueForQuarterReferralReward,
+            rewardAmountForAdvocate,
+            remainingReservedRevenueForAdvocateReward
+        );
 
         emit RewardAdvocateMonthly(
             advocateAddress,

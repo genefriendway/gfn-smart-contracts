@@ -371,6 +371,16 @@ contract AdvocateRewardConfiguration is IAdvocateRewardConfiguration, Ownable {
         return _advocateLevels[levelNumber].isActive;
     }
 
+    function getTotalPercentOfReserveObject()
+        external override view returns (uint256)
+    {
+        return _reservePercents[ReserveObject.CUSTOMER_REWARD]
+            + _reservePercents[ReserveObject.PLATFORM_FEE]
+            + _reservePercents[ReserveObject.COMMUNITY_CAMPAIGN]
+            + _reservePercents[ReserveObject.QUARTER_REFERRAL_REWARD]
+            + _reservePercents[ReserveObject.ADVOCATE_REWARD];
+    }
+
     function calculateAdvocateLevelNumber(
         uint256 numberOfReferrals
     )
@@ -392,16 +402,58 @@ contract AdvocateRewardConfiguration is IAdvocateRewardConfiguration, Ownable {
     )
         external override view returns (uint256)
     {
-        for (uint256 i = 1; i <= _levelCount; i++) {
-            AdvocateLevel storage level = _advocateLevels[i];
-            if (level.isActive
-                    && numberOfReferrals >= level.minReferral
-                    && numberOfReferrals <= level.maxReferral) {
-                return level.rewardPercent;
-            }
-        }
-        return 0; // default return zero reward percent
+        return _calculateAdvocateRewardPercent(numberOfReferrals);
     }
+
+    function calculateReservedRevenueForCustomerReward(
+        uint256 revenue
+    )
+        external override view returns (uint256)
+    {
+        return revenue * _reservePercents[ReserveObject.CUSTOMER_REWARD] / 100;
+    }
+
+    function calculateReserveRevenueForPlatformFee(
+        uint256 revenue
+    )
+        external override view returns (uint256)
+    {
+        return revenue * _reservePercents[ReserveObject.PLATFORM_FEE] / 100;
+    }
+
+    function calculateReserveRevenueForCommunityCampaign(
+        uint256 revenue
+    )
+        external override view returns (uint256)
+    {
+        return revenue * _reservePercents[ReserveObject.COMMUNITY_CAMPAIGN] / 100;
+    }
+
+    function calculateReserveRevenueForQuarterReferralReward(
+        uint256 revenue
+    )
+        external override view returns (uint256)
+    {
+        return revenue * _reservePercents[ReserveObject.QUARTER_REFERRAL_REWARD] / 100;
+    }
+
+    function calculateReserveRevenueForAdvocateReward(
+        uint256 revenue
+    )
+        external override view returns (uint256)
+    {
+        return revenue * _reservePercents[ReserveObject.ADVOCATE_REWARD]  / 100;
+    }
+
+    function calculateRewardAmountForAdvocate(
+        uint256 revenue,
+        uint256 referral
+    )
+        external override view returns (uint256)
+    {
+        return revenue * _calculateAdvocateRewardPercent(referral)/ 100;
+    }
+
 
     function getLevelCount() external override view returns (uint256) {
         return _levelCount;
@@ -457,5 +509,21 @@ contract AdvocateRewardConfiguration is IAdvocateRewardConfiguration, Ownable {
         emit AddAdvocateLevel(
             _levelCount, minReferral, maxReferral, rewardPercent, isActive
         );
+    }
+
+    function _calculateAdvocateRewardPercent(
+        uint256 numberOfReferrals
+    )
+        private view returns (uint256)
+    {
+        for (uint256 i = 1; i <= _levelCount; i++) {
+            AdvocateLevel storage level = _advocateLevels[i];
+            if (level.isActive
+                    && numberOfReferrals >= level.minReferral
+                    && numberOfReferrals <= level.maxReferral) {
+                return level.rewardPercent;
+            }
+        }
+        return 0; // default return zero reward percent
     }
 }

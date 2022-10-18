@@ -131,9 +131,36 @@ interface IAdvocateRewardConfiguration{
     function getAdvocateMaxReferral(uint256 levelNumber) external view returns (uint256);
     function getAdvocateRewardPercent(uint256 levelNumber) external view returns (uint256);
     function getAdvocateLevelStatus(uint256 levelNumber) external view returns (bool);
+    function getTotalPercentOfReserveObject() external view returns (uint256);
 
     function calculateAdvocateLevelNumber(uint256 numberOfReferrals) external view returns (uint256);
     function calculateAdvocateRewardPercent(uint256 numberOfReferrals) external view returns (uint256);
+
+    function calculateReservedRevenueForCustomerReward(
+        uint256 revenue
+    ) external view returns (uint256);
+
+    function calculateReserveRevenueForPlatformFee(
+        uint256 revenue
+    ) external view returns (uint256);
+
+    function calculateReserveRevenueForCommunityCampaign(
+        uint256 revenue
+    ) external view returns (uint256);
+
+    function calculateReserveRevenueForQuarterReferralReward(
+        uint256 revenue
+    ) external view returns (uint256);
+
+    function calculateReserveRevenueForAdvocateReward(
+        uint256 revenue
+    ) external view returns (uint256);
+
+    function calculateRewardAmountForAdvocate(
+        uint256 revenue,
+        uint256 referral
+    ) external view returns (uint256);
+
 
     function getLevelCount() external view returns (uint256);
 }
