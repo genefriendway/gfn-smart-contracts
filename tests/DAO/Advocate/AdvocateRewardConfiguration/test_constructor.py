@@ -14,6 +14,8 @@ def test_success__deploy_smart_contract():
         {"from": deployer}
     )
 
+    assert configuration.getTotalPercentOfReserveObject() == 100
+
     # Assert
     assert configuration.getLevelCount() == 4
 

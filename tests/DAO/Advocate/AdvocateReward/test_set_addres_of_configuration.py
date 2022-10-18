@@ -32,7 +32,7 @@ def test_success__set_configuration_address__owner_make_txn(advocate_deployment)
     assert advocate_reward_contract.getAddressOfConfiguration() == new_configuration
 
 
-def test_success__set_configuration_address__not_owner_make_txn(advocate_deployment):
+def test_failure__set_configuration_address__not_owner_make_txn(advocate_deployment):
     # Arranges
     advocate_reward_owner_fake = accounts.add()
     advocate_reward_contract = advocate_deployment['advocate_reward_contract']
@@ -52,7 +52,7 @@ def test_success__set_configuration_address__not_owner_make_txn(advocate_deploym
     assert advocate_reward_contract.getAddressOfConfiguration() == advocate_reward_configuration_contract
 
 
-def test_success__set_configuration_address__new_configuration_null(advocate_deployment):
+def test_failure__set_configuration_address__new_configuration_null(advocate_deployment):
     # Arranges
     advocate_reward_owner = advocate_deployment['advocate_reward_owner']
     advocate_reward_contract = advocate_deployment['advocate_reward_contract']
@@ -72,7 +72,7 @@ def test_success__set_configuration_address__new_configuration_null(advocate_dep
     assert advocate_reward_contract.getAddressOfConfiguration() == advocate_reward_configuration_contract
 
 
-def test_success__set_configuration_address__new_and_old_configuration_identical(advocate_deployment):
+def test_failure__set_configuration_address__new_and_old_configuration_identical(advocate_deployment):
     # Arranges
     advocate_reward_owner = advocate_deployment['advocate_reward_owner']
     advocate_reward_contract = advocate_deployment['advocate_reward_contract']
