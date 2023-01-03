@@ -34,7 +34,7 @@ contract TokenVesting is Ownable, ReentrancyGuard {
         uint256 released;
         // whether or not the vesting has been revoked
         bool revoked;
-        // percentage of tokens unlocked at start
+        // percentage of tokens unloced at start
         uint8 unlockPercentage;
     }
 
@@ -435,9 +435,12 @@ contract TokenVesting is Ownable, ReentrancyGuard {
         ) {
             return vestingSchedule.amountTotal.sub(vestingSchedule.released);
         } else {
-            uint256 timeFromStart = currentTime.sub(vestingSchedule.start);
+            uint256 timeStartVesting = vestingSchedule.cliff;
+            uint256 timeFromStartVesting = currentTime.sub(timeStartVesting);
             uint256 secondsPerSlice = vestingSchedule.slicePeriodSeconds;
-            uint256 vestedSlicePeriods = timeFromStart.div(secondsPerSlice);
+            uint256 vestedSlicePeriods = timeFromStartVesting.div(
+                secondsPerSlice
+            );
             uint256 vestedSeconds = vestedSlicePeriods.mul(secondsPerSlice);
             uint256 vestingAmount = vestingSchedule.amountTotal.sub(
                 unlockedAmount
