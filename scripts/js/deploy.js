@@ -45,10 +45,11 @@ async function verifyEnvironment() {
     print(`TOKEN_WALLET_OF_ERC20_ADDRESS    :${process.env.TOKEN_WALLET_OF_ERC20_ADDRESS}`)
     print(`TOKEN_WALLET_OWNER               :${process.env.TOKEN_WALLET_OWNER}`)
     print('-----------------------------------------------------------')
-    print(`PCSP_CONFIGURATION_OWNER         :${process.env.PCSP_CONFIGURATION_OWNER}`)
+    print(`PCSP_CUSTOMER_REWARD_CONFIGURATION_OWNER     :${process.env.PCSP_CUSTOMER_REWARD_CONFIGURATION_OWNER}`)
+    print(`PCSP_CUSTOMER_REWARD_OWNER                   :${process.env.PCSP_CUSTOMER_REWARD_OWNER}`)
     print('-----------------------------------------------------------')
-    print(`PCSP_REWARD_OWNER                    :${process.env.PCSP_REWARD_OWNER}`)
-    print(`PCSP_REWARD_CONFIGURATION_ADDRESS    :${process.env.PCSP_REWARD_CONFIGURATION_ADDRESS}`)
+    print(`ADVOCATE_REWARD_CONFIGURATION_OWNER     :${process.env.ADVOCATE_REWARD_CONFIGURATION_OWNER}`)
+    print(`ADVOCATE_REWARD_OWNER                   :${process.env.ADVOCATE_REWARD_OWNER}`)
     print('=======================================================');
 
     const response = await prompt({
@@ -159,8 +160,10 @@ async function selectContractsToDeploy() {
     print('9. GenomicDAOToken2LIFE');
     print('10. LIFE2GenomicDAOToken');
     print('11. TokenWallet');
-    print('12. PCSPConfiguration');
-    print('13. PCSPReward');
+    print('12. PCSPCustomerRewardConfiguration');
+    print('13. PCSPCustomerReward');
+    print('14. AdvocateRewardConfiguration');
+    print('15. AdvocateReward');
     print("==============================")
 
     const response = await prompt({
@@ -207,10 +210,16 @@ async function selectContractsToDeploy() {
             await deployment.deployTokenWallet();
             break;
           case 12:
-            await deployment.deployPCSPConfiguration();
+            await deployment.deployPCSPCustomerRewardConfiguration();
             break;
           case 13:
-            await deployment.deployPCSPReward();
+            await deployment.deployPCSPCustomerReward();
+            break;
+          case 14:
+            await deployment.deployAdvocateRewardConfiguration();
+            break;
+          case 15:
+            await deployment.deployAdvocateReward();
             break;
 
           default:

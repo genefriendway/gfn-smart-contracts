@@ -34,6 +34,17 @@ async function _getRegistryAddress() {
     return deploymentOutput.contracts.ContractRegistry.address
 }
 
+async function _getPCSPCustomerRewardConfigurationAddress() {
+    const deploymentOutput = await lib.readFromJSON(process.env.DEPLOYMENT_OUTPUT_FILE);
+    return deploymentOutput.contracts.PCSPCustomerRewardConfiguration.address
+}
+
+async function _getAdvocateRewardConfigurationAddress() {
+    const deploymentOutput = await lib.readFromJSON(process.env.DEPLOYMENT_OUTPUT_FILE);
+    return deploymentOutput.contracts.AdvocateRewardConfiguration.address
+}
+
+
 async function deployContractRegistry() {
     const CONTRACT_NAME = 'ContractRegistry'
     const CONTRACT_CLASS = 'ContractRegistry'
@@ -359,10 +370,10 @@ async function deployTokenWallet() {
     )
 }
 
-async function deployPCSPConfiguration() {
-    const CONTRACT_NAME = 'PCSPConfiguration'
-    const CONTRACT_CLASS = 'PCSPConfiguration'
-    const ARTIFACT_FILE = 'artifacts/contracts/dao/pcsp/PCSPConfiguration.sol/PCSPConfiguration.json'
+async function deployPCSPCustomerRewardConfiguration() {
+    const CONTRACT_NAME = 'PCSPCustomerRewardConfiguration'
+    const CONTRACT_CLASS = 'PCSPCustomerRewardConfiguration'
+    const ARTIFACT_FILE = 'artifacts/contracts/dao/pcsp/PCSPCustomerRewardConfiguration.sol/PCSPCustomerRewardConfiguration.json'
 
     // log to screen
     print(`Starting Deploy Contract ${CONTRACT_NAME}`);
@@ -370,7 +381,7 @@ async function deployPCSPConfiguration() {
     // start deploy contract to blockchain network
     const Contract = await hre.ethers.getContractFactory(CONTRACT_CLASS);
     const instance = await Contract.deploy(
-        process.env.PCSP_CONFIGURATION_OWNER,
+        process.env.PCSP_CUSTOMER_REWARD_CONFIGURATION_OWNER,
     )
 
     await instance.deployed();
@@ -382,15 +393,16 @@ async function deployPCSPConfiguration() {
     await _updateDeploymentOutput(
         `${CONTRACT_NAME}`,  // make this item unique
         instance.address,
-        process.env.PCSP_CONFIGURATION_OWNER,
+        process.env.PCSP_CUSTOMER_REWARD_CONFIGURATION_OWNER,
         ARTIFACT_FILE
     )
 }
 
-async function deployPCSPReward() {
-    const CONTRACT_NAME = 'PCSPReward'
-    const CONTRACT_CLASS = 'PCSPReward'
-    const ARTIFACT_FILE = 'artifacts/contracts/dao/pcsp/PCSPReward.sol/PCSPReward.json'
+async function deployPCSPCustomerReward() {
+    const CONTRACT_NAME = 'PCSPCustomerReward'
+    const CONTRACT_CLASS = 'PCSPCustomerReward'
+    const ARTIFACT_FILE = 'artifacts/contracts/dao/pcsp/PCSPCustomerReward.sol/PCSPCustomerReward.json'
+    const configurationAddress = await _getPCSPCustomerRewardConfigurationAddress();
 
     // log to screen
     print(`Starting Deploy Contract ${CONTRACT_NAME}`);
@@ -398,8 +410,8 @@ async function deployPCSPReward() {
     // start deploy contract to blockchain network
     const Contract = await hre.ethers.getContractFactory(CONTRACT_CLASS);
     const instance = await Contract.deploy(
-        process.env.PCSP_REWARD_OWNER,
-        process.env.PCSP_REWARD_CONFIGURATION_ADDRESS,
+        process.env.PCSP_CUSTOMER_REWARD_OWNER,
+        configurationAddress,
     )
 
     await instance.deployed();
@@ -411,7 +423,65 @@ async function deployPCSPReward() {
     await _updateDeploymentOutput(
         `${CONTRACT_NAME}`,  // make this item unique
         instance.address,
-        process.env.PCSP_REWARD_OWNER,
+        process.env.PCSP_CUSTOMER_REWARD_OWNER,
+        ARTIFACT_FILE
+    )
+}
+
+async function deployAdvocateRewardConfiguration() {
+    const CONTRACT_NAME = 'AdvocateRewardConfiguration'
+    const CONTRACT_CLASS = 'AdvocateRewardConfiguration'
+    const ARTIFACT_FILE = 'artifacts/contracts/dao/AdvocateRewardConfiguration.sol/AdvocateRewardConfiguration.json'
+
+    // log to screen
+    print(`Starting Deploy Contract ${CONTRACT_NAME}`);
+
+    // start deploy contract to blockchain network
+    const Contract = await hre.ethers.getContractFactory(CONTRACT_CLASS);
+    const instance = await Contract.deploy(
+        process.env.ADVOCATE_REWARD_CONFIGURATION_OWNER,
+    )
+
+    await instance.deployed();
+    // log to screen
+    print(`Contract ${CONTRACT_NAME} deployed at: ${instance.address}`);
+    print('------------------------------------------');
+
+    // update updateDeploymentOutput
+    await _updateDeploymentOutput(
+        `${CONTRACT_NAME}`,  // make this item unique
+        instance.address,
+        process.env.ADVOCATE_REWARD_CONFIGURATION_OWNER,
+        ARTIFACT_FILE
+    )
+}
+
+async function deployAdvocateReward() {
+    const CONTRACT_NAME = 'AdvocateReward'
+    const CONTRACT_CLASS = 'AdvocateReward'
+    const ARTIFACT_FILE = 'artifacts/contracts/dao/AdvocateReward.sol/AdvocateReward.json'
+    const configurationAddress = await _getAdvocateRewardConfigurationAddress();
+
+    // log to screen
+    print(`Starting Deploy Contract ${CONTRACT_NAME}`);
+
+    // start deploy contract to blockchain network
+    const Contract = await hre.ethers.getContractFactory(CONTRACT_CLASS);
+    const instance = await Contract.deploy(
+        process.env.ADVOCATE_REWARD_OWNER,
+        configurationAddress,
+    )
+
+    await instance.deployed();
+    // log to screen
+    print(`Contract ${CONTRACT_NAME} deployed at: ${instance.address}`);
+    print('------------------------------------------');
+
+    // update updateDeploymentOutput
+    await _updateDeploymentOutput(
+        `${CONTRACT_NAME}`,  // make this item unique
+        instance.address,
+        process.env.ADVOCATE_REWARD_OWNER,
         ARTIFACT_FILE
     )
 }
@@ -429,6 +499,8 @@ module.exports = {
     deployGenomicDAOToken2LIFE: deployGenomicDAOToken2LIFE,
     deployLIFE2GenomicDAOToken: deployLIFE2GenomicDAOToken,
     deployTokenWallet: deployTokenWallet,
-    deployPCSPConfiguration: deployPCSPConfiguration,
-    deployPCSPReward: deployPCSPReward,
+    deployPCSPCustomerRewardConfiguration: deployPCSPCustomerRewardConfiguration,
+    deployPCSPCustomerReward: deployPCSPCustomerReward,
+    deployAdvocateRewardConfiguration: deployAdvocateRewardConfiguration,
+    deployAdvocateReward: deployAdvocateReward,
 };
