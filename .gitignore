@@ -25,3 +25,4 @@ typechain
 cache
 artifacts
 flatten/*
+package-lock.json
