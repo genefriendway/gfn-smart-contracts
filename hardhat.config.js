@@ -1,10 +1,11 @@
 require("@nomiclabs/hardhat-waffle");
 require("@nomiclabs/hardhat-web3");
+require("@nomiclabs/hardhat-etherscan");
 const { prompt } = require('enquirer');
 const print = console.log
 
 
-require('dotenv').config({ path: '.env.local' });
+require('dotenv').config({ path: '.env.nightly' });
 
 
 const config = {
@@ -54,9 +55,9 @@ const config = {
     accounts: {
         count: 200
     },
-//    etherscan: {
-//        apiKey: `${process.env.ETHERSCAN_KEY}`
-//    },
+    etherscan: {
+        apiKey: 'SI36YCVBB6YPJQRENAQJV37KVUCSWGVM83'
+    },
     solidity: {
         compilers: [
             {
