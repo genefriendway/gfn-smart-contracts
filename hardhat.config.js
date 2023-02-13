@@ -45,7 +45,7 @@ const config = {
             accounts: [`${process.env.GFN_DEPLOYER_PRIVATE_KEY}`],
         },
         bsc_mainnet: {
-            url: 'https://bsc-dataseed1.binance.org',
+            url: 'https://bsc-dataseed.binance.org',
             chainId: 56,
             accounts: [`${process.env.GFN_DEPLOYER_PRIVATE_KEY}`],
         },
