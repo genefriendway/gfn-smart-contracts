@@ -5,7 +5,7 @@ services:
     build:
         context: .
         dockerfile: Dockerfile
-    image: gfn_smart_contracts:0.0.1
+    image: gfn_smart_contracts
     container_name: gfn_smart_contracts
     volumes:
       - .:/gfn-smart-contracts

@@ -6,12 +6,14 @@ ENV PYTHONUNBUFFERED=1
 
 WORKDIR /gfn-smart-contracts
 
-RUN apt-get update \
-    && apt-get install npm -y \
-    && npm install -g ganache-cli
+RUN apt update \
+    && apt install gcc g++ make \
+    && curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
+    && apt install -y nodejs
 
-COPY requirements.txt /gfn-smart-contracts/requirements.txt
+ADD . /gfn-smart-contracts/
+
 RUN pip install -r requirements.txt \
     && brownie pm install OpenZeppelin/openzeppelin-contracts@4.4.1
 
-ADD . /gfn-smart-contracts/
+RUN npm install
