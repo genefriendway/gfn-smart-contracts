@@ -1,7 +1,7 @@
 const hre = require("hardhat");
 const fs = require('fs');
 const lib = require('./lib.js');
-const deployment = require('./deployment.js');
+const job = require('./job.js');
 const { prompt } = require('enquirer');
 
 const print = console.log
@@ -163,34 +163,34 @@ async function selectContractsToDeploy() {
         let number = parseInt(numbers[i].trim());
         switch(number) {
           case 1:
-            await deployment.deployContractRegistry();
+            await job.deployContractRegistry();
             break;
           case 2:
-            await deployment.deployConfiguration();
+            await job.deployConfiguration();
             break;
           case 3:
-            await deployment.deployGeneNFTToken();
+            await job.deployGeneNFTToken();
             break;
           case 4:
-            await deployment.deployLIFEToken();
+            await job.deployLIFEToken();
             break;
           case 5:
-            await deployment.deployGFNExchangeLIFEBank();
+            await job.deployGFNExchangeLIFEBank();
             break;
           case 6:
-            await deployment.deployGFNExchangeWallet();
+            await job.deployGFNExchangeWallet();
             break;
           case 7:
-            await deployment.deployGFNProfitWallet();
+            await job.deployGFNProfitWallet();
             break;
           case 8:
-            await deployment.deployGenomicDAOToken();
+            await job.deployGenomicDAOToken();
             break;
           case 9:
-            await deployment.deployGenomicDAOToken2LIFE();
+            await job.deployGenomicDAOToken2LIFE();
             break;
           case 10:
-            await deployment.deployLIFE2GenomicDAOToken();
+            await job.deployLIFE2GenomicDAOToken();
             break;
           default:
             throw new Error(`Selected number invalid: ${number}`);
