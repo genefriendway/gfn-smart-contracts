@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+import time
 
 import pytest
 
@@ -35,6 +36,11 @@ def zero_address():
 @pytest.fixture(scope="module")
 def const():
     return Constant
+
+
+@pytest.fixture(scope="module")
+def util():
+    return Util
 
 
 @pytest.fixture(scope="module")
@@ -132,3 +138,13 @@ def deployment():
     }
 
     return results
+
+
+class Util:
+
+    @classmethod
+    def get_timestamp(cls, converted=True):
+        if converted:
+            return int(time.time())
+        else:
+            return time.time()
