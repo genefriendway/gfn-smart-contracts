@@ -9,7 +9,8 @@ WORKDIR /code
 RUN apt update \
     && apt install gcc g++ make \
     && curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
-    && apt install -y nodejs
+    && apt install -y nodejs \
+    && npm install -g ganache-cli
 
 ADD requirements.txt /code/requirements.txt
 
