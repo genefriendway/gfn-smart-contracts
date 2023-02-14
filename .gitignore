@@ -12,6 +12,7 @@ dev/*
 node_modules/
 bin/
 contracts/artifacts/
+deployments/*
 deployment*.json
 deployments/
 run.py
@@ -25,3 +26,4 @@ typechain
 cache
 artifacts
 flatten/*
+package-lock.json

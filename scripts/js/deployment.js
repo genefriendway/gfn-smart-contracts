@@ -34,6 +34,17 @@ async function _getRegistryAddress() {
     return deploymentOutput.contracts.ContractRegistry.address
 }
 
+async function _getPCSPCustomerRewardConfigurationAddress() {
+    const deploymentOutput = await lib.readFromJSON(process.env.DEPLOYMENT_OUTPUT_FILE);
+    return deploymentOutput.contracts.PCSPCustomerRewardConfiguration.address
+}
+
+async function _getAdvocateRewardConfigurationAddress() {
+    const deploymentOutput = await lib.readFromJSON(process.env.DEPLOYMENT_OUTPUT_FILE);
+    return deploymentOutput.contracts.AdvocateRewardConfiguration.address
+}
+
+
 async function deployContractRegistry() {
     const CONTRACT_NAME = 'ContractRegistry'
     const CONTRACT_CLASS = 'ContractRegistry'
@@ -330,6 +341,152 @@ async function deployLIFE2GenomicDAOToken() {
 }
 
 
+async function deployTokenWallet() {
+    const CONTRACT_NAME = 'TokenWallet'
+    const CONTRACT_CLASS = 'TokenWallet'
+    const ARTIFACT_FILE = 'artifacts/contracts/common/TokenWallet.sol/TokenWallet.json'
+
+    // log to screen
+    print(`Starting Deploy Contract ${CONTRACT_NAME}`);
+
+    // start deploy contract to blockchain network
+    const Contract = await hre.ethers.getContractFactory(CONTRACT_CLASS);
+    const instance = await Contract.deploy(
+        process.env.TOKEN_WALLET_OWNER,
+        process.env.TOKEN_WALLET_OF_ERC20_ADDRESS,
+    )
+
+    await instance.deployed();
+    // log to screen
+    print(`Contract ${CONTRACT_NAME} deployed at: ${instance.address}`);
+    print('------------------------------------------');
+
+    // update updateDeploymentOutput
+    await _updateDeploymentOutput(
+        `${process.env.TOKEN_WALLET_OF_ERC20_CODE}${CONTRACT_NAME}`,  // make this item unique
+        instance.address,
+        process.env.TOKEN_WALLET_OWNER,
+        ARTIFACT_FILE
+    )
+}
+
+async function deployPCSPCustomerRewardConfiguration() {
+    const CONTRACT_NAME = 'PCSPCustomerRewardConfiguration'
+    const CONTRACT_CLASS = 'PCSPCustomerRewardConfiguration'
+    const ARTIFACT_FILE = 'artifacts/contracts/dao/pcsp/PCSPCustomerRewardConfiguration.sol/PCSPCustomerRewardConfiguration.json'
+
+    // log to screen
+    print(`Starting Deploy Contract ${CONTRACT_NAME}`);
+
+    // start deploy contract to blockchain network
+    const Contract = await hre.ethers.getContractFactory(CONTRACT_CLASS);
+    const instance = await Contract.deploy(
+        process.env.PCSP_CUSTOMER_REWARD_CONFIGURATION_OWNER,
+    )
+
+    await instance.deployed();
+    // log to screen
+    print(`Contract ${CONTRACT_NAME} deployed at: ${instance.address}`);
+    print('------------------------------------------');
+
+    // update updateDeploymentOutput
+    await _updateDeploymentOutput(
+        `${CONTRACT_NAME}`,  // make this item unique
+        instance.address,
+        process.env.PCSP_CUSTOMER_REWARD_CONFIGURATION_OWNER,
+        ARTIFACT_FILE
+    )
+}
+
+async function deployPCSPCustomerReward() {
+    const CONTRACT_NAME = 'PCSPCustomerReward'
+    const CONTRACT_CLASS = 'PCSPCustomerReward'
+    const ARTIFACT_FILE = 'artifacts/contracts/dao/pcsp/PCSPCustomerReward.sol/PCSPCustomerReward.json'
+    const configurationAddress = await _getPCSPCustomerRewardConfigurationAddress();
+
+    // log to screen
+    print(`Starting Deploy Contract ${CONTRACT_NAME}`);
+
+    // start deploy contract to blockchain network
+    const Contract = await hre.ethers.getContractFactory(CONTRACT_CLASS);
+    const instance = await Contract.deploy(
+        process.env.PCSP_CUSTOMER_REWARD_OWNER,
+        configurationAddress,
+    )
+
+    await instance.deployed();
+    // log to screen
+    print(`Contract ${CONTRACT_NAME} deployed at: ${instance.address}`);
+    print('------------------------------------------');
+
+    // update updateDeploymentOutput
+    await _updateDeploymentOutput(
+        `${CONTRACT_NAME}`,  // make this item unique
+        instance.address,
+        process.env.PCSP_CUSTOMER_REWARD_OWNER,
+        ARTIFACT_FILE
+    )
+}
+
+async function deployAdvocateRewardConfiguration() {
+    const CONTRACT_NAME = 'AdvocateRewardConfiguration'
+    const CONTRACT_CLASS = 'AdvocateRewardConfiguration'
+    const ARTIFACT_FILE = 'artifacts/contracts/dao/AdvocateRewardConfiguration.sol/AdvocateRewardConfiguration.json'
+
+    // log to screen
+    print(`Starting Deploy Contract ${CONTRACT_NAME}`);
+
+    // start deploy contract to blockchain network
+    const Contract = await hre.ethers.getContractFactory(CONTRACT_CLASS);
+    const instance = await Contract.deploy(
+        process.env.ADVOCATE_REWARD_CONFIGURATION_OWNER,
+    )
+
+    await instance.deployed();
+    // log to screen
+    print(`Contract ${CONTRACT_NAME} deployed at: ${instance.address}`);
+    print('------------------------------------------');
+
+    // update updateDeploymentOutput
+    await _updateDeploymentOutput(
+        `${CONTRACT_NAME}`,  // make this item unique
+        instance.address,
+        process.env.ADVOCATE_REWARD_CONFIGURATION_OWNER,
+        ARTIFACT_FILE
+    )
+}
+
+async function deployAdvocateReward() {
+    const CONTRACT_NAME = 'AdvocateReward'
+    const CONTRACT_CLASS = 'AdvocateReward'
+    const ARTIFACT_FILE = 'artifacts/contracts/dao/AdvocateReward.sol/AdvocateReward.json'
+    const configurationAddress = await _getAdvocateRewardConfigurationAddress();
+
+    // log to screen
+    print(`Starting Deploy Contract ${CONTRACT_NAME}`);
+
+    // start deploy contract to blockchain network
+    const Contract = await hre.ethers.getContractFactory(CONTRACT_CLASS);
+    const instance = await Contract.deploy(
+        process.env.ADVOCATE_REWARD_OWNER,
+        configurationAddress,
+    )
+
+    await instance.deployed();
+    // log to screen
+    print(`Contract ${CONTRACT_NAME} deployed at: ${instance.address}`);
+    print('------------------------------------------');
+
+    // update updateDeploymentOutput
+    await _updateDeploymentOutput(
+        `${CONTRACT_NAME}`,  // make this item unique
+        instance.address,
+        process.env.ADVOCATE_REWARD_OWNER,
+        ARTIFACT_FILE
+    )
+}
+
+
 module.exports = {
     deployContractRegistry: deployContractRegistry,
     deployConfiguration: deployConfiguration,
@@ -341,4 +498,9 @@ module.exports = {
     deployGenomicDAOToken: deployGenomicDAOToken,
     deployGenomicDAOToken2LIFE: deployGenomicDAOToken2LIFE,
     deployLIFE2GenomicDAOToken: deployLIFE2GenomicDAOToken,
+    deployTokenWallet: deployTokenWallet,
+    deployPCSPCustomerRewardConfiguration: deployPCSPCustomerRewardConfiguration,
+    deployPCSPCustomerReward: deployPCSPCustomerReward,
+    deployAdvocateRewardConfiguration: deployAdvocateRewardConfiguration,
+    deployAdvocateReward: deployAdvocateReward,
 };
