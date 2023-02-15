@@ -52,7 +52,7 @@ def data_test(vesting_deployment, util):
     }
 
 
-def test_success__release(vesting_deployment, data_test):
+def test_success__release__by_owner(vesting_deployment, data_test):
     # Arranges
     dao_token_owner = vesting_deployment['dao_token_owner']
     dao_token_contract = vesting_deployment['dao_token_contract']
@@ -81,3 +81,80 @@ def test_success__release(vesting_deployment, data_test):
     assert dao_token_contract.balanceOf(beneficiary, {"from": dao_token_owner}) \
            == 100e+18
     assert vesting_contract.getVestingSchedulesTotalAmount() == 3900e+18
+
+
+def test_success__release__by_beneficiary(vesting_deployment, data_test):
+    # Arranges
+    dao_token_owner = vesting_deployment['dao_token_owner']
+    dao_token_contract = vesting_deployment['dao_token_contract']
+    vesting_owner = vesting_deployment['token_vesting_owner']
+    vesting_contract = vesting_deployment['token_vesting_contract']
+    beneficiary = data_test['beneficiary']
+    vesting_schedule_id = data_test['vesting_schedule_id']
+
+    # Assert before actions
+    assert dao_token_contract.balanceOf(beneficiary, {"from": dao_token_owner}) == 0
+    assert vesting_contract.getVestingSchedulesTotalAmount() == 4000e+18
+
+    # Action
+    tx = vesting_contract.release(
+        vesting_schedule_id,
+        100e+18,
+        {"from": beneficiary}
+    )
+
+    # Assert: Released Event
+    assert ('Released' in tx.events) is True
+    assert str(tx.events['Released']['vestingScheduleId']) == vesting_schedule_id
+    assert tx.events['Released']['beneficiary'] == beneficiary
+    assert tx.events['Released']['amount'] == 100e+18
+
+    assert dao_token_contract.balanceOf(beneficiary, {"from": dao_token_owner}) \
+           == 100e+18
+    assert vesting_contract.getVestingSchedulesTotalAmount() == 3900e+18
+
+
+def test_failure__release__by_fake_beneficiary(vesting_deployment, data_test):
+    # Arranges
+    vesting_contract = vesting_deployment['token_vesting_contract']
+    fake_beneficiary = accounts.add()
+    vesting_schedule_id = data_test['vesting_schedule_id']
+
+    # Action
+    with brownie.reverts("TokenVesting: only beneficiary "
+                         "and owner can release vested tokens"):
+        vesting_contract.release(
+            vesting_schedule_id,
+            100e+18,
+            {"from": fake_beneficiary}
+        )
+
+
+def test_failure__release__revoked_schedule(vesting_deployment, data_test):
+    # Arranges
+    vesting_owner = vesting_deployment['token_vesting_owner']
+    vesting_contract = vesting_deployment['token_vesting_contract']
+    vesting_schedule_id = data_test['vesting_schedule_id']
+
+    # Revoke schedule
+    vesting_contract.revoke(vesting_schedule_id, {"from": vesting_owner})
+
+    # Action
+    with brownie.reverts("Schedule has been revoked"):
+        vesting_contract.release(
+            vesting_schedule_id, 100e+18, {"from": vesting_owner}
+        )
+
+
+def test_failure__release__over_vested_amount(vesting_deployment, data_test):
+    # Arranges
+    vesting_owner = vesting_deployment['token_vesting_owner']
+    vesting_contract = vesting_deployment['token_vesting_contract']
+    vesting_schedule_id = data_test['vesting_schedule_id']
+
+    # Action
+    with brownie.reverts("TokenVesting: cannot release tokens, "
+                         "not enough vested tokens"):
+        vesting_contract.release(
+            vesting_schedule_id, 334e+18, {"from": vesting_owner}
+        )
