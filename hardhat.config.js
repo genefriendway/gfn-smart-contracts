@@ -5,7 +5,7 @@ const { prompt } = require('enquirer');
 const print = console.log
 
 
-require('dotenv').config({ path: '.env.nightly' });
+require('dotenv').config({ path: '.env.local' });
 
 
 const config = {

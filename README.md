@@ -24,6 +24,9 @@
 ### How to deploy smart contracts:
   - Command: `npx hardhat run --network <network_name> scripts/js/deploy.js`
 
+### How to verify and publish smart contracts:
+  - Command: `npx hardhat verify --network <network_name> <contact_address> arg1 arg2 ....`
+
 ## Project structure
   - `contracts/`: Contract sources
   - `interfaces/`: Interface sources
