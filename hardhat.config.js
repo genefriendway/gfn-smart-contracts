@@ -56,7 +56,7 @@ const config = {
         count: 200
     },
     etherscan: {
-        apiKey: 'SI36YCVBB6YPJQRENAQJV37KVUCSWGVM83'
+         apiKey: `${process.env.ETHERSCAN_KEY}`
     },
     solidity: {
         compilers: [
