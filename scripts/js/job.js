@@ -258,7 +258,7 @@ async function deployGenomicDAOToken() {
 
     // update updateDeploymentOutput
     await _updateDeploymentOutput(
-        `${CONTRACT_NAME}${process.env.DAO_TOKEN_SYMBOL}`,  // make this item unique
+        `${CONTRACT_NAME}`,  // make this item unique
         instance.address,
         process.env.DAO_TOKEN_OWNER,
         ARTIFACT_FILE
@@ -293,6 +293,38 @@ async function deployGenomicDAOToken2LIFE() {
         CONTRACT_NAME,
         instance.address,
         process.env.GENOMIC_DAO_TOKEN_2_LIFE_OWNER,
+        ARTIFACT_FILE
+    )
+}
+
+
+async function deployLIFE2GenomicDAOToken() {
+    const CONTRACT_NAME = 'LIFE2GenomicDAOToken'
+    const CONTRACT_CLASS = 'LIFE2GenomicDAOToken'
+    const ARTIFACT_FILE = 'artifacts/contracts/dao/LIFE2GenomicDAOToken.sol/LIFE2GenomicDAOToken.json'
+
+    // log to screen
+    print(`Starting Deploy Contract ${CONTRACT_NAME}`);
+
+    // start deploy contract to blockchain network
+    const Contract = await hre.ethers.getContractFactory(CONTRACT_CLASS);
+    const instance = await Contract.deploy(
+        process.env.LIFE_2_GENOMIC_DAO_TOKEN_OWNER,
+        process.env.LIFE_TOKEN_ADDRESS,
+        process.env.GENOMIC_DAO_TOKEN_ADDRESS,
+        process.env.RESERVATION_DAO_TOKEN_ADDRESS,
+    )
+
+    await instance.deployed();
+    // log to screen
+    print(`Contract ${CONTRACT_NAME} deployed at: ${instance.address}`);
+    print('------------------------------------------');
+
+    // update updateDeploymentOutput
+    await _updateDeploymentOutput(
+        CONTRACT_NAME,
+        instance.address,
+        process.env.LIFE_2_GENOMIC_DAO_TOKEN_OWNER,
         ARTIFACT_FILE
     )
 }
