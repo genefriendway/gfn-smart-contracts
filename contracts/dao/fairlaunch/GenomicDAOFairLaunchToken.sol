@@ -9,20 +9,21 @@ import "./TransferFee.sol";
 import "../../interfaces/IGenomicDAOFairLaunchToken.sol";
 
 contract GenomicDAOFairLaunchToken is
-    IGenomicDAOFairLaunchToken,
-    GasPriceController,
-    DexListing,
-    TransferFee,
-    Ownable,
-    ERC20Capped
+IGenomicDAOFairLaunchToken,
+GasPriceController,
+DexListing,
+TransferFee,
+Ownable,
+ERC20Capped
 {
     constructor(
         address owner,
         string memory name,
         string memory symbol,
         uint256 duration,
+        uint256 finishListingFeePercent,
         uint256 cap
-    ) ERC20(name, symbol) ERC20Capped(cap) DexListing(duration) {
+    ) ERC20(name, symbol) ERC20Capped(cap) DexListing(duration, finishListingFeePercent) {
         transferOwnership(owner);
         _setTransferFee(_msgSender(), 0, 0, 0);
     }

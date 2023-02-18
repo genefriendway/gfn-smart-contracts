@@ -13,11 +13,16 @@ contract DexListing is OriginOwner {
     uint256 private _listingFeePercent = 0;
     uint256 private _listingDuration;
     uint256 private _listingStartAt;
+    uint256 private _finishListingFeePercent = 0;
 
     bool internal _listingFinished;
 
-    constructor(uint256 listingDuration_) {
+    constructor(uint256 listingDuration_, uint256 finishListingFeePercent_) {
+        require(finishListingFeePercent_ <= 100, "FinishListingFeePercent: fee must be less or equal 100%");
+
         _listingDuration = listingDuration_;
+        _finishListingFeePercent = finishListingFeePercent_;
+
         // address router = address(0x10ED43C718714eb63d5aA57B78B54704E256024E);
         address router = address(0xD99D1c33F9fC3444f8101754aBC46c52416550D1); // Test net
         uniswapV2Router = router;
@@ -41,13 +46,17 @@ contract DexListing is OriginOwner {
     function _updateListingFee() private {
         uint256 pastTime = block.timestamp - _listingStartAt;
         if (pastTime > _listingDuration) {
-            _listingFeePercent = 0;
+            _listingFeePercent = _finishListingFeePercent;
         } else {
             // pastTime == 0 => fee = 100
-            // pastTime == _listingDuration => fee = 0
+            // pastTime == _listingDuration => fee = _finishListingFee
             _listingFeePercent =
                 (100 * (_listingDuration - pastTime)) /
                 _listingDuration;
+            
+            if (_listingFeePercent < _finishListingFeePercent) {
+                _listingFeePercent = _finishListingFeePercent;
+            }
         }
     }
 

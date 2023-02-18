@@ -26,7 +26,7 @@ library LDex {
     // address internal constant _busd =
     //     address(0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56);
     address internal constant _busd =
-    address(0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56); // testnet
+    address(0xaB1a4d4f1D656d2450692D237fdD6C7f9146e814); // testnet
 
     function _isPair(address pair_) internal returns (bool) {
         (bool success, bytes memory data) = pair_.call(
