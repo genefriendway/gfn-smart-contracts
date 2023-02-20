@@ -24,17 +24,17 @@ const web3 = new Web3(provider)
 const { utils } = web3
 
 const ROUTER = {
-    abi: require('../abis/PancakeSwap.json'),
+    abi: require('./abis/PancakeSwap.json'),
     address: routerAddress
 }
 
 const USDT = {
-    abi: require('../abis/USDTToken.json'),
+    abi: require('./abis/USDTToken.json'),
     address: usdtTokenAddress
 }
 
 const PCSP = {
-    abi: require('../abis/PCSPToken.json'),
+    abi: require('./abis/PCSPToken.json'),
     address: pcspTokenAddress
 }
 
