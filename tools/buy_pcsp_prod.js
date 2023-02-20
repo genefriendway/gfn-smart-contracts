@@ -68,7 +68,14 @@ async function main() {
     const pcspTokenOptions = pcspToken.options
     const routerPancakeOptions = routerPancake.options
 
-    const buyer = getAccount(pkeys[0])
+    // Get account argument index
+    const args = process.argv.slice(2);
+
+    const accountIndex = parseInt(args[0])
+    console.log('Account index: ', accountIndex)
+
+    const buyer = getAccount(pkeys[accountIndex])
+    console.log('Account: ', buyer.address)
 
     const amountIn = utils.toWei('0.2', 'ether')
     const approveAmount = utils.toWei('0.6', 'ether')
@@ -77,8 +84,6 @@ async function main() {
     for (let i = 0; i < 3; i++) {
         await swapToken(routerPancake, buyer.address, buyer.address, amountIn, usdtTokenOptions.address, pcspTokenOptions.address)
     }
-
-
 }
 
 async function addLiquidityPair(routerContract, fromAccount, pcspTokenContract, usdtTokenContract, pcspAmount, usdtAmount) {
