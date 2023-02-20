@@ -14,7 +14,7 @@ const timeDurationUnit = (env == 'dev') ? timeSecond : timeMonth
 
 const configuration = {
   'dev': {
-    listingDuration: 60 * 10,  // 10 mins
+    listingDuration: timeMinute * 3,  // 3 mins
     finishListingFeePercent: 2,
     startVestingTime: (1676695676 + 120).toString(),
     taxReceiverAccount: "",
@@ -95,11 +95,11 @@ const configuration = {
     ]
   },
   'prod': {
-    listingDuration: 60 * 10,  // 10 mins
+    listingDuration: timeMinute * 3,  // 3 mins
     finishListingFeePercent: 2,
     startVestingTime: '1676851200', // 20/02/2023 7:00:00 AM 
     taxReceiverAccount: "",
-    gasPrice: "20000000000",
+    gasPrice: "10000000000",
     vestingConfig: [
       {
         name: 'Community Development',
@@ -194,7 +194,8 @@ async function selectStep() {
   console.log("3. Mint token")
   console.log("4. Setup token tax receiver")
   console.log("5. Setup vesting schedule")
-  console.log("6. Exit")
+  console.log("6. Release liquidity vesting")
+  console.log("7. Exit")
   console.log("-------------------")
 
   let response
@@ -235,6 +236,11 @@ async function selectStep() {
         break;
 
       case 6:
+        // Release liquidity vesting
+        await releaseLiquidityVesting(vesting, deployer.address)
+        break;
+
+      case 7:
         // Exit
         return
 
@@ -317,6 +323,19 @@ async function setupTax(token, taxReceiver, gasPrice) {
 
   // Setup gas price
   await token.setMaxGasPrice(gasPrice)
+}
+
+async function releaseLiquidityVesting(vesting, liquidityAccount) {
+  console.log("Start releasing all liquidity vesting")
+
+  const vestingScheduleId = await vesting.computeVestingScheduleIdForAddressAndIndex(liquidityAccount, 0);
+
+  const releasableAmount = await vesting.computeReleasableAmount(vestingScheduleId);
+
+  await vesting.release(vestingScheduleId, releasableAmount);
+
+  console.log("Released: ", releasableAmount.toString())
+
 }
 
 // We recommend this pattern to be able to use async/await everywhere
