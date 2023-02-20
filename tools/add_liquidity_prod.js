@@ -70,9 +70,6 @@ async function main() {
 
     const account = getAccount(pkeys[0])
 
-    const amountIn = utils.toWei('1', 'ether')
-    const approveAmount = utils.toWei('3', 'ether')
-
     // Add liquidity
     const pcspLiquidAmount = utils.toWei('5000', 'ether')
     const usdtLiquidAmount = utils.toWei('10', 'ether')

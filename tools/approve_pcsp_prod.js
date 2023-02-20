@@ -70,8 +70,8 @@ async function main() {
 
     const buyer = getAccount(pkeys[0])
 
-    const amountIn = utils.toWei('1', 'ether')
-    const approveAmount = utils.toWei('3', 'ether')
+    const amountIn = utils.toWei('0.2', 'ether')
+    const approveAmount = utils.toWei('0.6', 'ether')
 
     // Approve token for routher
     await approveRouter(usdtToken, buyer.address, routerPancakeOptions.address, approveAmount)
