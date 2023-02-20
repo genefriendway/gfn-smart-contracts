@@ -68,13 +68,16 @@ async function main() {
     const pcspTokenOptions = pcspToken.options
     const routerPancakeOptions = routerPancake.options
 
-    const buyer = getAccount(pkeys[0])
+    const buyer1 = getAccount(pkeys[0])
+    const buyer2 = getAccount(pkeys[1])
 
     const amountIn = utils.toWei('0.2', 'ether')
     const approveAmount = utils.toWei('0.6', 'ether')
 
     // Approve token for routher
-    await approveRouter(usdtToken, buyer.address, routerPancakeOptions.address, approveAmount)
+    await approveRouter(usdtToken, buyer1.address, routerPancakeOptions.address, approveAmount)
+
+    await approveRouter(usdtToken, buyer2.address, routerPancakeOptions.address, approveAmount)
 
 }
 
