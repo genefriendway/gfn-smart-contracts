@@ -1,5 +1,6 @@
 require("@nomiclabs/hardhat-waffle");
 require("@nomiclabs/hardhat-web3");
+require("@nomiclabs/hardhat-etherscan");
 const { prompt } = require('enquirer');
 const print = console.log
 
@@ -39,14 +40,24 @@ const config = {
             chainId: 42262,
             accounts: [`${process.env.GFN_DEPLOYER_PRIVATE_KEY}`],
         },
+        bsc_testnet: {
+            url: 'https://data-seed-prebsc-1-s1.binance.org:8545',
+            chainId: 97,
+            accounts: [`${process.env.GFN_DEPLOYER_PRIVATE_KEY}`],
+        },
+        bsc_mainnet: {
+            url: 'https://bsc-dataseed.binance.org',
+            chainId: 56,
+            accounts: [`${process.env.GFN_DEPLOYER_PRIVATE_KEY}`],
+        },
 
     },
     accounts: {
         count: 200
     },
-//    etherscan: {
-//        apiKey: `${process.env.ETHERSCAN_KEY}`
-//    },
+    etherscan: {
+         apiKey: `${process.env.ETHERSCAN_KEY}`
+    },
     solidity: {
         compilers: [
             {

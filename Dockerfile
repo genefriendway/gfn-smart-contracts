@@ -4,14 +4,19 @@ FROM python:3.7.12
 # is sent straight to terminal without being first buffered
 ENV PYTHONUNBUFFERED=1
 
-WORKDIR /gfn-smart-contracts
+WORKDIR /code
 
-RUN apt-get update \
-    && apt-get install npm -y \
+RUN apt update \
+    && apt install gcc g++ make \
+    && curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
+    && apt install -y nodejs \
     && npm install -g ganache-cli
 
-COPY requirements.txt /gfn-smart-contracts/requirements.txt
-RUN pip install -r requirements.txt \
+ADD requirements.txt /code/requirements.txt
+
+RUN pip install -r /code/requirements.txt \
     && brownie pm install OpenZeppelin/openzeppelin-contracts@4.4.1
 
-ADD . /gfn-smart-contracts/
+ADD package.json /code/package.json
+
+RUN npm install

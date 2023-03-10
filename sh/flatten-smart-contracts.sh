@@ -32,3 +32,10 @@ echo "Removing duplicated SPDX-License-Identifier: MIT"
 sed -i 's/\/\/ SPDX-License-Identifier: MIT//g' flatten/flatten.GeneFriendNetworkWallet.sol
 sed -i '5 i \/\/ SPDX-License-Identifier: MIT' flatten/flatten.GeneFriendNetworkWallet.sol
 echo "------------------------------------------------"
+
+echo "Flattening GenomicDAOToken"
+npx hardhat flatten contracts/dao/GenomicDAOToken.sol > flatten/flatten.GenomicDAOToken.sol
+echo "Removing duplicated SPDX-License-Identifier: MIT"
+sed -i 's/\/\/ SPDX-License-Identifier: MIT//g' flatten/flatten.GenomicDAOToken.sol
+sed -i '5 i \/\/ SPDX-License-Identifier: MIT' flatten/flatten.GenomicDAOToken.sol
+echo "------------------------------------------------"
