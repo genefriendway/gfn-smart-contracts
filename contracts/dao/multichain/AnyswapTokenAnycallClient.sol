@@ -16,9 +16,9 @@ interface IApp {
 }
 
 interface IAnyswapToken {
-    function mint(address account, uint256 amount) external;
+    function mint(address to, uint256 amount) external returns (bool);
 
-    function burn(uint256 amount) external;
+    function burn(address from, uint256 amount) external returns (bool);
 
     function withdraw(uint256 amount, address to) external returns (uint256);
 }
@@ -172,7 +172,7 @@ contract AnyswapTokenAnycallClient is AnycallClientBase {
             // update amount to real balance increasement (some token may deduct fees)
             amount = new_balance - old_balance;
         } else {
-            IAnyswapToken(token).burn(amount);
+            assert(IAnyswapToken(token).burn(msg.sender, amount));
         }
 
         bytes memory data = abi.encodeWithSelector(
@@ -250,7 +250,7 @@ contract AnyswapTokenAnycallClient is AnycallClientBase {
                 IAnyswapToken(dstToken).mint(address(this), amount);
                 IAnyswapToken(dstToken).withdraw(amount, receiver);
             } else {
-                IAnyswapToken(dstToken).mint(receiver, amount);
+                assert(IAnyswapToken(dstToken).mint(receiver, amount));
             }
 
             emit LogSwapin(dstToken, sender, receiver, amount, fromChainId);
@@ -309,7 +309,7 @@ contract AnyswapTokenAnycallClient is AnycallClientBase {
         ) {
             IERC20(_underlying).safeTransferFrom(address(this), from, amount);
         } else {
-            IAnyswapToken(srcToken).mint(from, amount);
+            assert(IAnyswapToken(srcToken).mint(from, amount));
         }
 
         emit LogSwapoutFail(srcToken, from, receiver, amount, toChainId);
