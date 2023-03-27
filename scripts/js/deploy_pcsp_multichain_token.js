@@ -1,6 +1,7 @@
 
 const { ethers } = require("hardhat");
 const hre = require("hardhat");
+const { prompt } = require('enquirer');
 
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 
